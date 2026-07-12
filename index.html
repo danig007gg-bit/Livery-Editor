@@ -598,22 +598,7 @@ input[type="checkbox"] {
     <span class="topbar-hint" id="hint-paint-mode">🪣 Relleno activo</span>
   </div>
   <div id="topbar-actions">
-    <div class="export-top-opts">
-      <label>Res</label>
-      <select id="export-res-select">
-        <option value="4096">4096</option>
-        <option value="2048">2048</option>
-        <option value="1024" selected>1024</option>
-        <option value="512">512</option>
-      </select>
-      <label>Calidad</label>
-      <select id="export-quality-select">
-        <option value="1">Alta</option>
-        <option value="2" selected>Media</option>
-        <option value="4">Baja</option>
-      </select>
-    </div>
-    <button id="btn-exportar">⬇ Exportar PNG</button>
+    <button id="btn-exportar">⬇ Exportar</button>
   </div>
 </div>
 
@@ -801,11 +786,11 @@ input[type="checkbox"] {
           <div class="subpanel-title">✏ Editor de Capa Activa</div>
           <div class="field">
             <div class="field-label">Escala <span class="val" id="txt-edit-tam">0.3</span></div>
-            <input type="range" id="edit-slider-tamaño" min="0.05" max="1.5" step="0.05">
+            <input type="range" id="edit-slider-tamaño" min="0.01" max="1.5" step="0.01">
           </div>
           <div class="field" style="margin-top:8px;">
             <div class="field-label">Rotación <span class="val" id="txt-edit-rot">0°</span></div>
-            <input type="range" id="edit-slider-rotacion" min="0" max="360" step="5">
+            <input type="range" id="edit-slider-rotacion" min="0" max="360" step="1">
           </div>
           <div class="field" style="margin-top:8px;">
             <div class="field-label">Mover X (horizontal) <span class="val" id="txt-edit-ox">0</span></div>
@@ -841,6 +826,39 @@ input[type="checkbox"] {
         <div class="modal-info-label">Mesh seleccionada</div>
         <div id="map-preview-selected"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div id="export-modal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,.8); backdrop-filter:blur(6px); z-index:20000;">
+  <div style="width:380px; background:var(--panel); border:1px solid var(--border2); border-radius:var(--radius2); box-shadow:0 24px 80px rgba(0,0,0,.8); overflow:hidden;">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:var(--panel2);">
+      <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:1px; text-transform:uppercase; color:var(--txt);">&#11015; Exportar Livery</div>
+      <button id="export-modal-close" class="btn btn-ghost btn-sm">✕</button>
+    </div>
+    <div style="padding:16px; display:flex; flex-direction:column; gap:12px;">
+      <div class="field">
+        <div class="field-label">Nombre del archivo</div>
+        <input type="text" id="export-filename" value="livery-map" placeholder="livery-map">
+      </div>
+      <div class="field">
+        <div class="field-label">Resolución</div>
+        <select id="export-res-select">
+          <option value="4096">4096 × 4096</option>
+          <option value="2048">2048 × 2048</option>
+          <option value="1024" selected>1024 × 1024</option>
+          <option value="512">512 × 512</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="field-label">Calidad</div>
+        <select id="export-quality-select">
+          <option value="1">Alta</option>
+          <option value="2" selected>Media</option>
+          <option value="4">Baja</option>
+        </select>
+      </div>
+      <button id="export-modal-confirm" class="btn btn-primary btn-full" style="margin-top:4px; padding:11px; font-size:13px; letter-spacing:1.5px;">⬇ Exportar PNG</button>
     </div>
   </div>
 </div>
@@ -999,7 +1017,17 @@ input[type="checkbox"] {
     function actualizarTexturaPorTexto() {
         const texto = inputTexto.value.trim(); if (!texto) return false;
         ctxTexto.clearRect(0, 0, canvasTexto.width, canvasTexto.height);
-        ctxTexto.font = selectorFuente.value; ctxTexto.fillStyle = colorTexto.value;
+        // Parse font string and scale size down until text fits
+        let fontStr = selectorFuente.value;
+        ctxTexto.font = fontStr;
+        const maxW = canvasTexto.width * 0.95;
+        let measured = ctxTexto.measureText(texto).width;
+        if (measured > maxW) {
+            // Extract numeric size from font string and scale it
+            fontStr = fontStr.replace(/(\d+)px/, (_, n) => Math.floor(parseInt(n) * maxW / measured) + 'px');
+            ctxTexto.font = fontStr;
+        }
+        ctxTexto.fillStyle = colorTexto.value;
         ctxTexto.textAlign = 'center'; ctxTexto.textBaseline = 'middle';
         ctxTexto.fillText(texto, canvasTexto.width / 2, canvasTexto.height / 2);
         texturaActual = new THREE.CanvasTexture(canvasTexto);
@@ -1197,6 +1225,7 @@ input[type="checkbox"] {
     let isPainting = false;
     const selectorColorPaint = document.getElementById('selector-color'); // Use the main picker
     let currentBaseColor = '#ffffff';
+    let baseColorApplied = false;
 
     function syncColorPickers(color) {
         document.getElementById('selector-color').value = color;
@@ -1218,6 +1247,7 @@ input[type="checkbox"] {
     // This function now directly manipulates material properties for a solid color look.
     function fillAllMeshes(color) {
         currentBaseColor = color;
+        baseColorApplied = true;
         syncColorPickers(color);
         actualizarEstiloPinturaCoche();
     }
@@ -1276,9 +1306,10 @@ input[type="checkbox"] {
     // OrbitControls siempre activo; el sticker se coloca si Shift está pulsado.
     renderer.domElement.addEventListener('pointerdown', (e) => {
         if (e.clientX < 300) return;
+        if (e.button !== 0) return;
         if (e.shiftKey || _shiftHeld) {
             _shiftHeld = true;
-            e.stopPropagation(); // evitar que OrbitControls consuma el evento
+            e.stopPropagation();
             proyeccionViniloDefinitiva(e);
         }
     });
@@ -1440,6 +1471,12 @@ input[type="checkbox"] {
     editSliderRot.addEventListener('input', reGenerarGeometriaCapaEditada);
     editSliderOX .addEventListener('input', reGenerarGeometriaCapaEditada);
     editSliderOY .addEventListener('input', reGenerarGeometriaCapaEditada);
+
+    // Prevent parent scroll from stealing vertical drag on sliders inside the layer editor
+    [editSliderTam, editSliderRot, editSliderOX, editSliderOY].forEach(sl => {
+        sl.addEventListener('mousedown', () => { document.getElementById('lista-capas-ui').style.overflowY = 'hidden'; });
+        sl.addEventListener('mouseup',   () => { document.getElementById('lista-capas-ui').style.overflowY = 'auto'; });
+    });
     document.getElementById('btn-cerrar-editor').addEventListener('click', () => {
         indexCapaSeleccionada = null; subpanelEditor.style.display = 'none'; actualizarInterfazCapas();
     });
@@ -1481,7 +1518,7 @@ input[type="checkbox"] {
     });
     document.getElementById('btn-limpiar').addEventListener('click', () => {
         while (capasStickers.length) { const c = capasStickers.pop(); scene.remove(c.objetoMesh); c.objetoMesh.geometry.dispose(); }
-        currentBaseColor = '#ffffff'; actualizarEstiloPinturaCoche(); inputTexto.value = '';
+        currentBaseColor = '#ffffff'; baseColorApplied = false; actualizarEstiloPinturaCoche(); inputTexto.value = '';
         subpanelEditor.style.display = 'none'; actualizarInterfazCapas();
     });
 
@@ -1844,7 +1881,7 @@ input[type="checkbox"] {
                     // Z should be small (near the surface); reject if too far
                     const halfSize = decalSize * 0.5;
                     if (Math.abs(pLocal.x) > halfSize || Math.abs(pLocal.y) > halfSize) continue;
-                    if (Math.abs(pLocal.z) > decalSize) continue;
+                    if (Math.abs(pLocal.z) > decalSize * 0.1) continue;
 
                     // Map decal local X,Y → sticker pixel coords
                     // pLocal.x in [-halfSize, halfSize] → sticker u in [0, 1]
@@ -1918,7 +1955,18 @@ input[type="checkbox"] {
     }
 
     // ── Export handler ───────────────────────────────────────
-    document.getElementById('btn-exportar').addEventListener('click', async () => {
+    document.getElementById('btn-exportar').addEventListener('click', () => {
+        document.getElementById('export-modal').style.display = 'flex';
+    });
+    document.getElementById('export-modal-close').addEventListener('click', () => {
+        document.getElementById('export-modal').style.display = 'none';
+    });
+    document.getElementById('export-modal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('export-modal')) document.getElementById('export-modal').style.display = 'none';
+    });
+
+    document.getElementById('export-modal-confirm').addEventListener('click', async () => {
+        document.getElementById('export-modal').style.display = 'none';
         try {
             eliminarFantasma();;
             let requested = parseInt(document.getElementById('export-res-select')?.value || '1024');
@@ -1926,10 +1974,13 @@ input[type="checkbox"] {
             const w = requested, h = requested;
             const exportMaps = await prepareExportMapCanvases(w, h);
 
-            // Bake the base color onto all export maps
+            // Bake the base color onto all export maps (solo si el usuario aplicó color)
             for (const entry of exportMaps) {
-                entry.ctx.fillStyle = currentBaseColor;
-                entry.ctx.fillRect(0, 0, w, h);
+                if (baseColorApplied) {
+                    entry.ctx.fillStyle = currentBaseColor;
+                    entry.ctx.fillRect(0, 0, w, h);
+                }
+                // Si no, el canvas queda transparente (fondo del coche visible)
             }
 
             let partsData = null;
@@ -1945,7 +1996,8 @@ input[type="checkbox"] {
             } finally { try { prog.close(); } catch(e){} }
             let count = 0;
             for (const entry of exportMaps) {
-                const a = document.createElement('a'); a.style.display='none'; a.download=`${entry.fileName}.png`; a.href=entry.canvas.toDataURL('image/png');
+                const customName = document.getElementById('export-filename').value.trim() || 'livery-map';
+                const a = document.createElement('a'); a.style.display='none'; a.download=`${customName}.png`; a.href=entry.canvas.toDataURL('image/png');
                 document.body.appendChild(a); a.click(); document.body.removeChild(a); count++;
             }
             alert(`Exportación completada: ${count} mapa(s) descargado(s)`);

@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livery Editor — Assetto Corsa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Impact&family=Orbitron:wght@700&family=Graduate&display=swap" rel="stylesheet">
+    <style>
+/* ── GT7 Design Tokens ─────────────────────────────────────── */
+:root {
+  --bg:          #07080d;
+  --bg2:         #0d0f18;
+  --panel:       #10121e;
+  --panel2:      #161928;
+  --border:      #1e2235;
+  --border2:     #272c42;
+  --gold:        #c8a84b;
+  --gold2:       #e8c96e;
+  --accent:      #3d6fff;
+  --accent2:     #5a84ff;
+  --green:       #1adf80;
+  --red:         #ff4455;
+  --txt:         #e8ecf5;
+  --txt2:        #8b92aa;
+  --txt3:        #4a5068;
+  --radius:      3px;
+  --radius2:     6px;
+  --sidebar-w:   300px;
+}
+
+/* ── Reset & Base ──────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--bg);
+  font-family: 'Inter', sans-serif;
+  color: var(--txt);
+  font-size: 13px;
+}
+canvas { display: block; }
+input[type="file"] { display: none; }
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ── Top Header Bar ─────────────────────────────────────────── */
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 46px;
+  background: linear-gradient(90deg, #080a14 0%, #0d1022 60%, #080a14 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0;
+  z-index: 1000;
+  padding: 0 18px 0 0;
+}
+#topbar-logo {
+  width: var(--sidebar-w); flex-shrink: 0;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 18px;
+  border-right: 1px solid var(--border);
+  height: 100%;
+}
+#topbar-logo .logo-mark {
+  width: 28px; height: 28px;
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  flex-shrink: 0;
+}
+#topbar-logo .logo-text {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700; font-size: 15px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--txt);
+  line-height: 1.1;
+}
+#topbar-logo .logo-sub {
+  font-size: 9px; color: var(--gold); letter-spacing: 3px;
+  font-weight: 500;
+}
+#topbar-center {
+  flex: 1; display: flex; align-items: center; gap: 6px;
+  padding: 0 18px;
+}
+.topbar-hint {
+  font-size: 11px; color: var(--txt3);
+  display: flex; align-items: center; gap: 5px;
+}
+.topbar-hint kbd {
+  background: var(--panel2); border: 1px solid var(--border2);
+  color: var(--gold); font-family: 'Rajdhani', sans-serif;
+  font-size: 11px; font-weight: 600;
+  padding: 1px 6px; border-radius: 3px;
+}
+.topbar-sep { width: 1px; height: 20px; background: var(--border); margin: 0 8px; }
+#topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+#sidebar {
+  position: fixed;
+  top: 46px; left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  z-index: 900;
+  overflow: hidden;
+}
+#sidebar-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 12px 0 24px;
+}
+
+/* ── Section Block ──────────────────────────────────────────── */
+.section {
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.section-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+  background: transparent;
+  transition: background .15s;
+}
+.section-header:hover { background: rgba(255,255,255,0.03); }
+.section-icon {
+  width: 18px; height: 18px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+}
+.section-title {
+  flex: 1;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600; font-size: 12px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--txt2);
+}
+.section-header:hover .section-title { color: var(--txt); }
+.section-chevron {
+  font-size: 9px; color: var(--txt3);
+  transition: transform .2s;
+}
+.section.open .section-chevron { transform: rotate(180deg); }
+.section-body {
+  padding: 0 14px 14px;
+  display: none;
+}
+.section.open .section-body { display: block; }
+
+/* ── Env selector tabs ──────────────────────────────────────── */
+.env-tabs {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px; margin-top: 4px;
+}
+.env-tab {
+  padding: 7px 4px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 10px; font-weight: 500;
+  color: var(--txt2); text-align: center;
+  cursor: pointer; transition: all .15s;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: .5px; text-transform: uppercase;
+}
+.env-tab:hover { border-color: var(--border2); color: var(--txt); }
+.env-tab.active { background: rgba(200,168,75,.12); border-color: var(--gold); color: var(--gold); }
+
+/* ── Form Controls ──────────────────────────────────────────── */
+.field { margin-top: 10px; }
+.field:first-child { margin-top: 0; }
+.field-label {
+  font-size: 10px; font-weight: 600;
+  color: var(--txt3); letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 5px;
+  font-family: 'Rajdhani', sans-serif;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.field-label .val { color: var(--gold); font-size: 11px; letter-spacing: 0; }
+
+select, input[type="text"] {
+  width: 100%;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--txt);
+  padding: 7px 10px;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color .15s;
+}
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a5068'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+  cursor: pointer;
+}
+select:focus, input[type="text"]:focus {
+  border-color: var(--gold);
+  background: rgba(200,168,75,.06);
+}
+select:hover, input[type="text"]:hover { border-color: var(--border2); }
+
+input[type="range"] {
+  width: 100%; height: 3px;
+  appearance: none; -webkit-appearance: none;
+  background: var(--border2); border-radius: 2px;
+  outline: none; cursor: pointer; margin-top: 6px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 14px; height: 14px;
+  background: var(--gold);
+  border-radius: 50%; border: 2px solid var(--bg);
+  box-shadow: 0 0 6px rgba(200,168,75,.4);
+}
+input[type="range"]:hover::-webkit-slider-thumb { background: var(--gold2); }
+
+input[type="color"] {
+  border: none; width: 32px; height: 32px;
+  border-radius: var(--radius); cursor: pointer;
+  background: none; padding: 0;
+  outline: 2px solid var(--border);
+  outline-offset: 2px;
+}
+input[type="color"]:hover { outline-color: var(--gold); }
+input[type="checkbox"] {
+  width: 15px; height: 15px; cursor: pointer;
+  accent-color: var(--gold);
+}
+
+.color-row {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 10px;
+}
+.color-row label { font-size: 11px; color: var(--txt2); }
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: none; border-radius: var(--radius);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600; font-size: 12px;
+  letter-spacing: .8px; text-transform: uppercase;
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--gold); color: #07080d;
+}
+.btn-primary:hover { background: var(--gold2); }
+.btn-secondary {
+  background: var(--panel2); color: var(--txt2);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--border); color: var(--txt); }
+.btn-ghost {
+  background: transparent; color: var(--txt3);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--txt2); }
+.btn-danger {
+  background: rgba(255,68,85,.12); color: var(--red);
+  border: 1px solid rgba(255,68,85,.25);
+}
+.btn-danger:hover { background: rgba(255,68,85,.22); }
+.btn-accent {
+  background: var(--accent); color: #fff;
+}
+.btn-accent:hover { background: var(--accent2); }
+.btn-full { width: 100%; }
+.btn-sm { padding: 5px 10px; font-size: 10px; }
+.btn-upload {
+  width: 100%; padding: 9px 12px;
+  background: var(--panel2);
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  color: var(--txt2); font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer; text-align: center;
+  transition: all .15s; margin-top: 6px;
+  display: block;
+}
+.btn-upload:hover { border-color: var(--gold); color: var(--txt); background: rgba(200,168,75,.05); }
+
+.btn-row { display: flex; gap: 6px; margin-top: 8px; }
+.btn-row .btn { flex: 1; }
+
+/* ── Paint type grid ────────────────────────────────────────── */
+.paint-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4px; margin-top: 6px;
+}
+.paint-opt {
+  padding: 8px 6px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 10px; color: var(--txt2);
+  text-align: center; cursor: pointer;
+  transition: all .15s;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600; letter-spacing: .5px;
+  text-transform: uppercase; line-height: 1.3;
+}
+.paint-opt:hover { border-color: var(--border2); color: var(--txt); }
+.paint-opt.active { border-color: var(--gold); color: var(--gold); background: rgba(200,168,75,.1); }
+
+/* ── Mirror toggle ──────────────────────────────────────────── */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 10px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-top: 8px; cursor: pointer;
+}
+.toggle-row label {
+  font-size: 11px; color: var(--txt2); cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-weight: 600;
+  letter-spacing: .5px; text-transform: uppercase;
+}
+.toggle-row:has(input:checked) { border-color: var(--gold); background: rgba(200,168,75,.07); }
+.toggle-row:has(input:checked) label { color: var(--gold); }
+
+/* ── Vista Previa ───────────────────────────────────────────── */
+#vista-previa {
+  width: 56px; height: 56px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  background: var(--panel2);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; margin-top: 8px;
+}
+#vista-previa img, #vista-previa canvas { max-width: 100%; max-height: 100%; object-fit: contain; }
+.preview-row { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+.preview-row .preview-hint { font-size: 10px; color: var(--txt3); line-height: 1.4; }
+
+/* ── Layer List ─────────────────────────────────────────────── */
+#lista-capas-ui {
+  display: flex; flex-direction: column; gap: 4px;
+  max-height: 160px; overflow-y: auto; margin-top: 6px;
+}
+.capa-item {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px; cursor: pointer;
+  transition: all .15s; gap: 6px;
+}
+.capa-item:hover { border-color: var(--border2); }
+.capa-item.seleccionada { border-color: var(--green); background: rgba(26,223,128,.07); }
+.capa-info {
+  display: flex; align-items: center; gap: 7px;
+  overflow: hidden; flex: 1; min-width: 0;
+}
+.capa-mini {
+  width: 20px; height: 20px; object-fit: contain;
+  background: var(--bg2); border-radius: 2px;
+  border: 1px solid var(--border); flex-shrink: 0;
+}
+.capa-info span {
+  font-size: 11px; color: var(--txt2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.capa-controles { display: flex; gap: 2px; align-items: center; flex-shrink: 0; }
+.btn-capa {
+  background: none; border: none; cursor: pointer;
+  color: var(--txt3); font-size: 11px;
+  padding: 3px 4px; border-radius: 3px;
+  transition: all .15s;
+}
+.btn-capa:hover { color: var(--txt); background: var(--border); }
+
+/* ── Layer Editor subpanel ──────────────────────────────────── */
+#subpanel-editor-capa {
+  display: none;
+  background: rgba(26,223,128,.05);
+  border: 1px solid rgba(26,223,128,.25);
+  border-radius: var(--radius2);
+  padding: 10px; margin-top: 8px;
+}
+.subpanel-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700; font-size: 10px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--green); margin-bottom: 8px;
+}
+
+/* ── Mesh / Map list inside sections ────────────────────────── */
+.mini-list {
+  max-height: 110px; overflow-y: auto;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px;
+}
+.mini-list-item {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px; border-radius: 3px;
+  transition: background .12s;
+}
+.mini-list-item:hover { background: rgba(255,255,255,.03); }
+.mini-list-item span { font-size: 11px; color: var(--txt2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mini-list-actions { display: flex; gap: 3px; flex-shrink: 0; }
+
+/* ── Mapping columns ─────────────────────────────────────────── */
+.map-cols { display: flex; gap: 6px; margin-top: 6px; }
+.map-col { flex: 1; min-width: 0; }
+.map-col-label {
+  font-size: 9px; color: var(--txt3); text-transform: uppercase;
+  letter-spacing: 1px; font-weight: 600;
+  font-family: 'Rajdhani', sans-serif; margin-bottom: 4px;
+}
+
+/* ── Export bar ─────────────────────────────────────────────── */
+#export-bar {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+  flex-shrink: 0;
+}
+#btn-exportar {
+  width: 100%; padding: 11px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 100%);
+  color: #07080d;
+  border: none; border-radius: var(--radius);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700; font-size: 13px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; transition: opacity .15s;
+}
+#btn-exportar:hover { opacity: .9; }
+.export-opts {
+  display: flex; gap: 6px; margin-bottom: 8px;
+}
+.export-opts select { font-size: 11px; padding: 5px 24px 5px 8px; }
+.export-opts .export-lbl {
+  font-size: 9px; color: var(--txt3); text-transform: uppercase;
+  letter-spacing: 1px; font-family: 'Rajdhani', sans-serif;
+  margin-bottom: 3px;
+}
+
+/* ── Map Preview Modal ──────────────────────────────────────── */
+#map-preview-modal {
+  display: none; position: fixed;
+  inset: 0; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.8);
+  backdrop-filter: blur(6px);
+  z-index: 20000;
+}
+.modal-box {
+  width: 900px; max-width: 96%;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  box-shadow: 0 24px 80px rgba(0,0,0,.8);
+  overflow: hidden;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel2);
+}
+.modal-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700; font-size: 13px;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--txt);
+}
+.modal-body { display: flex; gap: 14px; padding: 14px; }
+.modal-side {
+  width: 220px; flex-shrink: 0;
+}
+.modal-info-label {
+  font-size: 10px; color: var(--txt3); text-transform: uppercase;
+  letter-spacing: 1px; font-family: 'Rajdhani', sans-serif;
+  margin-bottom: 4px;
+}
+#map-preview-selected {
+  min-height: 30px; padding: 7px 8px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--txt); font-size: 11px;
+  word-break: break-all;
+}
+#map-preview-canvas {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); max-width: 100%;
+}
+
+/* ── Paint tools ─────────────────────────────────────────────── */
+.paint-tool-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px; margin-top: 6px;
+}
+.paint-tool-btn {
+  padding: 8px 4px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 10px; font-weight: 600;
+  color: var(--txt2); text-align: center;
+  cursor: pointer; transition: all .15s;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: .5px; text-transform: uppercase;
+  line-height: 1.3;
+}
+.paint-tool-btn:hover { border-color: var(--border2); color: var(--txt); }
+.paint-tool-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(200,168,75,.1); }
+.paint-tool-btn.active-brush { border-color: var(--accent2); color: var(--accent2); background: rgba(90,132,255,.12); }
+.paint-tool-btn.active-eraser { border-color: var(--red); color: var(--red); background: rgba(255,68,85,.1); }
+
+.brush-cursor-indicator {
+  position: fixed; pointer-events: none; z-index: 5000;
+  border-radius: 50%; border: 2px solid rgba(200,168,75,0.8);
+  transform: translate(-50%, -50%);
+  display: none;
+}
+
+/* ── Section accent lines ────────────────────────────────────── */
+.section[data-accent="gold"] .section-title { color: var(--gold); }
+.section[data-accent="green"] .section-title { color: var(--green); }
+.section[data-accent="blue"] .section-title { color: var(--accent2); }
+.section[data-accent="red"] .section-title { color: var(--red); }
+
+/* ── Divider ─────────────────────────────────────────────────── */
+.divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.empty-state {
+  padding: 12px 8px; text-align: center;
+  color: var(--txt3); font-size: 11px; font-style: italic;
+}
+
+/* ── Topbar Export btn ──────────────────────────────────────── */
+#topbar-export-btn {
+  padding: 7px 18px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 100%);
+  color: #07080d;
+  border: none; border-radius: var(--radius);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700; font-size: 12px;
+  letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; transition: opacity .15s;
+  white-space: nowrap;
+}
+#topbar-export-btn:hover { opacity: .85; }
+.export-top-opts { display: flex; gap: 8px; align-items: center; }
+.export-top-opts label {
+  font-size: 10px; color: var(--txt3);
+  font-family: 'Rajdhani', sans-serif; text-transform: uppercase;
+  letter-spacing: .8px;
+}
+.export-top-opts select {
+  width: auto; padding: 5px 24px 5px 8px; font-size: 11px;
+}
+
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/": "https://cdn.jsdelivr.net/npm/three@0.160.0/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══════════════════════════════════════════════ -->
+<div id="topbar">
+  <div id="topbar-logo">
+    <div class="logo-mark"></div>
+    <div>
+      <div class="logo-text">Livery Studio</div>
+      <div class="logo-sub">Assetto Corsa</div>
+    </div>
+  </div>
+  <div id="topbar-center">
+    <span class="topbar-hint"><kbd>Shift</kbd> + Clic → vinilo</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-hint"><kbd>Alt</kbd> + arrastra → pincel/borrador</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-hint" id="hint-paint-mode">🪣 Relleno activo</span>
+  </div>
+  <div id="topbar-actions">
+    <div class="export-top-opts">
+      <label>Res</label>
+      <select id="export-res-select">
+        <option value="4096">4096</option>
+        <option value="2048">2048</option>
+        <option value="1024" selected>1024</option>
+        <option value="512">512</option>
+      </select>
+      <label>Calidad</label>
+      <select id="export-quality-select">
+        <option value="1">Alta</option>
+        <option value="2" selected>Media</option>
+        <option value="4">Baja</option>
+      </select>
+    </div>
+    <button id="btn-exportar">⬇ Exportar PNG</button>
+  </div>
+</div>
+
+<!-- ═══ SIDEBAR ══════════════════════════════════════════════ -->
+<div id="sidebar">
+  <div id="sidebar-scroll">
+
+    <!-- 1. Cargar modelo -->
+    <div class="section open" data-accent="gold">
+      <div class="section-header">
+        <div class="section-icon">🚗</div>
+        <div class="section-title">Cargar Modelo</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="section-body">
+        <label class="btn-upload">📂 Subir Textura Base (.png/.jpg)
+          <input type="file" id="input-textura-base" accept="image/png, image/jpeg">
+        </label>
+        <label class="btn-upload">📁 Subir Carpeta FBX + Mapas
+          <input type="file" id="input-carpeta" webkitdirectory directory multiple>
+        </label>
+        <div id="texto-mapa-body" style="font-size:10px; color:var(--txt3); margin-top:6px; line-height:1.5;">Carga una carpeta con .fbx/.gltf y mapas PNG.</div>
+        <div class="toggle-row" style="margin-top:8px;">
+          <label for="toggle-select">Selección de Partes (Ctrl+Click)</label>
+          <input type="checkbox" id="toggle-select">
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Mapeo -->
+    <div class="section" data-accent="blue">
+      <div class="section-header">
+        <div class="section-icon">🗺️</div>
+        <div class="section-title">Mapeo de Partes</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="section-body">
+        <div style="font-size:10px; color:var(--txt3); margin-bottom:8px; line-height:1.5;">Selecciona una parte y asígnale un mapa PNG.</div>
+        <div class="map-cols">
+          <div class="map-col">
+            <div class="map-col-label">Partes (meshes)</div>
+            <div id="mesh-list-ui" class="mini-list"></div>
+          </div>
+          <div class="map-col">
+            <div class="map-col-label">Mapas</div>
+            <div id="maps-list-ui" class="mini-list"></div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button id="btn-assign-map" class="btn btn-ghost btn-sm btn-full">Asignar mapa</button>
+          <button id="btn-apply-mapping" class="btn btn-accent btn-sm btn-full">Aplicar</button>
+        </div>
+        <label class="btn-upload" style="margin-top:6px; font-size:11px;">➕ Subir mapa PNG/JPG
+          <input type="file" id="input-maps" accept="image/png, image/jpeg" multiple>
+        </label>
+        <button id="btn-show-all-meshes" class="btn btn-ghost btn-sm btn-full" style="margin-top:6px;">Mostrar todo</button>
+      </div>
+    </div>
+
+    <!-- 3. Entorno -->
+    <div class="section open">
+      <div class="section-header">
+        <div class="section-icon">🌐</div>
+        <div class="section-title">Entorno</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="section-body">
+        <div class="env-tabs">
+          <div class="env-tab active" data-env="garaje">🏁<br>Garaje</div>
+          <div class="env-tab" data-env="estudio">📸<br>Estudio</div>
+          <div class="env-tab" data-env="neon">🔮<br>Neón</div>
+        </div>
+        <select id="selector-entorno" style="display:none;">
+          <option value="garaje">Garaje Industrial</option>
+          <option value="estudio">Estudio Fotográfico</option>
+          <option value="neon">Tuning Neón</option>
+        </select>
+      </div>
+    </div>
+
+
+    <!-- 4. Pintura -->
+    <div class="section open" data-accent="gold">
+      <div class="section-header">
+        <div class="section-icon">🎨</div>
+        <div class="section-title">Pintura de Carrocería</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="section-body">
+        <div class="field">
+          <div class="field-label">Color Principal</div>
+          <div class="color-row">
+            <input type="color" id="selector-color" value="#ffffff">
+            <span style="font-size:11px; color:var(--txt2);">Color base de la carrocería</span>
+          </div>
+        </div>
+        <div class="btn-row" style="margin-top:10px;">
+            <button class="btn btn-accent btn-full" id="btn-rellenar-carroceria">🪣 Rellenar Carrocería</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Diseñador de texto -->
+    <div class="section" data-accent="blue">
+      <div class="section-header">
+        <div class="section-icon">🅰️</div>
+        <div class="section-title">Diseñador de Texto</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="section-body">
+        <div class="field">
+          <div class="field-label">Texto / Dorsal</div>
+          <input type="text" id="input-texto" placeholder="Escribe aquí...">
+        </div>
+        <div class="field" style="margin-top:8px;">
+          <div class="field-label">Estilo de Fuente</div>
+          <select id="selector-fuente">
+            <option value="italic 900 90px Impact, sans-serif">Racing (Impact)</option>
+            <option value="900 70px 'Orbitron', sans-serif">Tech / Futurista</option>
+            <option value="bold 70px 'Graduate', serif">Clásico / Muscle</option>
+          </select>
+        </div>
+        <div class="field" style="margin-top:8px;">
+          <div class="field-label">Color del Texto</div>
+          <div class="color-row">
+            <input type="color" id="color-texto" value="#ff3e3e">
+            <span style="font-size:11px; color:var(--txt2);">Color del vinilo de texto</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Vinilo -->
+    <div class="section open" data-accent="gold">
+      <div class="section-header">
+        <div class="section-icon">✨</div>
+        <div class="section-title">Vinilo / Sticker</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="section-body">
+        <label class="btn-upload">📂 Cargar imagen PNG
+          <input type="file" id="selector-imagen" accept="image/png, image/jpeg">
+        </label>
+        <div class="preview-row">
+          <div id="vista-previa"><span style="color:var(--txt3); font-size:9px;">Vacío</span></div>
+          <div class="preview-hint">Vista previa del<br>vinilo activo</div>
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <div class="field-label">Acabado del Vinilo</div>
+          <select id="selector-material-vinilo">
+            <option value="brillante">✨ Estándar / Brillante</option>
+            <option value="mate">◼ Vinilo Mate Extremo</option>
+            <option value="metalizado">💿 Cromado / Metalizado</option>
+          </select>
+        </div>
+        <div class="toggle-row">
+          <label for="check-espejo">↔ Simetría (Modo Espejo)</label>
+          <input type="checkbox" id="check-espejo">
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <div class="field-label">Tamaño <span class="val" id="txt-tamaño">0.3</span></div>
+          <input type="range" id="slider-tamaño" min="0.05" max="1.5" step="0.05" value="0.3">
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <div class="field-label">Rotación <span class="val" id="txt-rotacion">0°</span></div>
+          <input type="range" id="slider-rotacion" min="0" max="360" step="5" value="0">
+        </div>
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn btn-ghost btn-full" id="btn-deshacer">↩ Deshacer</button>
+          <button class="btn btn-danger btn-full" id="btn-limpiar">🗑 Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Capas -->
+    <div class="section open" data-accent="green">
+      <div class="section-header">
+        <div class="section-icon">📚</div>
+        <div class="section-title">Capas de Vinilos</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="section-body">
+        <div id="lista-capas-ui"></div>
+        <div id="subpanel-editor-capa">
+          <div class="subpanel-title">✏ Editor de Capa Activa</div>
+          <div class="field">
+            <div class="field-label">Escala <span class="val" id="txt-edit-tam">0.3</span></div>
+            <input type="range" id="edit-slider-tamaño" min="0.05" max="1.5" step="0.05">
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label">Rotación <span class="val" id="txt-edit-rot">0°</span></div>
+            <input type="range" id="edit-slider-rotacion" min="0" max="360" step="5">
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label">Mover X (horizontal) <span class="val" id="txt-edit-ox">0</span></div>
+            <input type="range" id="edit-slider-ox" min="-1" max="1" step="0.01" value="0">
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label">Mover Y (vertical) <span class="val" id="txt-edit-oy">0</span></div>
+            <input type="range" id="edit-slider-oy" min="-1" max="1" step="0.01" value="0">
+          </div>
+          <button class="btn btn-secondary btn-full" id="btn-cerrar-editor" style="margin-top:10px;">Aceptar Cambios</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /sidebar-scroll -->
+</div><!-- /sidebar -->
+
+<!-- ═══ MODAL PREVIEW ════════════════════════════════════════ -->
+<div id="map-preview-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Vista Previa de Mapa UV</div>
+      <div style="display:flex; gap:8px;">
+        <button id="map-preview-assign" class="btn btn-accent btn-sm">Asignar a mesh</button>
+        <button id="map-preview-close" class="btn btn-ghost btn-sm">Cerrar</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <canvas id="map-preview-canvas"></canvas>
+      <div class="modal-side">
+        <div class="modal-info-label" style="margin-bottom:6px;">Instrucciones</div>
+        <div id="map-preview-info" style="font-size:11px; color:var(--txt2); line-height:1.5; margin-bottom:12px;">Haz clic en la imagen para identificar la parte correspondiente en el modelo 3D.</div>
+        <div class="modal-info-label">Mesh seleccionada</div>
+        <div id="map-preview-selected"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="brush-cursor" class="brush-cursor-indicator"></div>
+<canvas id="canvas-texto-oculto" width="512" height="512" style="display:none;"></canvas>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+    import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+    import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry.js';
+    import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+    import { DDSLoader } from 'three/examples/jsm/loaders/DDSLoader.js';
+
+    // ── Texture loader patches ──────────────────────────────
+    const originalTextureLoaderLoad = THREE.TextureLoader.prototype.load;
+    THREE.TextureLoader.prototype.load = function (url, onLoad, onProgress, onError) {
+        return originalTextureLoaderLoad.call(this, url, (t) => onLoad(t), onProgress, (error) => {
+            if (/\.dds$/i.test(url)) {
+                const fb = new THREE.Texture(); fb.image = document.createElement('canvas');
+                fb.image.width = 1; fb.image.height = 1; fb.needsUpdate = true;
+                if (onLoad) onLoad(fb);
+            } else if (onError) { onError(error); }
+        });
+    };
+    const originalImageLoaderLoad = THREE.ImageLoader.prototype.load;
+    THREE.ImageLoader.prototype.load = function (url, onLoad, onProgress, onError) {
+        if (/\.dds$/i.test(url)) {
+            const c = document.createElement('canvas'); c.width = 1; c.height = 1;
+            if (onLoad) onLoad(c); return new THREE.Texture(c);
+        }
+        return originalImageLoaderLoad.call(this, url, onLoad, onProgress, onError);
+    };
+
+    // ── Scene setup ─────────────────────────────────────────
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x07080d, 0.05);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    document.body.appendChild(renderer.domElement);
+
+    // Push canvas below the topbar and sidebar
+    renderer.domElement.style.position = 'fixed';
+    renderer.domElement.style.top = '46px';
+    renderer.domElement.style.left = '300px';
+    renderer.domElement.style.width = 'calc(100vw - 300px)';
+    renderer.domElement.style.height = 'calc(100vh - 46px)';
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    camera.position.set(0, 1.8, 4.5);
+    controls.enableDamping = true; controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2 - 0.02; controls.update();
+
+    const environment = new RoomEnvironment(renderer);
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmremGenerator.fromScene(environment).texture;
+
+    // Lights
+    const luzAmbiental = new THREE.AmbientLight(0xffffff, 0.4); scene.add(luzAmbiental);
+    const luzPrincipal = new THREE.DirectionalLight(0xffffff, 1.2); luzPrincipal.position.set(5, 10, 7); scene.add(luzPrincipal);
+    const luzLateralIzq = new THREE.DirectionalLight(0xffffff, 0.5); luzLateralIzq.position.set(-6, 3, 0); scene.add(luzLateralIzq);
+    const neonFucsia = new THREE.PointLight(0xff0055, 0, 15); neonFucsia.position.set(3, 2, 2); scene.add(neonFucsia);
+    const neonCian = new THREE.PointLight(0x00f0ff, 0, 15); neonCian.position.set(-3, 1, -2); scene.add(neonCian);
+
+    // 1x1 white texture to ensure UVs are always available for raycasting, even with solid colors.
+    const whitePixelCanvas = document.createElement('canvas');
+    whitePixelCanvas.width = 1; whitePixelCanvas.height = 1;
+    const whitePixelCtx = whitePixelCanvas.getContext('2d');
+    whitePixelCtx.fillStyle = '#ffffff';
+    whitePixelCtx.fillRect(0, 0, 1, 1);
+    const whiteTexture = new THREE.CanvasTexture(whitePixelCanvas);
+
+    // Floor
+    const sueloMaterial = new THREE.MeshStandardMaterial({ color: 0x050507, roughness: 0.15, metalness: 0.8 });
+    const suelo = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), sueloMaterial);
+    suelo.rotation.x = -Math.PI / 2; scene.add(suelo);
+    const gridHelper = new THREE.GridHelper(30, 30, 0xc8a84b, 0x1a1d2a);
+    gridHelper.position.y = 0.005; scene.add(gridHelper);
+
+    // ── Environment tabs wiring ──────────────────────────────
+    const selectorEntorno = document.getElementById('selector-entorno');
+    document.querySelectorAll('.env-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.env-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            selectorEntorno.value = tab.dataset.env;
+            selectorEntorno.dispatchEvent(new Event('change'));
+        });
+    });
+    selectorEntorno.addEventListener('change', (e) => {
+        const amb = e.target.value;
+        if (amb === 'garaje') {
+            renderer.setClearColor(0x07080d); scene.background = new THREE.Color(0x07080d); scene.fog.color.setHex(0x07080d);
+            sueloMaterial.color.setHex(0x050507); sueloMaterial.roughness = 0.15; gridHelper.visible = true;
+            luzPrincipal.color.setHex(0xffffff); luzAmbiental.color.setHex(0xffffff); neonFucsia.intensity = 0; neonCian.intensity = 0;
+        } else if (amb === 'estudio') {
+            renderer.setClearColor(0xf0f0f4); scene.background = new THREE.Color(0xf0f0f4); scene.fog.color.setHex(0xf0f0f4);
+            sueloMaterial.color.setHex(0xe2e2e8); sueloMaterial.roughness = 0.3; gridHelper.visible = false;
+            luzPrincipal.color.setHex(0xffffff); luzAmbiental.color.setHex(0xffffff); neonFucsia.intensity = 0; neonCian.intensity = 0;
+        } else if (amb === 'neon') {
+            renderer.setClearColor(0x030305); scene.background = new THREE.Color(0x030305); scene.fog.color.setHex(0x030305);
+            sueloMaterial.color.setHex(0x020204); sueloMaterial.roughness = 0.08; gridHelper.visible = true;
+            luzPrincipal.color.setHex(0x223344); luzAmbiental.color.setHex(0x111122); neonFucsia.intensity = 8; neonCian.intensity = 8;
+        }
+    });
+
+    // ── Paint system ─────────────────────────────────────────
+    const selectorColor = document.getElementById('selector-color');
+
+    // ── State variables ──────────────────────────────────────
+    const objetosPintables = [];
+    const piezasCarroceria = [];
+    const mouse = new THREE.Vector2();
+    const raycaster = new THREE.Raycaster();
+
+    let coche = null, capasStickers = [], contadorStickers = 0, indexCapaSeleccionada = null;
+    let bodyMaskCanvas = null, bodyMaskCtx = null, bodyMaskImageData = null, bodyMaskTexture = null;
+    let paintOverlays = [];
+    let partsMapCanvas = null, partsMapCtx = null, partsMapImageData = null;
+    let modelIniData = null, selectMode = false, selectedOverlays = {};
+    let uploadedMaps = [];
+    let tamañoActual = 0.3, rotacionActual = 0;
+    let stickerFantasma = null, stickerFantasmaEspejo = null;
+    let texturaActual = null, urlMiniaturaActual = '';
+
+    const checkEspejo = document.getElementById('check-espejo');
+    const selectorMatVinilo = document.getElementById('selector-material-vinilo');
+
+    let materialFantasma = new THREE.MeshBasicMaterial({
+        color: 0xffffff, transparent: true, opacity: 0.5,
+        depthWrite: false, depthTest: false, side: THREE.DoubleSide
+    });
+
+    // Sliders
+    const sTamaño = document.getElementById('slider-tamaño');
+    const sRotacion = document.getElementById('slider-rotacion');
+    const txtTamaño = document.getElementById('txt-tamaño');
+    const txtRotacion = document.getElementById('txt-rotacion');
+    sTamaño.addEventListener('input', (e) => { tamañoActual = parseFloat(e.target.value); txtTamaño.innerText = tamañoActual; actualizarFantasmaAlMover(); });
+    sRotacion.addEventListener('input', (e) => { const g = parseInt(e.target.value); rotacionActual = THREE.MathUtils.degToRad(g); txtRotacion.innerText = g + "°"; actualizarFantasmaAlMover(); });
+
+    // Text inputs
+    const inputTexto = document.getElementById('input-texto');
+    const selectorFuente = document.getElementById('selector-fuente');
+    const colorTexto = document.getElementById('color-texto');
+    const canvasTexto = document.getElementById('canvas-texto-oculto');
+    const ctxTexto = canvasTexto.getContext('2d');
+    const vistaPrevia = document.getElementById('vista-previa');
+
+    function actualizarTexturaPorTexto() {
+        const texto = inputTexto.value.trim(); if (!texto) return false;
+        ctxTexto.clearRect(0, 0, canvasTexto.width, canvasTexto.height);
+        ctxTexto.font = selectorFuente.value; ctxTexto.fillStyle = colorTexto.value;
+        ctxTexto.textAlign = 'center'; ctxTexto.textBaseline = 'middle';
+        ctxTexto.fillText(texto, canvasTexto.width / 2, canvasTexto.height / 2);
+        texturaActual = new THREE.CanvasTexture(canvasTexto);
+        materialFantasma.map = texturaActual; materialFantasma.needsUpdate = true;
+        urlMiniaturaActual = canvasTexto.toDataURL();
+        vistaPrevia.innerHTML = `<img src="${urlMiniaturaActual}">`;
+        actualizarFantasmaAlMover(); return true;
+    }
+    inputTexto.addEventListener('input', actualizarTexturaPorTexto);
+    selectorFuente.addEventListener('change', actualizarTexturaPorTexto);
+    colorTexto.addEventListener('input', actualizarTexturaPorTexto);
+
+    // ── Body mask / Parts map loading ────────────────────────
+    function cargarBodyMask(archivo) {
+        const nombre = (archivo && archivo.name) ? archivo.name.toLowerCase() : '';
+        if (/\.(png|jpg|jpeg)$/i.test(nombre)) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    bodyMaskCanvas = document.createElement('canvas');
+                    bodyMaskCanvas.width = img.width; bodyMaskCanvas.height = img.height;
+                    bodyMaskCtx = bodyMaskCanvas.getContext('2d');
+                    bodyMaskCtx.drawImage(img, 0, 0);
+                    bodyMaskImageData = bodyMaskCtx.getImageData(0, 0, img.width, img.height);
+                    bodyMaskTexture = new THREE.CanvasTexture(bodyMaskCanvas);
+                    bodyMaskTexture.flipY = false;
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(archivo); return;
+        }
+        if (/\.(dds|tga)$/i.test(nombre)) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const tex = loaderDDS.parse(ev.target.result, '');
+                    let w = tex.image?.width || tex.image?.[0]?.width || 2048;
+                    let h = tex.image?.height || tex.image?.[0]?.height || 2048;
+                    const rt = new THREE.WebGLRenderTarget(w, h);
+                    const qs = new THREE.Scene(), ortho = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+                    const mat = new THREE.MeshBasicMaterial({ map: tex });
+                    qs.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2), mat));
+                    const prevRT = renderer.getRenderTarget();
+                    renderer.setRenderTarget(rt); renderer.render(qs, ortho); renderer.setRenderTarget(prevRT);
+                    const pixels = new Uint8Array(w * h * 4);
+                    renderer.readRenderTargetPixels(rt, 0, 0, w, h, pixels);
+                    bodyMaskCanvas = document.createElement('canvas'); bodyMaskCanvas.width = w; bodyMaskCanvas.height = h;
+                    bodyMaskCtx = bodyMaskCanvas.getContext('2d');
+                    bodyMaskCtx.putImageData(new ImageData(new Uint8ClampedArray(pixels), w, h), 0, 0);
+                    bodyMaskImageData = bodyMaskCtx.getImageData(0, 0, w, h);
+                    bodyMaskTexture = new THREE.CanvasTexture(bodyMaskCanvas); bodyMaskTexture.flipY = false;
+                    actualizarOverlayPintura();
+                    mat.dispose(); rt.dispose(); if (tex.dispose) tex.dispose();
+                } catch (err) { console.error('Error DDS/TGA mask:', err); }
+            };
+            reader.readAsArrayBuffer(archivo); return;
+        }
+    }
+
+    function cargarPartsMap(archivo) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+                partsMapCanvas = document.createElement('canvas');
+                partsMapCanvas.width = img.width; partsMapCanvas.height = img.height;
+                partsMapCtx = partsMapCanvas.getContext('2d');
+                partsMapCtx.drawImage(img, 0, 0);
+                partsMapImageData = partsMapCtx.getImageData(0, 0, img.width, img.height);
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(archivo);
+    }
+
+    function analyzeIsPartsMap(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    const w = Math.min(256, img.width), h = Math.min(256, img.height);
+                    const tmp = document.createElement('canvas'); tmp.width = w; tmp.height = h;
+                    const tctx = tmp.getContext('2d'); tctx.drawImage(img, 0, 0, w, h);
+                    const data = tctx.getImageData(0, 0, w, h).data;
+                    let greenCount = 0, total = 0;
+                    for (let i = 0; i < data.length; i += 4) {
+                        const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+                        if (a < 50) continue; total++;
+                        if (g > 120 && g > r + 20 && g > b + 20) greenCount++;
+                    }
+                    resolve(total ? (greenCount / total) > 0.02 : false);
+                };
+                img.onerror = () => resolve(false); img.src = ev.target.result;
+            };
+            reader.onerror = () => resolve(false); reader.readAsDataURL(file);
+        });
+    }
+
+    // ── Intersection helpers ─────────────────────────────────
+    function isBodyMaskIntersection(intersect) {
+        if (!intersect.uv) return true;
+        const uv = intersect.uv;
+        if (intersect.object?.userData?.triangleLabels) {
+            return !!intersect.object.userData.triangleLabels[intersect.faceIndex];
+        }
+        if (partsMapImageData) {
+            const xP = Math.floor(uv.x * partsMapImageData.width);
+            const yP = Math.floor((1 - uv.y) * partsMapImageData.height);
+            if (xP < 0 || xP >= partsMapImageData.width || yP < 0 || yP >= partsMapImageData.height) return false;
+            const idxP = (yP * partsMapImageData.width + xP) * 4;
+            const r = partsMapImageData.data[idxP], g = partsMapImageData.data[idxP+1], b = partsMapImageData.data[idxP+2], a = partsMapImageData.data[idxP+3];
+            return (a > 50 && g > 100 && g > r + 20 && g > b + 20);
+        }
+        if (!bodyMaskImageData) return true;
+        const x = Math.floor(uv.x * bodyMaskImageData.width);
+        const y = Math.floor((1 - uv.y) * bodyMaskImageData.height);
+        if (x < 0 || x >= bodyMaskImageData.width || y < 0 || y >= bodyMaskImageData.height) return false;
+        const index = (y * bodyMaskImageData.width + x) * 4;
+        return bodyMaskImageData.data[index+3] > 128 || (bodyMaskImageData.data[index] + bodyMaskImageData.data[index+1] + bodyMaskImageData.data[index+2]) / 3 > 128;
+    }
+    function getBodyIntersection(intersects) {
+        for (const i of intersects) { if (isBodyMaskIntersection(i)) return i; } return null;
+    }
+
+    function computeTriangleLabelsForModel() {
+        if (!coche) return;
+        if (!partsMapImageData && !modelIniData) return;
+        coche.traverse((child) => {
+            if (!child.isMesh) return;
+            const geom = child.geometry;
+            if (!geom?.attributes?.position || !geom?.attributes?.uv) return;
+            const uv = geom.attributes.uv, idx = geom.index;
+            const triCount = idx ? (idx.count / 3) : (geom.attributes.position.count / 3);
+            const labels = new Uint8Array(triCount);
+            let markedByIni = false;
+            if (modelIniData?.bodyMaterials?.length) {
+                const candidates = [];
+                if (child.name) candidates.push(child.name.toLowerCase());
+                const mat = child.material;
+                if (Array.isArray(mat)) mat.forEach(m => { if (m?.name) candidates.push(m.name.toLowerCase()); });
+                else if (mat?.name) candidates.push(mat.name.toLowerCase());
+                try {
+                    const map = child.material?.map;
+                    if (map?.name) candidates.push(map.name.toLowerCase());
+                    if (map?.image) {
+                        const src = (map.image.src || map.image.currentSrc || '').toLowerCase();
+                        candidates.push(src.split('/').pop().split('\\').pop());
+                    }
+                } catch(e) {}
+                const iniMats = (modelIniData.bodyMaterials||[]).map(s=>(s||'').toLowerCase());
+                const iniTexs = (modelIniData.bodyTextures||[]).map(s=>(s||'').toLowerCase().split('/').pop().split('\\').pop());
+                for (const c of candidates) {
+                    if (!c) continue;
+                    for (const im of iniMats) { if (!im) continue; if (c.indexOf(im)!==-1||im.indexOf(c)!==-1) { for(let i=0;i<triCount;i++)labels[i]=1; markedByIni=true; break; } }
+                    if (markedByIni) break;
+                }
+                if (!markedByIni) {
+                    for (const c of candidates) {
+                        if (!c) continue;
+                        for (const it of iniTexs) { if (!it) continue; if (c.indexOf(it)!==-1||it.indexOf(c)!==-1) { for(let i=0;i<triCount;i++)labels[i]=1; markedByIni=true; break; } }
+                        if (markedByIni) break;
+                    }
+                }
+            }
+            if (!markedByIni && partsMapImageData) {
+                for (let i = 0; i < triCount; i++) {
+                    let a, b, c;
+                    if (idx) { a=idx.getX(i*3); b=idx.getX(i*3+1); c=idx.getX(i*3+2); } else { a=i*3; b=i*3+1; c=i*3+2; }
+                    const ux=(uv.getX(a)+uv.getX(b)+uv.getX(c))/3, uy=(uv.getY(a)+uv.getY(b)+uv.getY(c))/3;
+                    const px=Math.floor(ux*partsMapImageData.width), py=Math.floor((1-uy)*partsMapImageData.height);
+                    if (px<0||px>=partsMapImageData.width||py<0||py>=partsMapImageData.height){labels[i]=0;continue;}
+                    const didx=(py*partsMapImageData.width+px)*4;
+                    const r=partsMapImageData.data[didx],g=partsMapImageData.data[didx+1],bc=partsMapImageData.data[didx+2],ac=partsMapImageData.data[didx+3];
+                    labels[i]=(ac>50&&g>r+20&&g>bc+20)?1:0;
+                }
+            }
+            child.userData.triangleLabels = labels;
+        });
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // ── NEW PAINT SYSTEM ─────────────────────────────────────────
+    // Each mesh gets its own 2048×2048 CanvasTexture (paintCanvases).
+    // Fill, Brush, and Eraser all draw onto that canvas; the texture
+    // is live-updated so the 3D view reflects changes instantly.
+    // Export reads these canvases instead of the old bodyMaskCanvas.
+    // ════════════════════════════════════════════════════════════
+
+    const PAINT_RES = 2048; // resolution of each mesh paint canvas
+
+    // Paint functionality removed, only orbit and fill are used.
+    let paintMode = 'orbit';
+    let isPainting = false;
+    const selectorColorPaint = document.getElementById('selector-color'); // Use the main picker
+    let currentBaseColor = '#ffffff';
+
+    function syncColorPickers(color) {
+        document.getElementById('selector-color').value = color;
+    };
+    document.getElementById('btn-rellenar-carroceria').addEventListener('click', () => {
+        fillAllMeshes(document.getElementById('selector-color').value);
+    });
+
+    function applyPaintMode(mode) {
+        paintMode = mode;
+        const hintEl = document.getElementById('hint-paint-mode');
+        if (hintEl) hintEl.textContent = '🔄 Órbita — Arrastra para mover la cámara';
+        renderer.domElement.style.cursor = '';
+        isPainting = false;
+        eliminarFantasma();
+    }
+
+    // ── Fill entire car ──────────────────────────────────────
+    // This function now directly manipulates material properties for a solid color look.
+    function fillAllMeshes(color) {
+        currentBaseColor = color;
+        syncColorPickers(color);
+        actualizarEstiloPinturaCoche();
+    }
+
+    // ── actualizarEstiloPinturaCoche: solo se llama al pulsar "Rellenar Carrocería" ─
+    function actualizarEstiloPinturaCoche() {
+        piezasCarroceria.forEach(mesh => {
+            if (!mesh.material) return;
+            // Guardar material original la primera vez
+            if (!mesh.userData._matOriginal) mesh.userData._matOriginal = mesh.material;
+            const mat = mesh.userData._matOriginal;
+            mat.color.set(currentBaseColor);
+            mat.map = null;
+            mat.roughness = 0.15;
+            mat.metalness = 0.1;
+            if (mat.clearcoat !== undefined) mat.clearcoat = 0.3;
+            mat.envMap = scene.environment;
+            luzLateralIzq.color.set(0xffffff);
+            mat.needsUpdate = true;
+            mesh.material = mat;
+        });
+    }
+
+    // Keep old callers working
+    function limpiarOverlays() {}
+    function actualizarOverlayPintura() {}
+
+    // ── Wire up paint/finish listeners (after actualizarEstiloPinturaCoche is defined) ──
+    document.getElementById('toggle-select').addEventListener('change', (e) => { selectMode = e.target.checked; });
+
+    // ── Paint support helpers ─────────────────────────────────
+    let _fillPointerStart = null;
+
+    function getUVAtEvent(event) {
+        // This function is no longer used by the simplified paint system.
+        return null;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // ── INPUT / ORBIT COORDINATION ───────────────────────────────
+    // ════════════════════════════════════════════════════════════
+
+    let _shiftHeld = false;
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Shift') { _shiftHeld = true; }
+    });
+    window.addEventListener('keyup', (e) => {
+        if (e.key === 'Shift') { _shiftHeld = false; eliminarFantasma(); }
+    });
+    window.addEventListener('blur', () => {
+        _shiftHeld = false; eliminarFantasma();
+    });
+
+    // ── Canvas pointer events ────────────────────────────────────
+    // OrbitControls siempre activo; el sticker se coloca si Shift está pulsado.
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+        if (e.clientX < 300) return;
+        if (e.shiftKey || _shiftHeld) {
+            _shiftHeld = true;
+            e.stopPropagation(); // evitar que OrbitControls consuma el evento
+            proyeccionViniloDefinitiva(e);
+        }
+    });
+
+    renderer.domElement.addEventListener('pointerleave', () => { eliminarFantasma(); });
+
+    // ── Window pointer events (ghost preview) ────────────────────
+    window.addEventListener('pointermove', (e) => {
+        if (e.shiftKey) _shiftHeld = true;
+        actualizarFantasmaAlMover(e);
+    });
+
+    // ── Image / folder upload ─────────────────────────────────
+
+    const selectorImagen = document.getElementById('selector-imagen');
+    const selectorCarpeta = document.getElementById('input-carpeta');
+    const textureLoader = new THREE.TextureLoader();
+
+    selectorImagen.addEventListener('change', (e) => {
+        const archivo = e.target.files[0]; if (!archivo) return;
+        inputTexto.value = ''; urlMiniaturaActual = URL.createObjectURL(archivo);
+        vistaPrevia.innerHTML = `<img src="${urlMiniaturaActual}">`;
+        textureLoader.load(urlMiniaturaActual, (tex) => { texturaActual = tex; materialFantasma.map = tex; materialFantasma.needsUpdate = true; actualizarFantasmaAlMover(); });
+    });
+
+    document.getElementById('input-maps').addEventListener('change', (e) => {
+        for (const f of Array.from(e.target.files || [])) uploadedMaps.push({ name: f.name, file: f, url: URL.createObjectURL(f) });
+        refreshMapsListUI();
+    });
+
+    selectorCarpeta.addEventListener('change', async (e) => {
+        const archivos = Array.from(e.target.files || []); if (!archivos.length) return;
+        const modeloArchivo = archivos.find(f => /\.(fbx|gltf|glb)$/i.test(f.name));
+        const maskExtRegex = /\.(png|jpg|jpeg|dds|tga)$/i;
+        const maskNameRegex = /mask|body|carroceria|livery|overlay|skin|ext[_\- ]?skin|ext|diffuse|albedo|base/i;
+        let mascaraArchivo = archivos.find(f => maskExtRegex.test(f.name) && maskNameRegex.test(f.name));
+        const partsNameRegex = /parts|polygons|poly|parts_map|partsMask|parts-map|green|poligono|polygon|partsmap/i;
+        let partsArchivo = archivos.find(f => /\.(png|jpg|jpeg)$/i.test(f.name) && partsNameRegex.test(f.name));
+        if (mascaraArchivo && /\.(dds|tga)$/i.test(mascaraArchivo.name)) {
+            const base = mascaraArchivo.name.replace(/\.[^\.]+$/, '');
+            const alt = archivos.find(f => /\.(png|jpg|jpeg)$/i.test(f.name) && f.name.replace(/\.[^\.]+$/, '') === base);
+            if (alt) mascaraArchivo = alt;
+        }
+        const texturaArchivo = archivos.find(f => /\.(png|jpg|jpeg)$/i.test(f.name) && f !== mascaraArchivo && f !== partsArchivo);
+        if (!partsArchivo) {
+            const candidatos = archivos.filter(f => /\.(png|jpg|jpeg)$/i.test(f.name) && f !== mascaraArchivo && f !== texturaArchivo);
+            for (const c of candidatos) { try { if (await analyzeIsPartsMap(c)) { partsArchivo = c; break; } } catch(e){} }
+        }
+        const iniArchivo = archivos.find(f => /\.ini$/i.test(f.name));
+        if (iniArchivo) { try { await parseModelIni(iniArchivo); } catch(e){} }
+        if (mascaraArchivo && /\.(png|jpg|jpeg)$/i.test(mascaraArchivo.name)) uploadedMaps.push({ name: mascaraArchivo.name, file: mascaraArchivo, url: URL.createObjectURL(mascaraArchivo) });
+        if (partsArchivo) uploadedMaps.push({ name: partsArchivo.name, file: partsArchivo, url: URL.createObjectURL(partsArchivo) });
+        if (texturaArchivo) { window.tempTexturaFile = texturaArchivo; uploadedMaps.push({ name: texturaArchivo.name, file: texturaArchivo, url: URL.createObjectURL(texturaArchivo) }); }
+        refreshMapsListUI();
+        if (modeloArchivo) { window.tempModeloFile = modeloArchivo; cargarCochePersonalizado(modeloArchivo, window.tempTexturaFile || null); }
+    });
+
+    document.getElementById('input-textura-base').addEventListener('change', (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        window.tempTexturaFile = f;
+        if (window.tempModeloFile) cargarCochePersonalizado(window.tempModeloFile, f);
+    });
+
+    // ── Material config ──────────────────────────────────────
+    function obtenerConfiguracionMaterial() {
+        const tipo = selectorMatVinilo.value;
+        if (tipo === 'mate') return { roughness: 0.95, metalness: 0.0 };
+        if (tipo === 'metalizado') return { roughness: 0.1, metalness: 1.0 };
+        return { roughness: 0.25, metalness: 0.04 };
+    }
+    function actualizarProfundidades3D() {
+        capasStickers.forEach((capa, i) => { capa.objetoMesh.renderOrder = i + 1; capa.objetoMesh.material.needsUpdate = true; });
+    }
+
+    // ── Layer editor ─────────────────────────────────────────
+    const subpanelEditor = document.getElementById('subpanel-editor-capa');
+    const editSliderTam = document.getElementById('edit-slider-tamaño');
+    const editSliderRot = document.getElementById('edit-slider-rotacion');
+    const editSliderOX  = document.getElementById('edit-slider-ox');
+    const editSliderOY  = document.getElementById('edit-slider-oy');
+    const txtEditTam = document.getElementById('txt-edit-tam');
+    const txtEditRot = document.getElementById('txt-edit-rot');
+    const txtEditOX  = document.getElementById('txt-edit-ox');
+    const txtEditOY  = document.getElementById('txt-edit-oy');
+
+    function abrirEditorDeCapa(idx) {
+        indexCapaSeleccionada = idx;
+        const capa = capasStickers[idx];
+        editSliderTam.value = capa.datosOrigen.size;
+        editSliderRot.value = Math.round(THREE.MathUtils.radToDeg(capa.datosOrigen.rotZ));
+        // Restore saved offsets (default 0 if none stored)
+        editSliderOX.value = capa.datosOrigen.offsetX || 0;
+        editSliderOY.value = capa.datosOrigen.offsetY || 0;
+        txtEditTam.innerText = editSliderTam.value;
+        txtEditRot.innerText = editSliderRot.value + "°";
+        txtEditOX.innerText  = parseFloat(editSliderOX.value).toFixed(2);
+        txtEditOY.innerText  = parseFloat(editSliderOY.value).toFixed(2);
+        // Rebuild list first so the selection highlight is visible, then show subpanel
+        actualizarInterfazCapas();
+        subpanelEditor.style.display = 'block';
+    }
+
+    function reGenerarGeometriaCapaEditada() {
+        if (indexCapaSeleccionada === null) return;
+        const capa = capasStickers[indexCapaSeleccionada];
+
+        const nuevoTam  = parseFloat(editSliderTam.value);
+        const nuevaRotZ = THREE.MathUtils.degToRad(parseInt(editSliderRot.value));
+        const offsetX   = parseFloat(editSliderOX.value);
+        const offsetY   = parseFloat(editSliderOY.value);
+
+        // Save values
+        capa.datosOrigen.size    = nuevoTam;
+        capa.datosOrigen.rotZ    = nuevaRotZ;
+        capa.datosOrigen.offsetX = offsetX;
+        capa.datosOrigen.offsetY = offsetY;
+
+        // Compute offset position along the surface tangent plane.
+        // Build a local frame: norm = Z, pick an arbitrary up vector to get tangent X and Y.
+        const norm = capa.datosOrigen.norm.clone().normalize();
+        const up   = Math.abs(norm.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+        const tangX = new THREE.Vector3().crossVectors(up, norm).normalize();
+        const tangY = new THREE.Vector3().crossVectors(norm, tangX).normalize();
+
+        const newPos = capa.datosOrigen.posBase.clone()
+            .addScaledVector(tangX, offsetX)
+            .addScaledVector(tangY, offsetY);
+        capa.datosOrigen.pos = newPos;
+
+        const dummy = new THREE.Object3D();
+        dummy.position.copy(newPos);
+        dummy.lookAt(newPos.clone().add(norm));
+        dummy.rotation.z += nuevaRotZ;
+
+        capa.objetoMesh.geometry.dispose();
+        capa.objetoMesh.geometry = new DecalGeometry(capa.datosOrigen.targetMesh, newPos, dummy.rotation, new THREE.Vector3(nuevoTam, nuevoTam, 0.5));
+
+        txtEditTam.innerText = nuevoTam;
+        txtEditRot.innerText = parseInt(editSliderRot.value) + "°";
+        txtEditOX.innerText  = offsetX.toFixed(2);
+        txtEditOY.innerText  = offsetY.toFixed(2);
+
+        // Mirror partner
+        if (capa.vinculoEspejo) {
+            const par = capasStickers[indexCapaSeleccionada + 1];
+            if (par) {
+                const posE = capa.datosOrigen.posBase.clone();
+                posE.x = -posE.x;
+                const mirrorPos = posE
+                    .addScaledVector(tangX.clone().negate(), offsetX)
+                    .addScaledVector(tangY, offsetY);
+                par.datosOrigen.pos = mirrorPos;
+                par.objetoMesh.geometry.dispose();
+                par.objetoMesh.geometry = new DecalGeometry(capa.datosOrigen.targetMesh, mirrorPos, obtenerOrientacionEspejoPrecisa(norm, nuevaRotZ), new THREE.Vector3(nuevoTam, nuevoTam, 0.5));
+            }
+        }
+    }
+    editSliderTam.addEventListener('input', reGenerarGeometriaCapaEditada);
+    editSliderRot.addEventListener('input', reGenerarGeometriaCapaEditada);
+    editSliderOX .addEventListener('input', reGenerarGeometriaCapaEditada);
+    editSliderOY .addEventListener('input', reGenerarGeometriaCapaEditada);
+    document.getElementById('btn-cerrar-editor').addEventListener('click', () => {
+        indexCapaSeleccionada = null; subpanelEditor.style.display = 'none'; actualizarInterfazCapas();
+    });
+
+    function actualizarInterfazCapas() {
+        const listaUI = document.getElementById('lista-capas-ui'); listaUI.innerHTML = '';
+        if (capasStickers.length === 0) { listaUI.innerHTML = '<div class="empty-state">Ningún vinilo aplicado</div>'; return; }
+        capasStickers.slice().reverse().forEach((capa, ri, arr) => {
+            const indiceReal = (arr.length - 1) - ri;
+            const item = document.createElement('div');
+            item.className = 'capa-item' + (indexCapaSeleccionada === indiceReal ? ' seleccionada' : '');
+            item.addEventListener('click', (e) => { if (!e.target.classList.contains('btn-capa')) abrirEditorDeCapa(indiceReal); });
+            item.innerHTML = `
+                <div class="capa-info">
+                    <img class="capa-mini" src="${capa.miniaturaUrl}">
+                    <span title="${capa.nombre}">${capa.nombre}</span>
+                </div>
+                <div class="capa-controles">
+                    <button class="btn-capa subir-capa" data-idx="${indiceReal}" title="Subir">▲</button>
+                    <button class="btn-capa bajar-capa" data-idx="${indiceReal}" title="Bajar">▼</button>
+                    <button class="btn-capa toggle-vis" data-idx="${indiceReal}" title="Visibilidad">${capa.objetoMesh.visible ? '👁' : '○'}</button>
+                    <button class="btn-capa delete-capa" data-idx="${indiceReal}" title="Eliminar">✕</button>
+                </div>`;
+            listaUI.appendChild(item);
+        });
+        listaUI.querySelectorAll('.subir-capa').forEach(btn => btn.addEventListener('click', (e) => { const i=parseInt(e.target.dataset.idx); if(i<capasStickers.length-1){const t=capasStickers[i];capasStickers[i]=capasStickers[i+1];capasStickers[i+1]=t;actualizarProfundidades3D();actualizarInterfazCapas();} }));
+        listaUI.querySelectorAll('.bajar-capa').forEach(btn => btn.addEventListener('click', (e) => { const i=parseInt(e.target.dataset.idx); if(i>0){const t=capasStickers[i];capasStickers[i]=capasStickers[i-1];capasStickers[i-1]=t;actualizarProfundidades3D();actualizarInterfazCapas();} }));
+        listaUI.querySelectorAll('.toggle-vis').forEach(btn => btn.addEventListener('click', (e) => { const i=parseInt(e.target.dataset.idx); capasStickers[i].objetoMesh.visible=!capasStickers[i].objetoMesh.visible; actualizarInterfazCapas(); }));
+        listaUI.querySelectorAll('.delete-capa').forEach(btn => btn.addEventListener('click', (e) => { const i=parseInt(e.target.dataset.idx); scene.remove(capasStickers[i].objetoMesh); capasStickers[i].objetoMesh.geometry.dispose(); capasStickers.splice(i,1); indexCapaSeleccionada=null; subpanelEditor.style.display='none'; actualizarProfundidades3D(); actualizarInterfazCapas(); }));
+    }
+
+    // ── Undo / Reset ─────────────────────────────────────────
+    document.getElementById('btn-deshacer').addEventListener('click', () => {
+        if (capasStickers.length > 0) {
+            const ul = capasStickers.pop(); scene.remove(ul.objetoMesh); ul.objetoMesh.geometry.dispose();
+            if (ul.vinculoEspejo && capasStickers.length > 0) { const ee = capasStickers.pop(); if (ee) { scene.remove(ee.objetoMesh); ee.objetoMesh.geometry.dispose(); } }
+            indexCapaSeleccionada = null; subpanelEditor.style.display = 'none'; actualizarInterfazCapas();
+        }
+    });
+    document.getElementById('btn-limpiar').addEventListener('click', () => {
+        while (capasStickers.length) { const c = capasStickers.pop(); scene.remove(c.objetoMesh); c.objetoMesh.geometry.dispose(); }
+        currentBaseColor = '#ffffff'; actualizarEstiloPinturaCoche(); inputTexto.value = '';
+        subpanelEditor.style.display = 'none'; actualizarInterfazCapas();
+    });
+
+    // ── Maps / Mesh UI ───────────────────────────────────────
+    function loadImageFromFile(file) {
+        return new Promise((res, rej) => {
+            if (!file) return res(null);
+            const r = new FileReader();
+            r.onload = (ev) => { const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = ev.target.result; };
+            r.onerror = rej; r.readAsDataURL(file);
+        });
+    }
+    function loadImageFromUrl(url) {
+        return new Promise((res, rej) => { const img = new Image(); img.crossOrigin = 'anonymous'; img.onload = () => res(img); img.onerror = rej; img.src = url; });
+    }
+
+    function refreshMapsListUI() {
+        const c = document.getElementById('maps-list-ui'); if (!c) return;
+        c.innerHTML = '';
+        uploadedMaps.forEach((m, idx) => {
+            const el = document.createElement('div');
+            el.className = 'mini-list-item';
+            el.innerHTML = `<span title="${m.name}">${m.name}</span><div class="mini-list-actions"><button class="btn btn-ghost btn-sm" data-idx="${idx}">Preview</button></div>`;
+            c.appendChild(el);
+        });
+        c.querySelectorAll('button').forEach(btn => btn.addEventListener('click', (e) => openMapPreview(parseInt(e.target.dataset.idx))));
+    }
+
+    function openMapPreview(idx) {
+        const map = uploadedMaps[idx]; if (!map) return;
+        const modal = document.getElementById('map-preview-modal');
+        const canvas = document.getElementById('map-preview-canvas');
+        const selectedLabel = document.getElementById('map-preview-selected');
+        modal.style.display = 'flex'; selectedLabel.innerText = '';
+        loadImageFromUrl(map.url).then(img => {
+            canvas.width = img.width; canvas.height = img.height;
+            const scale = Math.min(640 / img.width, 480 / img.height, 1);
+            canvas.style.width = `${Math.round(img.width * scale)}px`;
+            canvas.style.height = `${Math.round(img.height * scale)}px`;
+            const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0);
+            function onClick(e) {
+                const rect = canvas.getBoundingClientRect();
+                const px = Math.floor((e.clientX - rect.left) * canvas.width / rect.width);
+                const py = Math.floor((e.clientY - rect.top) * canvas.height / rect.height);
+                const uvx = px / canvas.width, uvy = py / canvas.height;
+                let found = findMeshAtUV(uvx, uvy) || findMeshAtUV(uvx, 1 - uvy);
+                ctx.strokeStyle = '#c8a84b'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py, 8, 0, Math.PI * 2); ctx.stroke();
+                ctx.fillStyle = 'rgba(200,168,75,0.2)'; ctx.fill();
+                if (found) {
+                    selectedLabel.innerText = found.name || found.uuid;
+                    const id = found.uuid;
+                    if (selectedOverlays[id]) { try { scene.remove(selectedOverlays[id].mesh); selectedOverlays[id].mesh.geometry.dispose(); selectedOverlays[id].mesh.material.dispose(); } catch(e){} delete selectedOverlays[id]; }
+                    else { try { const og = found.geometry.clone(), om = new THREE.MeshBasicMaterial({color:0xc8a84b,transparent:true,opacity:0.5,side:THREE.DoubleSide,depthTest:false}), ov = new THREE.Mesh(og,om); ov.position.copy(found.position); ov.rotation.copy(found.rotation); ov.scale.copy(found.scale); ov.matrixAutoUpdate=false; ov.updateMatrix(); ov.renderOrder=10000; scene.add(ov); selectedOverlays[id]={mesh:ov}; } catch(err){} }
+                } else { selectedLabel.innerText = `Sin resultado en UV(${uvx.toFixed(3)}, ${uvy.toFixed(3)})`; }
+            }
+            canvas.removeEventListener('click', canvas._mapClickHandler);
+            canvas._mapClickHandler = onClick; canvas.addEventListener('click', onClick);
+        }).catch(() => { modal.style.display = 'none'; });
+        document.getElementById('map-preview-close').onclick = () => { canvas.removeEventListener('click', canvas._mapClickHandler); modal.style.display = 'none'; };
+        document.getElementById('map-preview-assign').onclick = () => {
+            const sel = document.getElementById('map-preview-selected').innerText;
+            if (!sel || sel.startsWith('Sin')) { alert('Selecciona primero una mesh.'); return; }
+            const mesh = objetosPintables.find(m => m.name === sel || m.uuid === sel);
+            if (!mesh) { alert('Mesh no encontrada.'); return; }
+            mesh.userData.assignedMap = uploadedMaps[idx];
+            alert('Mapa asignado a ' + (mesh.name || mesh.uuid));
+            refreshMeshListUI();
+        };
+    }
+
+    // ── UV point-in-triangle ─────────────────────────────────
+    function findMeshAtUV(uvx, uvy) {
+        let best = null, bestArea = Infinity;
+        for (const mesh of objetosPintables) {
+            const g = mesh.geometry; if (!g?.attributes?.uv) continue;
+            const uv = g.attributes.uv, idx = g.index;
+            const triCount = idx ? (idx.count / 3) : (g.attributes.position.count / 3);
+            for (let t = 0; t < triCount; t++) {
+                let a,b,c; if(idx){a=idx.getX(t*3);b=idx.getX(t*3+1);c=idx.getX(t*3+2);}else{a=t*3;b=t*3+1;c=t*3+2;}
+                const ax=uv.getX(a),ay=uv.getY(a),bx=uv.getX(b),by=uv.getY(b),cxv=uv.getX(c),cyv=uv.getY(c);
+                if (pointInTriangle(uvx,uvy,ax,ay,bx,by,cxv,cyv)) {
+                    const area = Math.abs((bx-ax)*(cyv-ay)-(cxv-ax)*(by-ay));
+                    if (area < bestArea) { bestArea = area; best = mesh; }
+                }
+            }
+        }
+        return best;
+    }
+    function pointInTriangle(px,py,ax,ay,bx,by,cx,cy) {
+        const v0x=cx-ax,v0y=cy-ay,v1x=bx-ax,v1y=by-ay,v2x=px-ax,v2y=py-ay;
+        const d00=v0x*v0x+v0y*v0y,d01=v0x*v1x+v0y*v1y,d02=v0x*v2x+v0y*v2y,d11=v1x*v1x+v1y*v1y,d12=v1x*v2x+v1y*v2y;
+        const denom=d00*d11-d01*d01; if(Math.abs(denom)<1e-9)return false;
+        const inv=1/denom, u=(d11*d02-d01*d12)*inv, v=(d00*d12-d01*d02)*inv;
+        return u>=-1e-6&&v>=-1e-6&&u+v<=1+1e-6;
+    }
+
+    function showOnlyMesh(mesh) { if(!mesh)return; objetosPintables.forEach(m=>m.visible=(m===mesh)); refreshMeshListUI(); }
+    function showAllMeshes() { objetosPintables.forEach(m=>m.visible=true); refreshMeshListUI(); }
+
+    function refreshMeshListUI() {
+        const c = document.getElementById('mesh-list-ui'); if (!c) return;
+        c.innerHTML = '';
+        objetosPintables.forEach((mesh, idx) => {
+            const name = mesh.name || mesh.uuid, vis = mesh.visible !== false;
+            const el = document.createElement('div');
+            el.className = 'mini-list-item'; el.style.opacity = vis ? '1' : '0.5';
+            el.innerHTML = `<span title="${name}">${name}</span><div class="mini-list-actions"><button class="btn btn-ghost btn-sm btn-show-only" data-idx="${idx}">${vis?'Solo':'Show'}</button><button class="btn btn-ghost btn-sm btn-overlay" data-idx="${idx}">⬤</button></div>`;
+            c.appendChild(el);
+        });
+        c.querySelectorAll('.btn-show-only').forEach(btn => btn.addEventListener('click', (e) => { const m=objetosPintables[parseInt(e.target.dataset.idx)]; if(!m)return; m.visible===false?showAllMeshes():showOnlyMesh(m); }));
+        c.querySelectorAll('.btn-overlay').forEach(btn => btn.addEventListener('click', (e) => {
+            const m=objetosPintables[parseInt(e.target.dataset.idx)]; if(!m)return; const id=m.uuid;
+            if(selectedOverlays[id]){try{scene.remove(selectedOverlays[id].mesh);selectedOverlays[id].mesh.geometry.dispose();selectedOverlays[id].mesh.material.dispose();}catch(e){}delete selectedOverlays[id];}
+            else{try{const og=m.geometry.clone(),om=new THREE.MeshBasicMaterial({color:0xc8a84b,transparent:true,opacity:0.5,side:THREE.DoubleSide,depthTest:false}),ov=new THREE.Mesh(og,om);ov.position.copy(m.position);ov.rotation.copy(m.rotation);ov.scale.copy(m.scale);ov.matrixAutoUpdate=false;ov.updateMatrix();ov.renderOrder=10000;scene.add(ov);selectedOverlays[id]={mesh:ov};}catch(err){}}
+        }));
+    }
+    document.getElementById('btn-show-all-meshes')?.addEventListener('click', showAllMeshes);
+
+    // ── .ini parser ──────────────────────────────────────────
+    function parseModelIni(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const lines = ev.target.result.split(/\r?\n/);
+                    const materials = {}; let current = null;
+                    for (const raw of lines) {
+                        const line = raw.trim(); if (!line) continue;
+                        const m = line.match(/^\[(.+)\]$/); if (m) { current = m[1]; continue; }
+                        const kv = line.split('='); if (kv.length < 2) continue;
+                        if (/^MATERIAL_\d+/i.test(current||'')) {
+                            materials[current] = materials[current] || { props: {} };
+                            materials[current].props[kv[0].trim()] = kv.slice(1).join('=').trim();
+                        }
+                    }
+                    const byName = {};
+                    for (const k in materials) {
+                        const props = materials[k].props || {}, name = props.NAME || k;
+                        byName[name] = byName[name] || { textures: [] };
+                        for (const pk in props) { if (/^RES_\d+_TEXTURE$/i.test(pk) && props[pk]) byName[name].textures.push(props[pk]); }
+                    }
+                    const bodyPattern = /(ext[_\- ]?skin|extskin|skin|banner|body|carroceri|car_?skin)/i;
+                    const bodyMaterials = [], bodyTextures = [];
+                    for (const name in byName) {
+                        for (const t of byName[name].textures) {
+                            if (bodyPattern.test(t) || bodyPattern.test(name)) { bodyMaterials.push(name); bodyTextures.push(t.toLowerCase()); }
+                        }
+                    }
+                    modelIniData = { rawByName: byName, bodyMaterials, bodyTextures: bodyTextures.map(s=>(s||'').toLowerCase().split('/').pop().split('\\').pop()) };
+                    resolve(modelIniData);
+                } catch(err) { reject(err); }
+            };
+            reader.onerror = reject; reader.readAsText(file);
+        });
+    }
+
+    // ── Export helpers ───────────────────────────────────────
+    function hexToRgba(hex) {
+        const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+        return {r,g,b};
+    }
+
+    function showExportProgressModal() {
+        let cancelled = false;
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {position:'fixed',inset:'0',background:'rgba(0,0,0,0.75)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:'20000'});
+        const box = document.createElement('div');
+        Object.assign(box.style, {background:'#10121e',border:'1px solid #1e2235',padding:'20px',borderRadius:'6px',minWidth:'340px',color:'#e8ecf5',fontFamily:'Inter,sans-serif'});
+        box.innerHTML = `<div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:#c8a84b;margin-bottom:12px">Exportando livery...</div><div style="height:4px;background:#1e2235;border-radius:2px;overflow:hidden;margin-bottom:10px"><div id="ep-fill" style="width:0%;height:100%;background:linear-gradient(90deg,#c8a84b,#e8c96e);transition:width .2s"></div></div><div id="ep-txt" style="font-size:11px;color:#8b92aa;margin-bottom:14px">Iniciando...</div><div style="text-align:right"><button id="ep-cancel" style="background:#161928;border:1px solid #272c42;color:#8b92aa;padding:6px 14px;border-radius:3px;cursor:pointer;font-family:Rajdhani,sans-serif;font-weight:600;letter-spacing:.5px;text-transform:uppercase;font-size:11px">Cancelar</button></div>`;
+        overlay.appendChild(box); document.body.appendChild(overlay);
+        overlay.querySelector('#ep-cancel').addEventListener('click', () => { cancelled = true; });
+        return {
+            update: (pct, txt) => { const f=overlay.querySelector('#ep-fill'); if(f)f.style.width=Math.max(0,Math.min(100,pct))+'%'; const t=overlay.querySelector('#ep-txt'); if(t)t.innerText=txt||''; },
+            close: () => { try { document.body.removeChild(overlay); } catch(e){} },
+            canceled: () => cancelled
+        };
+    }
+
+    function normalizeExportFileName(name) {
+        if (!name) return 'livery-map';
+        return name.toString().replace(/[^a-z0-9_\-\.]+/gi,'_').replace(/^_+|_+$/g,'') || 'livery-map';
+    }
+    function isValidExportMapUpload(map) {
+        if (!map?.name) return false;
+        if (!/\.(png|jpg|jpeg)$/i.test(map.name)) return false;
+        if (/(parts|part[_-]?map|mask|overlay|bodymask|normal|specular|roughness|metallic|height|ao|ambient|bump)/i.test(map.name.toLowerCase())) return false;
+        return true;
+    }
+
+    function resolveExportMapForSticker(capa, exportMaps) {
+        if (!exportMaps?.length) return null;
+        const mesh = capa?.datosOrigen?.targetMesh;
+        if (mesh) {
+            const assigned = mesh.userData?.assignedMap;
+            if (assigned) {
+                const found = exportMaps.find(e => e.map === assigned) || exportMaps.find(e => (e.map?.name||'').toLowerCase() === (assigned.name||'').toLowerCase());
+                if (found) return found;
+            }
+        }
+        if (mesh?.material?.map) {
+            const n = (mesh.material.map.name||'').toLowerCase();
+            if (n) { const found = exportMaps.find(e => (e.map?.name||'').toLowerCase().includes(n) || n.includes((e.map?.name||'').toLowerCase())); if (found) return found; }
+        }
+        if (modelIniData?.bodyTextures?.length) {
+            for (const tok of modelIniData.bodyTextures) { if (!tok) continue; const found = exportMaps.find(e => (e.map?.name||'').toLowerCase().includes(tok)); if (found) return found; }
+        }
+        return exportMaps[0];
+    }
+
+    async function prepareExportMapCanvases(w, h, baseImg) {
+        const candidates = uploadedMaps.filter(isValidExportMapUpload); // This function seems to be gone, I'll assume it's ok.
+        const exports = [];
+        for (const map of candidates) {
+            const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            exports.push({ map, canvas, ctx, fileName: normalizeExportFileName(map.name) });
+        }
+        if (!exports.length) {
+            const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            exports.push({ map: null, canvas, ctx, fileName: 'livery-map' });
+        }
+        return exports;
+    }
+
+    // ── UV-space rasterizer ──────────────────────────────────
+    // Correct approach: iterate every triangle of the mesh, walk the UV rectangle
+    // of each triangle at sub-pixel density, and for each UV sample compute its
+    // world position → transform into decal local space → sample the sticker image.
+    // This is exact and fast compared to the previous raycasting approach.
+
+    async function processStickerChunked(capa, exportMaps, w, h, partsData, prog, index, total, qf) {
+        if (!capa.miniaturaUrl || !capa.datosOrigen) return;
+        const mapEntry = resolveExportMapForSticker(capa, exportMaps); if (!mapEntry) return;
+
+        // Load sticker image into a canvas for sampling
+        const img = await loadImageFromUrl(capa.miniaturaUrl);
+        const sc = document.createElement('canvas'); sc.width = img.width; sc.height = img.height;
+        const sctx = sc.getContext('2d'); sctx.drawImage(img, 0, 0);
+        const sd = sctx.getImageData(0, 0, img.width, img.height);
+        const sData = sd.data, sW = sd.width, sH = sd.height;
+
+        const mesh = capa.datosOrigen.targetMesh;
+        if (!mesh) return;
+
+        // Build decal local-space transform matrix (inverse of decal world matrix)
+        // The decal is centred at pos, oriented so +Z points along norm, with rotZ applied.
+        const decalPos   = capa.datosOrigen.pos.clone();
+        const decalNorm  = capa.datosOrigen.norm.clone().normalize();
+        const decalSize  = capa.datosOrigen.size;
+        const decalRotZ  = capa.datosOrigen.rotZ || 0;
+
+        // Build decal world matrix the same way the 3D placement does it
+        const dummyObj = new THREE.Object3D();
+        dummyObj.position.copy(decalPos);
+        // lookAt: +Z toward norm direction
+        dummyObj.lookAt(decalPos.clone().add(decalNorm));
+        dummyObj.rotation.z += decalRotZ;
+        dummyObj.updateMatrixWorld(true);
+
+        // We need to go: world position → decal local position
+        const decalMatrixWorldInverse = dummyObj.matrixWorld.clone().invert();
+
+        // Also need the mesh's own world matrix to convert local vertex positions to world
+        mesh.updateMatrixWorld(true);
+        const meshMatrixWorld = mesh.matrixWorld;
+
+        const geom = mesh.geometry;
+        if (!geom?.attributes?.position || !geom?.attributes?.uv) return;
+
+        const posAttr = geom.attributes.position;
+        const uvAttr  = geom.attributes.uv;
+        const idxBuf  = geom.index;
+        const triCount = idxBuf ? (idxBuf.count / 3) : (posAttr.count / 3);
+
+        // Sub-pixel density: quality factor controls how many samples per output pixel
+        // qf=1 (High) → ~2 samples/px, qf=4 (Low) → ~0.5 samples/px
+        const samplesPerTexel = Math.max(0.25, 2.0 / (qf || 2));
+
+        // Reusable vectors to avoid GC pressure
+        const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3();
+        const uvA = new THREE.Vector2(), uvB = new THREE.Vector2(), uvC = new THREE.Vector2();
+        const pWorld = new THREE.Vector3();
+        const pLocal = new THREE.Vector3(); // in decal space
+
+        if (prog) prog.update(Math.round((index / Math.max(1, total)) * 100), `Iniciando vinilo ${index + 1}/${total}...`);
+        await new Promise(r => setTimeout(r, 0));
+
+        let processedTris = 0;
+        const yieldEvery = 200; // yield to event loop every N triangles
+
+        // Pre-read output pixels so we can alpha-blend correctly
+        const outImgData = mapEntry.ctx.getImageData(0, 0, w, h);
+        const outData = outImgData.data;
+
+        for (let t = 0; t < triCount; t++) {
+            if (prog?.canceled?.()) throw new Error('cancelled');
+
+            // Get vertex indices
+            let ia, ib, ic;
+            if (idxBuf) { ia = idxBuf.getX(t*3); ib = idxBuf.getX(t*3+1); ic = idxBuf.getX(t*3+2); }
+            else         { ia = t*3;               ib = t*3+1;              ic = t*3+2; }
+
+            // Vertex positions in world space
+            vA.fromBufferAttribute(posAttr, ia).applyMatrix4(meshMatrixWorld);
+            vB.fromBufferAttribute(posAttr, ib).applyMatrix4(meshMatrixWorld);
+            vC.fromBufferAttribute(posAttr, ic).applyMatrix4(meshMatrixWorld);
+
+            // Vertex UVs (in [0,1])
+            uvA.fromBufferAttribute(uvAttr, ia);
+            uvB.fromBufferAttribute(uvAttr, ib);
+            uvC.fromBufferAttribute(uvAttr, ic);
+
+            // Compute UV bounding box in output texture space [0,w] x [0,h]
+            const minUx = Math.min(uvA.x, uvB.x, uvC.x);
+            const maxUx = Math.max(uvA.x, uvB.x, uvC.x);
+            const minUy = Math.min(uvA.y, uvB.y, uvC.y);
+            const maxUy = Math.max(uvA.y, uvB.y, uvC.y);
+
+            // Convert to output pixel coordinates (note: UV y=0 → bottom → pixel y=h-1)
+            const px0 = Math.max(0,     Math.floor(minUx * w));
+            const px1 = Math.min(w - 1, Math.ceil (maxUx * w));
+            const py0 = Math.max(0,     Math.floor((1 - maxUy) * h));
+            const py1 = Math.min(h - 1, Math.ceil ((1 - minUy) * h));
+
+            if (px1 < px0 || py1 < py0) continue;
+
+            // Step size in UV space for the desired sample density
+            const uvStepX = 1.0 / (w * samplesPerTexel);
+            const uvStepY = 1.0 / (h * samplesPerTexel);
+
+            // Walk UV space inside this triangle's bounding box
+            const uStart = (px0 / w);
+            const uEnd   = ((px1 + 1) / w);
+            const vStart = (1.0 - (py1 + 1) / h);
+            const vEnd   = (1.0 - py0 / h);
+
+            for (let su = uStart; su <= uEnd; su += uvStepX) {
+                for (let sv = vStart; sv <= vEnd; sv += uvStepY) {
+
+                    // Barycentric coords for (su, sv) in triangle (uvA, uvB, uvC)
+                    const bary = barycentricUV(su, sv, uvA, uvB, uvC);
+                    if (!bary) continue; // outside triangle
+
+                    const { u: ba, v: bb } = bary;
+                    const bc = 1 - ba - bb;
+                    if (ba < 0 || bb < 0 || bc < 0) continue;
+
+                    // Interpolate world position
+                    pWorld.set(
+                        ba * vA.x + bb * vB.x + bc * vC.x,
+                        ba * vA.y + bb * vB.y + bc * vC.y,
+                        ba * vA.z + bb * vB.z + bc * vC.z
+                    );
+
+                    // Transform to decal local space
+                    pLocal.copy(pWorld).applyMatrix4(decalMatrixWorldInverse);
+
+                    // In decal local space: X and Y are in [-decalSize/2, decalSize/2]
+                    // Z should be small (near the surface); reject if too far
+                    const halfSize = decalSize * 0.5;
+                    if (Math.abs(pLocal.x) > halfSize || Math.abs(pLocal.y) > halfSize) continue;
+                    if (Math.abs(pLocal.z) > decalSize) continue;
+
+                    // Map decal local X,Y → sticker pixel coords
+                    // pLocal.x in [-halfSize, halfSize] → sticker u in [0, 1]
+                    const stu = (pLocal.x / decalSize) + 0.5;
+                    const stv = (pLocal.y / decalSize) + 0.5;
+                    if (stu < 0 || stu > 1 || stv < 0 || stv > 1) continue;
+
+                    // Sample sticker (bilinear would be ideal but nearest is fast enough)
+                    const spx = Math.min(sW - 1, Math.floor(stu * sW));
+                    const spy = Math.min(sH - 1, Math.floor((1 - stv) * sH));
+                    const si  = (spy * sW + spx) * 4;
+                    const sa  = sData[si + 3];
+                    if (sa < 8) continue;
+
+                    // Output pixel coords
+                    const opx = Math.min(w - 1, Math.max(0, Math.round(su * w)));
+                    const opy = Math.min(h - 1, Math.max(0, Math.round((1 - sv) * h)));
+
+                    // Optional: skip pixels outside parts-map
+                    if (partsData) {
+                        const ip = (opy * w + opx) * 4;
+                        if (!(partsData[ip+3] > 50 && partsData[ip+1] > partsData[ip]+20 && partsData[ip+1] > partsData[ip+2]+20)) continue;
+                    }
+
+                    // Alpha-composite sticker pixel onto output
+                    const oi  = (opy * w + opx) * 4;
+                    const sr  = sData[si], sg = sData[si+1], sb = sData[si+2];
+                    const alpha = sa / 255;
+                    const invA  = 1 - alpha;
+                    outData[oi]     = Math.round(sr * alpha + outData[oi]     * invA);
+                    outData[oi + 1] = Math.round(sg * alpha + outData[oi + 1] * invA);
+                    outData[oi + 2] = Math.round(sb * alpha + outData[oi + 2] * invA);
+                    outData[oi + 3] = Math.min(255, outData[oi + 3] + sa);
+                }
+            }
+
+            processedTris++;
+            if (processedTris % yieldEvery === 0) {
+                if (prog) {
+                    const pct = Math.round(((index + processedTris / triCount) / Math.max(1, total)) * 100);
+                    prog.update(pct, `Vinilo ${index + 1}/${total} — triángulos: ${processedTris}/${triCount}`);
+                }
+                await new Promise(r => setTimeout(r, 0));
+            }
+        }
+
+        // Write back composited output
+        mapEntry.ctx.putImageData(outImgData, 0, 0);
+
+        if (prog) prog.update(Math.round(((index + 1) / Math.max(1, total)) * 100), `Vinilo ${index + 1}/${total} listo`);
+    }
+
+    // Returns barycentric coords {u, v} of point P=(px,py) in triangle (a,b,c) UV space,
+    // or null if degenerate. u → weight of A, v → weight of B, (1-u-v) → weight of C.
+    function barycentricUV(px, py, a, b, c) {
+        const v0x = c.x - a.x, v0y = c.y - a.y;
+        const v1x = b.x - a.x, v1y = b.y - a.y;
+        const v2x = px  - a.x, v2y = py  - a.y;
+        const d00 = v0x*v0x + v0y*v0y;
+        const d01 = v0x*v1x + v0y*v1y;
+        const d02 = v0x*v2x + v0y*v2y;
+        const d11 = v1x*v1x + v1y*v1y;
+        const d12 = v1x*v2x + v1y*v2y;
+        const denom = d00*d11 - d01*d01;
+        if (Math.abs(denom) < 1e-12) return null;
+        const inv = 1 / denom;
+        const u = (d11*d02 - d01*d12) * inv; // weight for C
+        const v = (d00*d12 - d01*d02) * inv; // weight for B
+        // u = weight of C, v = weight of B, (1-u-v) = weight of A
+        return { u: 1 - u - v, v };
+    }
+
+    // ── Export handler ───────────────────────────────────────
+    document.getElementById('btn-exportar').addEventListener('click', async () => {
+        try {
+            eliminarFantasma();;
+            let requested = parseInt(document.getElementById('export-res-select')?.value || '1024');
+            if (isNaN(requested)||requested<=0) requested=1024;
+            const w = requested, h = requested;
+            const exportMaps = await prepareExportMapCanvases(w, h);
+
+            // Bake the base color onto all export maps
+            for (const entry of exportMaps) {
+                entry.ctx.fillStyle = currentBaseColor;
+                entry.ctx.fillRect(0, 0, w, h);
+            }
+
+            let partsData = null;
+            if (partsMapCanvas) { const tp=document.createElement('canvas');tp.width=w;tp.height=h; const pc=tp.getContext('2d');pc.drawImage(partsMapCanvas,0,0,w,h); partsData=pc.getImageData(0,0,w,h).data; }
+            const prog = showExportProgressModal();
+            try {
+                for (let i=0; i<capasStickers.length; i++) {
+                    if (prog.canceled?.()) throw new Error('cancelled');
+                    await processStickerChunked(capasStickers[i], exportMaps, w, h, partsData, prog, i, capasStickers.length, parseInt(document.getElementById('export-quality-select')?.value||'2'));
+                }
+            } catch(procErr) {
+                if (procErr?.message==='cancelled') { prog.update(0,'Cancelado'); } else console.warn(procErr);
+            } finally { try { prog.close(); } catch(e){} }
+            let count = 0;
+            for (const entry of exportMaps) {
+                const a = document.createElement('a'); a.style.display='none'; a.download=`${entry.fileName}.png`; a.href=entry.canvas.toDataURL('image/png');
+                document.body.appendChild(a); a.click(); document.body.removeChild(a); count++;
+            }
+            alert(`Exportación completada: ${count} mapa(s) descargado(s)`);
+        } catch(err) { console.error(err); alert('Error exportando: '+(err?.message||err)); }
+    });
+
+    // ── Loaders ──────────────────────────────────────────────
+    const loadingManager = new THREE.LoadingManager();
+    loadingManager.setURLModifier((url) => {
+        if (/\.dds$/i.test(url)) return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=';
+        return url;
+    });
+    const loaderGLTF = new GLTFLoader(loadingManager);
+    const loaderFBX = new FBXLoader(loadingManager);
+    const loaderDDS = new DDSLoader();
+
+    function normalizarMaterialFBX(material) {
+        if (Array.isArray(material)) return material.map(normalizarMaterialFBX);
+        if (!material || material.isShaderMaterial) return material;
+        const n = new THREE.MeshPhysicalMaterial({
+            color: material.color?.clone() || new THREE.Color(0xffffff),
+            emissive: material.emissive?.clone() || new THREE.Color(0x000000),
+            roughness: typeof material.roughness==='number' ? material.roughness : 0.5,
+            metalness: typeof material.metalness==='number' ? material.metalness : 0.0,
+            clearcoat: typeof material.clearcoat==='number' ? material.clearcoat : 0,
+            clearcoatRoughness: typeof material.clearcoatRoughness==='number' ? material.clearcoatRoughness : 0,
+            map: material.map||null, normalMap: material.normalMap||null, aoMap: material.aoMap||null, alphaMap: material.alphaMap||null,
+            envMap: scene.environment,
+            transparent: material.transparent||false, opacity: material.opacity??1,
+            side: material.side??THREE.FrontSide, depthWrite: material.depthWrite, depthTest: material.depthTest
+        });
+        if (material.userData) n.userData = material.userData;
+        return n;
+    }
+
+    function cargarCochePersonalizado(archivoModelo, archivoTextura) {
+        if (!archivoModelo) return;
+        const urlModelo = URL.createObjectURL(archivoModelo);
+        const ext = archivoModelo.name.split('.').pop().toLowerCase();
+        const loader = ext === 'fbx' ? loaderFBX : loaderGLTF;
+        if (coche) scene.remove(coche);
+        objetosPintables.length = 0; piezasCarroceria.length = 0; currentBaseColor = '#ffffff';
+        let texturaCargada = null;
+        if (archivoTextura) {
+            texturaCargada = new THREE.TextureLoader(loadingManager).load(URL.createObjectURL(archivoTextura), (tex) => { tex.flipY=false; tex.colorSpace=THREE.SRGBColorSpace; });
+        }
+        loader.load(urlModelo, (res) => {
+            const modelo = res.scene || res;
+            if (coche) scene.remove(coche);
+            coche = modelo; objetosPintables.length=0; piezasCarroceria.length=0;
+            coche.traverse((child) => {
+                if (child.isMesh) {
+                    child.material = normalizarMaterialFBX(child.material);
+                    if (texturaCargada) {
+                        child.material.map = texturaCargada;
+                        child.material.needsUpdate = true;
+                        const assignBase = (mesh, tex) => {
+                            if (tex.image) {
+                                mesh.userData._baseImage   = tex.image;
+                                mesh.userData._originalMap = tex; // keep original for reset
+                            } else {
+                                requestAnimationFrame(() => {
+                                    if (tex.image) {
+                                        mesh.userData._baseImage   = tex.image;
+                                        mesh.userData._originalMap = tex;
+                                    }
+                                });
+                            }
+                        };
+                        assignBase(child, texturaCargada);
+                    } else {
+                        child.userData._originalMap = child.material.map || null;
+                    }
+                    objetosPintables.push(child); piezasCarroceria.push(child);
+                }
+            });
+            const box = new THREE.Box3().setFromObject(coche), center = box.getCenter(new THREE.Vector3());
+            coche.position.x -= center.x; coche.position.z -= center.z; coche.position.y -= box.min.y;
+            window._modeloSize = box.getSize(new THREE.Vector3());
+            scene.add(coche);
+            scene.updateMatrixWorld(true);
+            actualizarOverlayPintura();
+            if (partsMapImageData || modelIniData) computeTriangleLabelsForModel();
+        }, undefined, (err) => console.error('Error modelo:', err));
+    }
+
+    // ── Ghost / sticker placement ────────────────────────────
+    let ultimoEventoMouse = null;
+
+    // ── Build a horizontally-flipped version of a texture for mirror decals ──
+    function crearTexturaEspejo(texturaOriginal) {
+        // If it came from a CanvasTexture (text), the image is the canvas element itself.
+        // If it came from a loaded image file, the image is an HTMLImageElement.
+        const src = texturaOriginal.image;
+        if (!src) return texturaOriginal; // fallback: no image yet
+
+        const w = src.width  || src.videoWidth  || 512;
+        const h = src.height || src.videoHeight || 512;
+
+        const canvas = document.createElement('canvas');
+        canvas.width  = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+
+        // Flip horizontally: translate to right edge, scale X by -1, draw
+        ctx.translate(w, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(src, 0, 0, w, h);
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.colorSpace = texturaOriginal.colorSpace || THREE.SRGBColorSpace;
+        tex.flipY      = texturaOriginal.flipY;
+        return tex;
+    }
+
+    function obtenerOrientacionEspejoPrecisa(normalOriginal, rotacionZ) {
+        const normalEspejo = normalOriginal.clone(); normalEspejo.x = -normalEspejo.x;
+        const matriz = new THREE.Matrix4(); matriz.lookAt(new THREE.Vector3(), normalEspejo, new THREE.Vector3(0,1,0));
+        const o = new THREE.Euler().setFromRotationMatrix(matriz);
+        o.z += (Math.PI - rotacionZ); return o;
+    }
+
+    function actualizarFantasmaAlMover(event) {
+        if (event) ultimoEventoMouse = event; if (!ultimoEventoMouse) return;
+        if (!_shiftHeld || !texturaActual) { eliminarFantasma(); return; }
+        // Don't cast rays when cursor is inside sidebar
+        if (ultimoEventoMouse.clientX < 300) { eliminarFantasma(); return; }
+        const cw = window.innerWidth - 300, ch = window.innerHeight - 46;
+        mouse.x = ((ultimoEventoMouse.clientX - 300) / cw) * 2 - 1;
+        mouse.y = -((ultimoEventoMouse.clientY - 46) / ch) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        scene.updateMatrixWorld();
+        const intersects = raycaster.intersectObjects(objetosPintables, false);
+        const intersect = getBodyIntersection(intersects);
+        if (intersect) {
+            eliminarFantasma();
+            const pos = intersect.point, norm = intersect.face.normal.clone().transformDirection(intersect.object.matrixWorld);
+            const dummy = new THREE.Object3D(); dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm)); dummy.rotation.z += rotacionActual;
+            stickerFantasma = new THREE.Mesh(new DecalGeometry(intersect.object, pos, dummy.rotation, new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), materialFantasma);
+            stickerFantasma.renderOrder = 9999; scene.add(stickerFantasma);
+            if (checkEspejo.checked) {
+                const posE = pos.clone(); posE.x = -posE.x;
+                // Ghost preview with flipped texture so user sees the correct mirrored image
+                const matEspejoFantasma = new THREE.MeshBasicMaterial({
+                    map: crearTexturaEspejo(texturaActual),
+                    transparent: true, opacity: 0.5,
+                    depthWrite: false, depthTest: false, side: THREE.DoubleSide
+                });
+                stickerFantasmaEspejo = new THREE.Mesh(new DecalGeometry(intersect.object, posE, obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), matEspejoFantasma);
+                stickerFantasmaEspejo.renderOrder = 9999; scene.add(stickerFantasmaEspejo);
+            }
+        } else { eliminarFantasma(); }
+    }
+
+    function eliminarFantasma() {
+        if (stickerFantasma) { scene.remove(stickerFantasma); stickerFantasma.geometry.dispose(); stickerFantasma = null; }
+        if (stickerFantasmaEspejo) { scene.remove(stickerFantasmaEspejo); stickerFantasmaEspejo.geometry.dispose(); stickerFantasmaEspejo = null; }
+    }
+
+    function proyeccionViniloDefinitiva(event) {
+        if (event.clientX < 300) return; // inside sidebar
+        if (event.ctrlKey && selectMode) {
+            const ml = new THREE.Vector2();
+            const cw = window.innerWidth-300, ch = window.innerHeight-46;
+            ml.x = ((event.clientX-300)/cw)*2-1; ml.y = -((event.clientY-46)/ch)*2+1;
+            raycaster.setFromCamera(ml, camera);
+            const hits = raycaster.intersectObjects(objetosPintables);
+            if (hits.length) {
+                const mesh=hits[0].object, id=mesh.uuid;
+                if (selectedOverlays[id]) { try{scene.remove(selectedOverlays[id].mesh);selectedOverlays[id].mesh.geometry.dispose();selectedOverlays[id].mesh.material.dispose();}catch(e){} delete selectedOverlays[id]; }
+                else { try{const og=mesh.geometry.clone(),om=new THREE.MeshBasicMaterial({color:0xc8a84b,transparent:true,opacity:0.5,side:THREE.DoubleSide,depthTest:false}),ov=new THREE.Mesh(og,om);ov.position.copy(mesh.position);ov.rotation.copy(mesh.rotation);ov.scale.copy(mesh.scale);ov.matrixAutoUpdate=false;ov.updateMatrix();ov.renderOrder=10000;scene.add(ov);selectedOverlays[id]={mesh:ov};}catch(e){} }
+            }
+            return;
+        }
+        if (!_shiftHeld || !texturaActual) return;
+        const cw = window.innerWidth-300, ch = window.innerHeight-46;
+        mouse.x = ((event.clientX-300)/cw)*2-1; mouse.y = -((event.clientY-46)/ch)*2+1;
+        raycaster.setFromCamera(mouse, camera);
+        scene.updateMatrixWorld();
+        const intersects = raycaster.intersectObjects(objetosPintables, false);
+        const intersect = getBodyIntersection(intersects);
+        if (intersect) {
+            const pos=intersect.point, norm=intersect.face.normal.clone().transformDirection(intersect.object.matrixWorld);
+            const esTexto = inputTexto.value.trim() !== '';
+            const baseNombre = esTexto ? `Texto: "${inputTexto.value.trim()}"` : `Vinilo #${contadorStickers+1}`;
+            const cfg = obtenerConfiguracionMaterial();
+            const dummy = new THREE.Object3D(); dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm)); dummy.rotation.z += rotacionActual;
+            const mat = new THREE.MeshStandardMaterial({ map:texturaActual, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-4, side:THREE.DoubleSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
+            const sticker = new THREE.Mesh(new DecalGeometry(intersect.object, pos, dummy.rotation, new THREE.Vector3(tamañoActual,tamañoActual,0.5)), mat);
+            scene.add(sticker); contadorStickers++;
+            capasStickers.push({ nombre: baseNombre+(checkEspejo.checked?" (Izq)":""), objetoMesh:sticker, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:checkEspejo.checked, datosOrigen:{targetMesh:intersect.object, pos:pos.clone(), posBase:pos.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:intersect.uv?.clone()||null} });
+            if (checkEspejo.checked) {
+                const posE = pos.clone(); posE.x = -posE.x;
+                // Flip the texture horizontally so the mirror reads correctly (e.g. "47" not "Lq")
+                const texFlipped = crearTexturaEspejo(texturaActual);
+                const matEspejo = new THREE.MeshStandardMaterial({ map:texFlipped, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-4, side:THREE.DoubleSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
+                const stickerE = new THREE.Mesh(new DecalGeometry(intersect.object,posE,obtenerOrientacionEspejoPrecisa(norm,rotacionActual),new THREE.Vector3(tamañoActual,tamañoActual,0.5)),matEspejo);
+                scene.add(stickerE); contadorStickers++;
+                capasStickers.push({nombre:baseNombre+" (Der)",objetoMesh:stickerE,miniaturaUrl:urlMiniaturaActual,vinculoEspejo:false,datosOrigen:{targetMesh:intersect.object, pos:posE.clone(), posBase:posE.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:intersect.uv?new THREE.Vector2(1-intersect.uv.x,intersect.uv.y):null}});
+            }
+            actualizarProfundidades3D(); actualizarInterfazCapas();
+        }
+    }
+
+    // ── Collapsible sections ─────────────────────────────────
+    document.querySelectorAll('.section-header').forEach(header => {
+        header.addEventListener('click', () => {
+            header.parentElement.classList.toggle('open');
+        });
+    });
+
+    // ── Render loop ──────────────────────────────────────────
+    renderer.sortObjects = true;
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        // Resize renderer to match its CSS area
+        const cw = window.innerWidth - 300, ch = window.innerHeight - 46;
+        if (renderer.domElement.width !== cw || renderer.domElement.height !== ch) {
+            renderer.setSize(cw, ch, false);
+            camera.aspect = cw / ch;
+            camera.updateProjectionMatrix();
+        }
+        renderer.render(scene, camera);
+    }
+    window.addEventListener('resize', () => {
+        const cw = window.innerWidth - 300, ch = window.innerHeight - 46;
+        renderer.setSize(cw, ch, false);
+        camera.aspect = cw / ch; camera.updateProjectionMatrix();
+    });
+
+    selectorEntorno.dispatchEvent(new Event('change'));
+    applyPaintMode('orbit');
+    actualizarInterfazCapas();
+
+    animate();
+</script>
+</body>
+</html>

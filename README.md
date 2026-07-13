@@ -1,4 +1,4 @@
-1. Descargar rar de los 3 archivos
+1. Descargar rar
 2. Descomprimirlo
 3. Ejecutar archivo Index.html
 4. Para poder subir tu coche, descomprime el KN5 de tu coche (con el Content Manager) y esa carpeta es la que debes subir a la app

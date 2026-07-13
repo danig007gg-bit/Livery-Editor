@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -47,71 +47,117 @@ input[type="file"] { display: none; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-/* ── Top Header Bar ─────────────────────────────────────────── */
-#topbar {
-  position: fixed; top: 0; left: 0; right: 0; height: 46px;
-  background: linear-gradient(90deg, #080a14 0%, #0d1022 60%, #080a14 100%);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 0;
-  z-index: 1000;
-  padding: 0 18px 0 0;
+/* ── GT7 HUD superior izquierdo ─────────────────────────────── */
+#hud-top-left {
+  position: fixed; top: 18px; left: 20px;
+  display: flex; align-items: center; gap: 12px;
+  z-index: 1000; pointer-events: none;
 }
-#topbar-logo {
-  width: var(--sidebar-w); flex-shrink: 0;
-  display: flex; align-items: center; gap: 10px;
-  padding: 0 18px;
-  border-right: 1px solid var(--border);
-  height: 100%;
+#hud-top-left .hud-icon {
+  font-size: 22px; opacity: .85;
 }
-#topbar-logo .logo-mark {
-  width: 28px; height: 28px;
-  background: var(--gold);
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-  flex-shrink: 0;
-}
-#topbar-logo .logo-text {
-  font-family: 'Rajdhani', sans-serif;
-  font-weight: 700; font-size: 15px;
+#hud-top-left .hud-titles { display: flex; flex-direction: column; }
+#hud-top-left .hud-sub {
+  font-family: 'Rajdhani', sans-serif; font-size: 10px;
   letter-spacing: 2px; text-transform: uppercase;
-  color: var(--txt);
-  line-height: 1.1;
+  color: var(--txt3); font-weight: 500;
 }
-#topbar-logo .logo-sub {
-  font-size: 9px; color: var(--gold); letter-spacing: 3px;
-  font-weight: 500;
+#hud-top-left .hud-main {
+  font-family: 'Rajdhani', sans-serif; font-size: 16px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--txt); font-weight: 700; line-height: 1.1;
 }
-#topbar-center {
-  flex: 1; display: flex; align-items: center; gap: 6px;
-  padding: 0 18px;
-}
-.topbar-hint {
-  font-size: 11px; color: var(--txt3);
-  display: flex; align-items: center; gap: 5px;
-}
-.topbar-hint kbd {
-  background: var(--panel2); border: 1px solid var(--border2);
-  color: var(--gold); font-family: 'Rajdhani', sans-serif;
-  font-size: 11px; font-weight: 600;
-  padding: 1px 6px; border-radius: 3px;
-}
-.topbar-sep { width: 1px; height: 20px; background: var(--border); margin: 0 8px; }
-#topbar-actions { display: flex; gap: 8px; align-items: center; }
 
-/* ── Sidebar ─────────────────────────────────────────────────── */
-#sidebar {
+/* ── GT7 HUD superior derecho ───────────────────────────────── */
+#hud-top-right {
+  position: fixed; top: 14px; right: 18px;
+  z-index: 1000;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+}
+#hud-design-label {
+  font-family: 'Rajdhani', sans-serif; font-size: 11px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--txt3); font-weight: 500;
+}
+#hud-design-box {
+  background: rgba(13,15,24,.85);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 6px 14px;
+  display: flex; align-items: center; gap: 8px;
+  min-width: 160px;
+}
+#hud-design-box .design-icon { font-size: 14px; color: var(--txt3); }
+#hud-design-name {
+  font-family: 'Rajdhani', sans-serif; font-size: 13px;
+  font-weight: 700; letter-spacing: 1px;
+  color: var(--txt); text-transform: uppercase;
+}
+
+/* ── Barra inferior GT7 ─────────────────────────────────────── */
+#bottombar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 90px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 0 24px;
+  z-index: 1000;
+  background: linear-gradient(0deg, rgba(7,8,13,.95) 0%, rgba(7,8,13,.0) 100%);
+  pointer-events: none;
+}
+.bb-btn {
+  pointer-events: all;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; width: 90px; height: 72px;
+  background: rgba(13,15,24,.82);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  cursor: pointer; transition: all .18s;
+  color: var(--txt2);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .8px; text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  user-select: none;
+}
+.bb-btn:hover { border-color: rgba(200,168,75,.5); color: var(--txt); background: rgba(200,168,75,.08); }
+.bb-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(200,168,75,.14); }
+.bb-btn .bb-icon { font-size: 22px; line-height: 1; }
+.bb-btn .bb-label { font-size: 9px; letter-spacing: .6px; text-align: center; line-height: 1.2; }
+
+/* ── Panel lateral GT7 ──────────────────────────────────────── */
+#gt-panel {
   position: fixed;
-  top: 46px; left: 0; bottom: 0;
-  width: var(--sidebar-w);
-  background: var(--panel);
+  top: 0; left: 0; bottom: 90px;
+  width: 300px;
+  background: rgba(10,12,20,.92);
   border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
+  backdrop-filter: blur(12px);
   z-index: 900;
+  display: flex; flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform .22s cubic-bezier(.4,0,.2,1);
   overflow: hidden;
 }
-#sidebar-scroll {
-  flex: 1; overflow-y: auto; overflow-x: hidden;
-  padding: 12px 0 24px;
+#gt-panel.open { transform: translateX(0); }
+#gt-panel-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 10px;
 }
+#gt-panel-title {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); flex: 1;
+}
+#gt-panel-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 14px 14px 24px;
+}
+
+/* ── Sidebar (alias para compatibilidad) ────────────────────── */
+#sidebar { display: none; }
+#sidebar-scroll { display: none; }
 
 /* ── Section Block ──────────────────────────────────────────── */
 .section {
@@ -203,6 +249,7 @@ select {
   padding-right: 28px;
   cursor: pointer;
 }
+select option { background: #1a1d2e; color: var(--txt); }
 select:focus, input[type="text"]:focus {
   border-color: var(--gold);
   background: rgba(200,168,75,.06);
@@ -538,6 +585,11 @@ input[type="checkbox"] {
 .section[data-accent="red"] .section-title { color: var(--red); }
 
 /* ── Divider ─────────────────────────────────────────────────── */
+/* ── GT subpanels ───────────────────────────────────────────────── */
+.gt-subpanel { animation: fadeIn .15s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+canvas { display: block; z-index: 0; }
+
 .divider { height: 1px; background: var(--border); margin: 10px 0; }
 
 /* ── Empty state ─────────────────────────────────────────────── */
@@ -545,6 +597,204 @@ input[type="checkbox"] {
   padding: 12px 8px; text-align: center;
   color: var(--txt3); font-size: 11px; font-style: italic;
 }
+
+/* ── Vinilos rework ──────────────────────────────────────────── */
+#vinilos-home, #vinilos-add { display: flex; flex-direction: column; gap: 0; }
+#vinilos-add { display: none; }
+
+#btn-add-vinilo {
+  width: 100%; padding: 13px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
+  color: #fff; border: none; border-radius: var(--radius);
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; transition: opacity .15s; margin-bottom: 12px;
+}
+#btn-add-vinilo:hover { opacity: .85; }
+
+#vinilos-capas-list {
+  display: flex; flex-direction: column; gap: 4px;
+  overflow-y: auto;
+}
+
+.vadd-back {
+  display: flex; align-items: center; gap: 8px;
+  background: none; border: none; color: var(--txt3);
+  font-family: 'Rajdhani', sans-serif; font-weight: 600;
+  font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; padding: 0 0 12px 0; transition: color .15s;
+}
+.vadd-back:hover { color: var(--txt); }
+
+.vadd-tabs {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px; margin-bottom: 14px;
+}
+.vadd-tab {
+  padding: 9px 4px;
+  background: var(--panel2); border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: 10px; font-weight: 600;
+  color: var(--txt2); text-align: center; cursor: pointer;
+  transition: all .15s; font-family: 'Rajdhani', sans-serif;
+  letter-spacing: .5px; text-transform: uppercase; line-height: 1.4;
+}
+.vadd-tab:hover { border-color: var(--border2); color: var(--txt); }
+.vadd-tab.active { border-color: var(--accent2); color: var(--accent2); background: rgba(90,132,255,.1); }
+
+.vadd-section { display: none; }
+.vadd-section.active { display: block; }
+
+#btn-confirmar-vinilo {
+  width: 100%; padding: 11px; margin-top: 14px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
+  color: #fff; border: none; border-radius: var(--radius);
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase;
+  cursor: pointer; transition: opacity .15s;
+}
+#btn-confirmar-vinilo:hover { opacity: .85; }
+
+/* ── Welcome modal ─────────────────────────────────────────── */
+#welcome-modal {
+  position: fixed; inset: 0; z-index: 30000;
+  background: radial-gradient(ellipse at 50% 40%, #0d1022 0%, #07080d 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0;
+}
+#welcome-modal .wm-logo {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 36px;
+}
+#welcome-modal .wm-logo-hex {
+  width: 44px; height: 44px;
+  background: var(--gold);
+  clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+}
+#welcome-modal .wm-logo-text {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 28px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--txt);
+}
+#welcome-modal .wm-logo-sub {
+  font-size: 10px; color: var(--gold); letter-spacing: 4px;
+  font-family: 'Rajdhani', sans-serif; font-weight: 500;
+  text-transform: uppercase; margin-top: 2px;
+}
+#welcome-modal .wm-box {
+  width: 420px; max-width: 96vw;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius2);
+  box-shadow: 0 32px 80px rgba(0,0,0,.9);
+  overflow: hidden;
+}
+#welcome-modal .wm-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--panel2);
+  border-bottom: 1px solid var(--border);
+}
+#welcome-modal .wm-title {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--txt);
+}
+#welcome-modal .wm-lang {
+  position: relative;
+}
+#welcome-modal .wm-lang-btn {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--txt2);
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 8px; cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; gap: 4px;
+}
+#welcome-modal .wm-lang-btn:hover { border-color: var(--border2); color: var(--txt); }
+#welcome-modal .wm-lang-dropdown {
+  display: none; position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--panel2); border: 1px solid var(--border2);
+  border-radius: var(--radius); min-width: 120px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.6); z-index: 2000; overflow: hidden;
+}
+#welcome-modal .wm-lang-dropdown.open { display: block; }
+#welcome-modal .wm-lang-dropdown .lang-option {
+  padding: 7px 12px; font-family: 'Rajdhani', sans-serif;
+  font-weight: 600; font-size: 11px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--txt2); cursor: pointer;
+  transition: background .12s; white-space: nowrap;
+}
+#welcome-modal .wm-lang-dropdown .lang-option:hover { background: rgba(255,255,255,.04); color: var(--txt); }
+#welcome-modal .wm-lang-dropdown .lang-option.active { color: var(--gold); }
+#welcome-modal .wm-body { padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; }
+.wm-slot {
+  width: 100%; padding: 14px 16px;
+  background: var(--panel2);
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: all .15s;
+}
+.wm-slot:hover { border-color: var(--gold); background: rgba(200,168,75,.05); }
+.wm-slot.filled { border-style: solid; border-color: var(--green); background: rgba(26,223,128,.06); }
+.wm-slot-icon { font-size: 22px; flex-shrink: 0; }
+.wm-slot-info { flex: 1; min-width: 0; }
+.wm-slot-label {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--txt2);
+}
+.wm-slot.filled .wm-slot-label { color: var(--green); }
+.wm-slot-hint { font-size: 10px; color: var(--txt3); margin-top: 2px; }
+.wm-slot.filled .wm-slot-hint { color: var(--txt2); }
+#welcome-modal .wm-footer { display: flex; gap: 8px; padding: 0 18px 18px; }
+
+#btn-welcome-abrir {
+  flex: 1; padding: 12px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 100%);
+  color: #07080d; border: none; border-radius: var(--radius);
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; transition: opacity .15s;
+}
+#btn-welcome-abrir:disabled { opacity: .35; cursor: not-allowed; }
+#btn-welcome-abrir:not(:disabled):hover { opacity: .88; }
+#btn-welcome-saltar {
+  padding: 12px 16px;
+  background: transparent; color: var(--txt3);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  font-family: 'Rajdhani', sans-serif; font-weight: 600;
+  font-size: 12px; letter-spacing: .8px; text-transform: uppercase;
+  cursor: pointer; transition: all .15s;
+}
+#btn-welcome-saltar:hover { border-color: var(--border2); color: var(--txt2); }
+
+/* ── Language selector ──────────────────────────────────────── */
+#lang-selector { position: relative; }
+#lang-btn {
+  background: var(--panel2); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--txt2);
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 4px 8px; cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; gap: 4px;
+}
+#lang-btn:hover { border-color: var(--border2); color: var(--txt); }
+#lang-dropdown {
+  display: none; position: absolute; top: calc(100% + 6px); left: 0;
+  background: var(--panel2); border: 1px solid var(--border2);
+  border-radius: var(--radius); min-width: 100%;
+  box-shadow: 0 8px 24px rgba(0,0,0,.6); z-index: 2000; overflow: hidden;
+}
+#lang-dropdown.open { display: block; }
+.lang-option {
+  padding: 7px 12px; font-family: 'Rajdhani', sans-serif;
+  font-weight: 600; font-size: 11px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--txt2); cursor: pointer;
+  transition: background .12s; white-space: nowrap;
+}
+.lang-option:hover { background: rgba(255,255,255,.04); color: var(--txt); }
+.lang-option.active { color: var(--gold); }
 
 /* ── Topbar Export btn ──────────────────────────────────────── */
 #topbar-export-btn {
@@ -581,29 +831,348 @@ input[type="checkbox"] {
 </head>
 <body>
 
-<!-- ═══ TOP BAR ═══════════════════════════════════════════════ -->
-<div id="topbar">
-  <div id="topbar-logo">
-    <img src="logo.png" style="height:30px; width:auto; object-fit:contain;">
-    <div class="logo-text" style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; letter-spacing:2px; text-transform:uppercase; color:var(--txt);">Livery Editor</div>
-  </div>
-  <div id="topbar-center">
-    <span class="topbar-hint"><kbd>Shift</kbd> + Clic → colocar vinilo</span>
-    <div class="topbar-sep"></div>
-    <span class="topbar-hint">🖱 Arrastrar → rotar cámara</span>
-    <div class="topbar-sep"></div>
-    <span class="topbar-hint">🖱 Rueda → zoom</span>
-    <div class="topbar-sep"></div>
-    <span class="topbar-hint">🖱 Clic derecho + arrastra → desplazar cámara</span>
-  </div>
-  <div id="topbar-actions">
-    <button id="btn-exportar">⬇ Exportar</button>
+<!-- ═══ HUD SUPERIOR DERECHO ═════════════════════════════════ -->
+<div id="hud-top-right">
+  <div id="hud-design-label">Nuevo diseño</div>
+  <div id="hud-design-box">
+    <span class="design-icon">🖌️</span>
+    <span id="hud-design-name">Mi Livery</span>
   </div>
 </div>
 
-<!-- ═══ SIDEBAR ══════════════════════════════════════════════ -->
-<div id="sidebar">
-  <div id="sidebar-scroll">
+<!-- ═══ PANEL LATERAL GT7 ════════════════════════════════════ -->
+<div id="gt-panel">
+  <div id="gt-panel-header">
+    <span id="gt-panel-title">Panel</span>
+    <button id="gt-panel-close" style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:16px;padding:2px 6px;">✕</button>
+  </div>
+  <div id="gt-panel-scroll">
+
+    <!-- PANEL: MODELO -->
+    <div id="panel-modelo" class="gt-subpanel" style="display:none">
+      <label class="btn-upload">📁 Cargar carpeta del modelo
+        <input type="file" id="input-carpeta" webkitdirectory directory multiple>
+      </label>
+      <div id="texto-mapa-body" style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;">Carga una carpeta con .fbx/.gltf y mapas PNG.</div>
+      <div class="divider"></div>
+      <div class="field-label" style="margin-top:8px;">Entorno</div>
+      <div class="env-tabs" style="margin-top:6px;">
+        <div class="env-tab active" data-env="garaje">🏁<br>Garaje</div>
+        <div class="env-tab" data-env="estudio">📸<br>Estudio</div>
+        <div class="env-tab" data-env="neon">🔧<br>Hangar</div>
+      </div>
+      <select id="selector-entorno" style="display:none;">
+        <option value="garaje">Garaje Industrial</option>
+        <option value="estudio">Estudio Fotográfico</option>
+        <option value="neon">Taller Mecánico</option>
+      </select>
+      <div class="toggle-row" style="margin-top:10px;" onclick="this.querySelector('input').click()">
+        <label for="toggle-grid">Cuadrícula del suelo</label>
+        <input type="checkbox" id="toggle-grid">
+      </div>
+    </div>
+
+    <!-- PANEL: PINTURA -->
+    <div id="panel-pintura" class="gt-subpanel" style="display:none">
+      <div class="field">
+        <div class="field-label">Color de carrocería</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
+          <input type="color" id="selector-color" value="#ff0000" style="width:48px;height:48px;">
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--txt2);margin-bottom:6px;">Selecciona el color</div>
+            <div class="btn-row">
+              <button class="btn btn-accent btn-full" id="btn-rellenar-carroceria">🪣 Aplicar</button>
+              <button class="btn btn-ghost btn-full" id="btn-quitar-pintura">✕ Quitar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <div class="field-label">Acabado <span style="font-size:9px;color:var(--txt3);">(solo previsualización)</span></div>
+        <div class="paint-grid" style="margin-top:6px;">
+          <div class="paint-opt" id="acabado-brillante">✨<br>Brillante</div>
+          <div class="paint-opt active" id="acabado-metalizado">🔩<br>Metalizado</div>
+          <div class="paint-opt" id="acabado-cromado">💿<br>Cromado</div>
+          <div class="paint-opt" id="acabado-mate">◼<br>Mate</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <label class="btn-upload">🎨 Textura base (.png/.jpg)
+        <input type="file" id="input-textura-base" accept="image/png, image/jpeg">
+      </label>
+      <div id="texto-textura-base" style="font-size:10px;color:var(--txt3);margin-top:4px;line-height:1.5;">Aplica una textura a toda la carrocería.</div>
+      <div class="divider"></div>
+      <div class="field-label">Colores rápidos</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:8px;">
+        <div style="width:100%;aspect-ratio:1;background:#ffffff;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#ffffff'"></div>
+        <div style="width:100%;aspect-ratio:1;background:#111111;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#111111'"></div>
+        <div style="width:100%;aspect-ratio:1;background:#c0392b;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#c0392b'"></div>
+        <div style="width:100%;aspect-ratio:1;background:#2980b9;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#2980b9'"></div>
+        <div style="width:100%;aspect-ratio:1;background:#27ae60;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#27ae60'"></div>
+        <div style="width:100%;aspect-ratio:1;background:#f39c12;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#f39c12'"></div>
+      </div>
+    </div>
+
+    <!-- PANEL: VINILOS -->
+    <div id="panel-vinilos" class="gt-subpanel" style="display:none">
+
+      <!-- VISTA HOME: botón añadir + lista de capas -->
+      <div id="vinilos-home">
+        <button id="btn-add-vinilo">＋ Añadir vinilo</button>
+        <div id="vinilos-capas-list"></div>
+        <div id="subpanel-editor-capa" style="display:none;background:rgba(26,223,128,.05);border:1px solid rgba(26,223,128,.25);border-radius:var(--radius2);padding:10px;margin-top:8px;">
+          <div class="subpanel-title">✏ Editor de Capa Activa</div>
+          <div class="field">
+            <div class="field-label">Escala <span class="val" id="txt-edit-tam">0.3</span></div>
+            <input type="range" id="edit-slider-tamaño" min="0.01" max="1.5" step="0.01">
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label">Rotación <span class="val" id="txt-edit-rot">0°</span></div>
+            <input type="range" id="edit-slider-rotacion" min="0" max="360" step="1">
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label">Mover X <span class="val" id="txt-edit-ox">0</span></div>
+            <input type="range" id="edit-slider-ox" min="-1" max="1" step="0.01" value="0">
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label">Mover Y <span class="val" id="txt-edit-oy">0</span></div>
+            <input type="range" id="edit-slider-oy" min="-1" max="1" step="0.01" value="0">
+          </div>
+          <button class="btn btn-secondary btn-full" id="btn-cerrar-editor" style="margin-top:10px;">Aceptar Cambios</button>
+        </div>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn btn-ghost btn-full" id="btn-deshacer">↩ Deshacer</button>
+          <button class="btn btn-danger btn-full" id="btn-limpiar">🗑 Reset</button>
+        </div>
+      </div>
+
+      <!-- VISTA AÑADIR: formulario de nuevo vinilo -->
+      <div id="vinilos-add">
+        <button class="vadd-back" id="btn-vinilos-back">← Volver</button>
+
+        <!-- Tabs: Imagen / Texto / Biblioteca -->
+        <div class="vadd-tabs">
+          <div class="vadd-tab active" data-vtab="imagen">🖼<br>Imagen</div>
+          <div class="vadd-tab" data-vtab="texto">🅰<br>Texto</div>
+          <div class="vadd-tab" data-vtab="biblioteca">🗂<br>Biblioteca</div>
+        </div>
+
+        <!-- Sección: Imagen -->
+        <div class="vadd-section active" id="vtab-imagen">
+          <label class="btn-upload">📂 Subir imagen PNG/JPG
+            <input type="file" id="selector-imagen" accept="image/png, image/jpeg">
+          </label>
+          <div class="preview-row" style="margin-top:10px;">
+            <div id="vista-previa" style="width:64px;height:64px;"><span style="color:var(--txt3);font-size:9px;">Vacío</span></div>
+            <div class="preview-hint">Vista previa<br>del vinilo activo</div>
+          </div>
+        </div>
+
+        <!-- Sección: Texto -->
+        <div class="vadd-section" id="vtab-texto">
+          <div class="field">
+            <div class="field-label">Texto</div>
+            <input type="text" id="input-texto" placeholder="Escribe aquí..." style="margin-top:6px;">
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label">Fuente</div>
+            <select id="selector-fuente" style="margin-top:6px;">
+              <option value="italic 900 90px Impact, sans-serif">Racing (Impact)</option>
+              <option value="900 70px 'Orbitron', sans-serif">Tech / Futurista</option>
+              <option value="bold 70px 'Graduate', serif">Clásico / Muscle</option>
+            </select>
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label">Color</div>
+            <div class="color-row" style="margin-top:6px;">
+              <input type="color" id="color-texto" value="#ff3e3e">
+              <span style="font-size:11px;color:var(--txt2);">Color del texto</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección: Biblioteca -->
+        <div class="vadd-section" id="vtab-biblioteca">
+          <label class="btn-upload">📁 Seleccionar carpeta
+            <input type="file" id="input-biblioteca" webkitdirectory directory multiple>
+          </label>
+          <div id="biblioteca-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px;max-height:200px;overflow-y:auto;"></div>
+          <div class="btn-row" style="margin-top:6px;">
+            <button id="btn-borrar-sticker-sel" class="btn btn-ghost btn-sm btn-full">✕ Borrar sel.</button>
+            <button id="btn-limpiar-biblioteca" class="btn btn-danger btn-sm btn-full">🗑 Limpiar</button>
+          </div>
+        </div>
+
+        <!-- Opciones comunes -->
+        <div class="divider" style="margin-top:14px;"></div>
+        <div class="field">
+          <div class="field-label">Acabado</div>
+          <select id="selector-material-vinilo" style="margin-top:6px;">
+            <option value="brillante">✨ Estándar / Brillante</option>
+            <option value="mate">◼ Vinilo Mate</option>
+            <option value="metalizado">💿 Cromado / Metalizado</option>
+          </select>
+        </div>
+        <div class="field" style="margin-top:8px;">
+          <div class="field-label">Modo Espejo</div>
+          <select id="check-espejo" style="margin-top:6px;">
+            <option value="ninguno">Sin espejo</option>
+            <option value="simetrico">Simétrico (voltea ambos)</option>
+            <option value="asimetrico">Asimétrico (legible ambos lados)</option>
+          </select>
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <div class="field-label">Tamaño <span class="val" id="txt-tamaño">0.3</span></div>
+          <input type="range" id="slider-tamaño" min="0.05" max="1.5" step="0.05" value="0.3">
+        </div>
+        <div class="field" style="margin-top:10px;">
+          <div class="field-label">Rotación <span class="val" id="txt-rotacion">0°</span></div>
+          <input type="range" id="slider-rotacion" min="0" max="360" step="5" value="0">
+        </div>
+        <button id="btn-confirmar-vinilo">✔ Listo — Shift+Clic para colocar</button>
+      </div>
+
+    </div>
+
+    <!-- PANEL: OPCIONES DE CARRERA -->
+    <div id="panel-carrera" class="gt-subpanel" style="display:none">
+      <div class="field">
+        <div class="field-label">Número de carrera</div>
+        <input type="text" id="input-numero-carrera" placeholder="47" maxlength="3" style="margin-top:6px;font-size:28px;font-family:'Impact',sans-serif;text-align:center;letter-spacing:4px;">
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <div class="field-label">Color del número</div>
+        <div class="color-row" style="margin-top:6px;">
+          <input type="color" id="color-numero" value="#111111">
+          <span style="font-size:11px;color:var(--txt2);">Color del texto</span>
+        </div>
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <div class="field-label">Color del fondo</div>
+        <div class="color-row" style="margin-top:6px;">
+          <input type="color" id="color-fondo-numero" value="#ffffff">
+          <span style="font-size:11px;color:var(--txt2);">Color del dorsal</span>
+        </div>
+      </div>
+      <div id="preview-dorsal" style="margin-top:12px;display:flex;align-items:center;justify-content:center;">
+        <canvas id="canvas-dorsal-preview" width="120" height="90" style="border-radius:4px;border:1px solid var(--border2);"></canvas>
+      </div>
+      <button class="btn btn-accent btn-full" id="btn-aplicar-dorsal" style="margin-top:12px;">&#x2714; Aplicar dorsal en ambos lados</button>
+      <div style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;">Se generará como vinilo en ambos lados. Usa Shift+Clic para reposicionarlo.</div>
+      <div class="divider"></div>
+      <div class="field">
+        <div class="field-label">Nombre del piloto</div>
+        <input type="text" id="input-nombre-piloto" placeholder="DRIVER" style="margin-top:6px;font-family:'Impact',sans-serif;letter-spacing:2px;">
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <div class="field-label">Color del texto</div>
+        <div class="color-row" style="margin-top:6px;">
+          <input type="color" id="color-piloto-texto" value="#ffffff">
+          <span style="font-size:11px;color:var(--txt2);">Color del nombre</span>
+        </div>
+      </div>
+      <button class="btn btn-accent btn-full" id="btn-aplicar-piloto" style="margin-top:12px;">&#x2714; Aplicar nombre en el techo</button>
+      <div style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;">Se coloca en ambos lados del techo. Usa el editor de capas para ajustarlo.</div>
+    </div>
+
+    <!-- PANEL: OPCIONES DEL EDITOR -->
+    <div id="panel-editor" class="gt-subpanel" style="display:none">
+
+      <div class="field-label" style="margin-bottom:8px;">Iluminación</div>
+      <div class="field">
+        <div class="field-label">Exposición <span class="val" id="txt-exposure">1.0</span></div>
+        <input type="range" id="sl-exposure" min="0.1" max="3" step="0.05" value="1.0">
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <div class="field-label">Luz ambiental <span class="val" id="txt-luz-amb">0.4</span></div>
+        <input type="range" id="sl-luz-amb" min="0" max="2" step="0.05" value="0.4">
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <div class="field-label">Luz principal <span class="val" id="txt-luz-prin">1.2</span></div>
+        <input type="range" id="sl-luz-prin" min="0" max="4" step="0.1" value="1.2">
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <div class="field-label">Luz lateral <span class="val" id="txt-luz-lat">0.5</span></div>
+        <input type="range" id="sl-luz-lat" min="0" max="3" step="0.1" value="0.5">
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <div class="field-label">Entorno (env) <span class="val" id="txt-env-int">1.0</span></div>
+        <input type="range" id="sl-env-int" min="0" max="3" step="0.05" value="1.0">
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <div class="field-label">Niebla <span class="val" id="txt-fog">0.05</span></div>
+        <input type="range" id="sl-fog" min="0" max="0.3" step="0.005" value="0.05">
+      </div>
+      <button class="btn btn-ghost btn-full btn-sm" id="btn-reset-luz" style="margin-top:10px;">↺ Restablecer luces</button>
+
+      <div class="divider"></div>
+
+      <div class="field-label">Mapeo de partes <span style="font-size:9px;color:var(--txt3);">/DEV/</span></div>
+      <div style="font-size:10px;color:var(--txt3);margin:6px 0 8px;line-height:1.5;">Selecciona una parte y asígnale un mapa PNG.</div>
+      <div class="map-cols">
+        <div class="map-col">
+          <div class="map-col-label">Meshes</div>
+          <div id="mesh-list-ui" class="mini-list"></div>
+        </div>
+        <div class="map-col">
+          <div class="map-col-label">Mapas</div>
+          <div id="maps-list-ui" class="mini-list"></div>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:6px;">
+        <button id="btn-assign-map" class="btn btn-ghost btn-sm btn-full">Asignar</button>
+        <button id="btn-apply-mapping" class="btn btn-accent btn-sm btn-full">Aplicar</button>
+      </div>
+      <label class="btn-upload" style="margin-top:6px;font-size:11px;">➕ Subir mapa PNG/JPG
+        <input type="file" id="input-maps" accept="image/png, image/jpeg" multiple>
+      </label>
+      <button id="btn-show-all-meshes" class="btn btn-ghost btn-sm btn-full" style="margin-top:6px;">Mostrar todo</button>
+      <div class="toggle-row" style="margin-top:8px;">
+        <label for="toggle-select">Selección (Ctrl+Click)</label>
+        <input type="checkbox" id="toggle-select">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ BARRA INFERIOR GT7 ═══════════════════════════════════ -->
+<div id="bottombar">
+  <div class="bb-btn active" id="bb-modelo" data-panel="modelo">
+    <div class="bb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 8.10747C6 4.73441 8.68629 2 12 2C15.3137 2 18 4.73441 18 8.10747C18 11.4541 16.085 15.3593 13.0972 16.7558C12.4007 17.0814 11.5993 17.0814 10.9028 16.7558C7.91499 15.3593 6 11.4541 6 8.10747ZM12 10C13.1046 10 14 9.10457 14 8C14 6.89543 13.1046 6 12 6C10.8954 6 10 6.89543 10 8C10 9.10457 10.8954 10 12 10Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M3.62731 14.5343C3.88455 14.8589 3.82989 15.3306 3.50523 15.5879C2.93157 16.0424 2.75 16.443 2.75 16.75C2.75 16.993 2.86028 17.2881 3.19064 17.6296C3.52438 17.9747 4.04582 18.3252 4.75556 18.6471C6.00981 19.2159 7.74351 19.6466 9.75 19.8343V19.375C9.75 19.0807 9.9221 18.8137 10.1901 18.6921C10.4581 18.5705 10.7724 18.6168 10.9939 18.8106L12.4939 20.1231C12.6566 20.2655 12.75 20.4713 12.75 20.6875C12.75 20.9038 12.6566 21.1095 12.4939 21.252L10.9939 22.5645C10.7724 22.7582 10.4581 22.8046 10.1901 22.683C9.9221 22.5614 9.75 22.2943 9.75 22V21.3404C7.56512 21.1487 5.60927 20.6814 4.13599 20.0132C3.32214 19.644 2.62069 19.198 2.11244 18.6725C1.60081 18.1435 1.25 17.494 1.25 16.75C1.25 15.7998 1.81667 15.012 2.5737 14.4122C2.89836 14.1549 3.37008 14.2096 3.62731 14.5343ZM20.3727 14.5343C20.6299 14.2096 21.1016 14.1549 21.4263 14.4122C22.1833 15.012 22.75 15.7998 22.75 16.75C22.75 18.1281 21.5819 19.1606 20.2034 19.8514C18.7617 20.5738 16.791 21.0851 14.5756 21.3097C14.1635 21.3514 13.7956 21.0512 13.7538 20.6391C13.7121 20.227 14.0123 19.8591 14.4244 19.8173C16.522 19.6047 18.3014 19.1267 19.5314 18.5103C20.8246 17.8623 21.25 17.2067 21.25 16.75C21.25 16.443 21.0684 16.0424 20.4948 15.5879C20.1701 15.3306 20.1155 14.8589 20.3727 14.5343Z" fill="currentColor"></path></svg></div>
+    <div class="bb-label">Vista previa</div>
+  </div>
+  <div class="bb-btn" id="bb-pintura" data-panel="pintura">
+    <div class="bb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M19.11 7.47145L15.59 3.95145C12.43 0.801451 10.77 1.96145 8.77005 3.95145L3.11005 9.61145C1.96005 10.7615 1.33005 11.5015 1.10005 12.3215C1.10005 12.3315 1.09005 12.3315 1.09005 12.3315C1.09005 12.3415 1.09005 12.3415 1.09005 12.3415C1.09005 12.3515 1.09005 12.3515 1.09005 12.3515V12.3815C0.680048 13.8415 1.76005 15.0815 3.11005 16.4315L6.64005 19.9415C7.90005 21.2115 8.92005 22.0015 10.05 22.0015C11.18 22.0015 12.15 21.2415 13.45 19.9415L19.11 14.2915C19.6 13.7915 19.96 13.3815 20.24 12.9915C20.24 12.9815 20.24 12.9815 20.24 12.9815C20.24 12.9815 20.24 12.9815 20.25 12.9815C21.53 11.1915 21.19 9.54145 19.11 7.47145ZM18.08 11.3715H18.07C17.77 11.3015 17.46 11.2415 17.15 11.1815C17.13 11.1815 17.11 11.1715 17.08 11.1715C16.38 11.0415 15.67 10.9315 14.95 10.8415H14.91C14.19 10.7515 13.46 10.6815 12.73 10.6415H12.65C12.01 10.6015 11.36 10.5815 10.72 10.5815C9.94005 10.5815 9.16005 10.6215 8.39005 10.6715C8.26005 10.6815 8.14005 10.6915 8.02005 10.7015C7.44005 10.7415 6.86005 10.8015 6.29005 10.8715C6.13005 10.8915 5.98005 10.9115 5.83005 10.9315C5.25005 11.0215 4.68005 11.1115 4.11005 11.2215C3.98005 11.2515 3.86005 11.2715 3.73005 11.2915C3.68005 11.3015 3.62005 11.3115 3.57005 11.3215C3.75005 11.1215 3.96005 10.9115 4.19005 10.6815L9.84005 5.03145C11.66 3.23145 12.28 2.80145 14.52 5.03145L18.03 8.55145C18.57 9.08145 18.93 9.53145 19.15 9.92145C19.15 9.92145 19.15 9.93145 19.16 9.93145C19.58 10.6615 18.9 11.5315 18.08 11.3715Z" fill="currentColor"></path><path d="M20.9499 16.87C20.5699 16.4 20.2399 16 19.4999 16C18.7599 16 18.4299 16.4 18.0599 16.87C17.2599 17.86 16.8999 18.94 17.0299 19.98C17.1799 21.17 18.1999 22 19.4999 22C20.7999 22 21.8199 21.17 21.9699 19.97C22.0999 18.93 21.7499 17.86 20.9499 16.87Z" fill="currentColor"></path></svg></div>
+    <div class="bb-label">Pintura</div>
+  </div>
+  <div class="bb-btn" id="bb-vinilos" data-panel="vinilos">
+    <div class="bb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M16.9358 13.1007C17.804 12.7969 18.8834 12.756 21.1392 12.7508H22.7242C22.7167 12.859 22.7348 12.6434 22.7242 12.7508C22.6895 13.1321 22.5227 13.4894 22.2526 13.7608L13.7454 22.3107C13.4821 22.5754 13.1241 22.7242 12.7508 22.7242C12.6434 22.7348 12.859 22.7167 12.7508 22.7242V21.1392C12.756 18.8834 12.7969 17.804 13.1007 16.9358C13.7289 15.1405 15.1405 13.7289 16.9358 13.1007Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M11.5515 16.8809C11.2763 17.9436 11.2521 19.2445 11.2501 21.22V22.7243C5.66292 22.3393 1.25 17.685 1.25 12C1.25 6.06294 6.06294 1.25 12 1.25C17.685 1.25 22.3393 5.66292 22.7243 11.2501H21.22C18.9634 11.2524 17.587 11.2837 16.4403 11.6849C14.6151 12.3236 13.1098 13.6152 12.1975 15.2866C12.1782 15.2885 12.1589 15.2911 12.1396 15.2945C11.0656 15.4824 10.0235 15.4383 9.09494 15.2056C8.69315 15.1049 8.2858 15.349 8.1851 15.7508C8.0844 16.1526 8.32847 16.5599 8.73026 16.6606C9.61622 16.8827 10.5717 16.9615 11.5515 16.8809ZM14.8977 11.2234C15.4311 11.0805 15.6898 10.3159 15.4754 9.51572C15.2609 8.71552 14.6547 8.18271 14.1212 8.32565C13.5877 8.4686 13.3291 9.23316 13.5435 10.0334C13.7579 10.8336 14.3642 11.3664 14.8977 11.2234ZM9.10225 12.7764C9.63571 12.6335 9.89436 11.8689 9.67994 11.0687C9.46553 10.2685 8.85925 9.73569 8.32579 9.87863C7.79232 10.0216 7.53368 10.7861 7.74809 11.5863C7.9625 12.3865 8.56878 12.9194 9.10225 12.7764Z" fill="currentColor"></path></svg></div>
+    <div class="bb-label">Vinilos</div>
+  </div>
+  <div class="bb-btn" id="bb-carrera" data-panel="carrera">
+    <div class="bb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M13.75 6.99982C13.75 7.41403 13.4142 7.74982 13 7.74982H11C10.5858 7.74982 10.25 7.41403 10.25 6.99982C10.25 6.5856 10.5858 6.24982 11 6.24982H13C13.4142 6.24982 13.75 6.5856 13.75 6.99982Z" fill="currentColor"></path>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12.9264 1.36274C12.3186 1.20778 11.6815 1.20778 11.0737 1.36274C10.383 1.53882 9.76876 1.98149 8.87847 2.62313L3.47119 6.51641C2.82311 6.98268 2.37487 7.30518 2.04389 7.72924C1.75175 8.10354 1.53335 8.52991 1.4003 8.98569C1.24955 9.50208 1.24974 10.0543 1.25002 10.8527L1.25005 18.8303C1.25004 19.3645 1.25003 19.8103 1.27979 20.1746C1.31083 20.5544 1.37794 20.9111 1.54978 21.2484C1.81343 21.7658 2.23413 22.1865 2.75157 22.4501C3.08884 22.622 3.44549 22.6891 3.82538 22.7201C4.18961 22.7499 4.63545 22.7499 5.1696 22.7499H18.8305C19.3646 22.7499 19.8105 22.7499 20.1747 22.7201C20.5546 22.6891 20.9113 22.622 21.2485 22.4501C21.766 22.1865 22.1867 21.7658 22.4503 21.2484C22.6222 20.9111 22.6893 20.5544 22.7203 20.1746C22.7501 19.8103 22.7501 19.3645 22.75 18.8303L22.7501 10.8527C22.7504 10.0543 22.7505 9.50208 22.5998 8.98569C22.4667 8.52991 22.2483 8.10354 21.9562 7.72924C21.6252 7.30518 21.177 6.98269 20.5289 6.51642L15.1216 2.62312C14.2313 1.98149 13.6171 1.53882 12.9264 1.36274ZM11.4442 2.81625C11.8089 2.72328 12.1911 2.72328 12.5559 2.81625C12.9355 2.91304 13.306 3.16428 14.3665 3.92783L19.5665 7.67185C20.3336 8.22415 20.5913 8.41846 20.7737 8.65216C20.949 8.87674 21.0801 9.13256 21.1599 9.40603C21.243 9.69061 21.25 10.0133 21.25 10.9586V18.7999C21.25 19.3723 21.2495 19.7565 21.2253 20.0524C21.2018 20.3395 21.1599 20.4768 21.1138 20.5674C20.994 20.8026 20.8027 20.9938 20.5675 21.1136C20.477 21.1598 20.3397 21.2017 20.0526 21.2251C19.8419 21.2423 19.5864 21.2476 19.25 21.2492V12.4998C19.25 11.5333 18.4665 10.7498 17.5 10.7498H6.5C5.5335 10.7498 4.75 11.5333 4.75 12.4998V21.2492C4.41368 21.2476 4.15821 21.2423 3.94753 21.2251C3.6604 21.2017 3.52312 21.1598 3.43256 21.1136C3.19736 20.9938 3.00613 20.8026 2.88629 20.5674C2.84015 20.4768 2.79826 20.3395 2.77481 20.0524C2.75063 19.7565 2.75005 19.3723 2.75005 18.7999V10.9586C2.75005 10.0133 2.75712 9.69061 2.8402 9.40603C2.92003 9.13256 3.05107 8.87674 3.22635 8.65216C3.40876 8.41846 3.66652 8.22415 4.43361 7.67185L9.63361 3.92783C10.6941 3.16428 11.0646 2.91304 11.4442 2.81625ZM6.25 19.25V21.2498H17.75V19.25H6.25ZM17.75 17.75H6.25V15.75H17.75V17.75ZM17.75 12.4998V14.25H6.25V12.4998C6.25 12.3617 6.36193 12.2498 6.5 12.2498H17.5C17.6381 12.2498 17.75 12.3617 17.75 12.4998Z" fill="currentColor"></path></svg></div>
+    <div class="bb-label">Opciones de carrera</div>
+  </div>
+  <div class="bb-btn" id="bb-editor" data-panel="editor">
+    <div class="bb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15.5699 18.5001V14.6001" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15.5699 7.45V5.5" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15.57 12.65C17.0059 12.65 18.17 11.4859 18.17 10.05C18.17 8.61401 17.0059 7.44995 15.57 7.44995C14.134 7.44995 12.97 8.61401 12.97 10.05C12.97 11.4859 14.134 12.65 15.57 12.65Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.43005 18.5V16.55" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.43005 9.4V5.5" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.42996 16.5501C9.8659 16.5501 11.03 15.386 11.03 13.9501C11.03 12.5142 9.8659 11.3501 8.42996 11.3501C6.99402 11.3501 5.82996 12.5142 5.82996 13.9501C5.82996 15.386 6.99402 16.5501 8.42996 16.5501Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+    <div class="bb-label">Opciones del editor</div>
+  </div>
+  <div class="bb-btn" id="bb-guardar">
+    <div class="bb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M16.44 8.8999C20.04 9.2099 21.51 11.0599 21.51 15.1099V15.2399C21.51 19.7099 19.72 21.4999 15.25 21.4999H8.73998C4.26998 21.4999 2.47998 19.7099 2.47998 15.2399V15.1099C2.47998 11.0899 3.92998 9.2399 7.46998 8.9099" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 15.0001V3.62012" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15.35 5.85L12 2.5L8.65002 5.85" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+    <div class="bb-label">Exportar PNG</div>
+  </div>
+  <div class="bb-btn" id="bb-sesion">
+    <div class="bb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M16.0694 9.95182C17.3989 9.95177 18.5317 9.95172 19.436 10.054C19.5895 10.0714 19.7425 10.0923 19.8943 10.1178C20.4264 10.2071 20.9447 10.3533 21.4242 10.6063V9.75579C21.4242 8.84687 21.4243 8.09279 21.3389 7.49156C21.2489 6.85704 21.0526 6.29458 20.5834 5.83245C20.5069 5.75707 20.4261 5.68552 20.3415 5.61807C19.8297 5.21023 19.2162 5.04345 18.5217 4.96608C17.8526 4.89155 17.0097 4.89157 15.9765 4.89158L15.6237 4.89158C14.6416 4.89158 14.2895 4.88587 13.9706 4.80533C13.7833 4.75802 13.6035 4.69195 13.4348 4.60878C13.1505 4.46867 12.9028 4.25761 12.2072 3.64132L11.7331 3.22128C11.5341 3.04489 11.3982 2.9245 11.2526 2.81755C10.6279 2.35879 9.86732 2.08132 9.07098 2.01534C8.88555 1.99998 8.69632 1.99999 8.41308 2.00002L8.29666 2.00001C7.65599 1.9999 7.23317 1.99983 6.86604 2.0612C5.26119 2.32947 3.96344 3.45143 3.64735 4.93575C3.57543 5.27344 3.57554 5.66035 3.57571 6.21853L3.57573 10.6063C4.05523 10.3533 4.57357 10.2071 5.1056 10.1178C5.25746 10.0923 5.41043 10.0714 5.56394 10.054C6.46822 9.95172 7.60107 9.95177 8.93055 9.95182H16.0694Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M3.35791 12.7788C2.74772 13.7202 2.99956 15.0292 3.50323 17.6471C3.8658 19.5317 4.04709 20.474 4.67523 21.0993C4.8382 21.2615 5.02054 21.4053 5.2186 21.5278C5.98195 22 6.99539 22 9.02227 22H15.9777C18.0046 22 19.0181 22 19.7814 21.5278C19.9795 21.4053 20.1618 21.2615 20.3248 21.0993C20.9529 20.474 21.1342 19.5317 21.4968 17.6471C22.0004 15.0292 22.2523 13.7202 21.6421 12.7788C21.4864 12.5386 21.2943 12.3211 21.0721 12.1334C20.2011 11.3976 18.7933 11.3976 15.9777 11.3976H9.02227C6.20667 11.3976 4.79888 11.3976 3.92792 12.1334C3.70566 12.3211 3.51363 12.5386 3.35791 12.7788ZM9.69518 17.1807C9.69518 16.7815 10.0376 16.4578 10.4601 16.4578H14.5398C14.9622 16.4578 15.3047 16.7815 15.3047 17.1807C15.3047 17.58 14.9622 17.9036 14.5398 17.9036H10.4601C10.0376 17.9036 9.69518 17.58 9.69518 17.1807Z" fill="currentColor"></path></svg></div>
+    <div class="bb-label">Guardar/Cargar Sesión</div>
+  </div>
+  <div class="bb-btn" id="bb-cerrar">
+    <div class="bb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM15.36 14.3C15.65 14.59 15.65 15.07 15.36 15.36C15.21 15.51 15.02 15.58 14.83 15.58C14.64 15.58 14.45 15.51 14.3 15.36L12 13.06L9.7 15.36C9.55 15.51 9.36 15.58 9.17 15.58C8.98 15.58 8.79 15.51 8.64 15.36C8.35 15.07 8.35 14.59 8.64 14.3L10.94 12L8.64 9.7C8.35 9.41 8.35 8.93 8.64 8.64C8.93 8.35 9.41 8.35 9.7 8.64L12 10.94L14.3 8.64C14.59 8.35 15.07 8.35 15.36 8.64C15.65 8.93 15.65 9.41 15.36 9.7L13.06 12L15.36 14.3Z" fill="currentColor"></path></svg></div>
+    <div class="bb-label">Cerrar</div>
+  </div>
+</div>
+
 
     <!-- 1. Cargar modelo -->
     <div class="section open" data-accent="gold">
@@ -697,6 +1266,7 @@ input[type="checkbox"] {
         </div>
         <div class="btn-row" style="margin-top:10px;">
           <button class="btn btn-accent btn-full" id="btn-rellenar-carroceria">🪣 Rellenar Todo</button>
+          <button class="btn btn-ghost btn-full" id="btn-quitar-pintura">✕ Quitar Pintura</button>
         </div>
       </div>
     </div>
@@ -754,9 +1324,13 @@ input[type="checkbox"] {
             <option value="metalizado">💿 Cromado / Metalizado</option>
           </select>
         </div>
-        <div class="toggle-row">
-          <label for="check-espejo">↔ Simetría (Modo Espejo)</label>
-          <input type="checkbox" id="check-espejo">
+        <div class="field" style="margin-top:6px;">
+          <div class="field-label">Modo Espejo</div>
+          <select id="check-espejo">
+            <option value="ninguno">Sin espejo</option>
+            <option value="simetrico">Simétrico (voltea ambos)</option>
+            <option value="asimetrico">Asimétrico (legible ambos lados)</option>
+          </select>
         </div>
         <div class="field" style="margin-top:10px;">
           <div class="field-label">Tamaño <span class="val" id="txt-tamaño">0.3</span></div>
@@ -825,8 +1399,46 @@ input[type="checkbox"] {
       </div>
     </div>
 
-  </div><!-- /sidebar-scroll -->
-</div><!-- /sidebar -->
+  </div><!-- /
+<!-- ═══ WELCOME MODAL ═══════════════════════════════════════ -->
+<div id="welcome-modal">
+  <div class="wm-logo">
+    <img src="logo.png" style="height:44px;width:auto;object-fit:contain;">
+    <div>
+      <div class="wm-logo-text">Livery Editor</div>
+      <div class="wm-logo-sub">Made By DanG007</div>
+    </div>
+  </div>
+  <div class="wm-box">
+    <div class="wm-header">
+      <div class="wm-title">🚗 Cargar Proyecto</div>
+      <div class="wm-lang">
+        <button class="wm-lang-btn" id="wm-lang-btn">🌐 ES ▾</button>
+        <div class="wm-lang-dropdown" id="wm-lang-dropdown">
+          <div class="lang-option active" data-lang="es">🇪🇸 Español</div>
+        </div>
+      </div>
+    </div>
+    <div class="wm-body">
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);font-weight:600;">Nombre del proyecto</div>
+        <input type="text" id="wm-nombre-proyecto" placeholder="Mi Livery" style="background:var(--panel2);border:1px solid var(--border2);border-radius:var(--radius);color:var(--txt);padding:9px 12px;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;outline:none;width:100%;">
+      </div>
+      <label class="wm-slot" id="wm-slot-carpeta" for="wm-input-carpeta">
+        <div class="wm-slot-icon">📁</div>
+        <div class="wm-slot-info">
+          <div class="wm-slot-label">Carpeta del modelo</div>
+          <div class="wm-slot-hint">Selecciona la carpeta con .fbx/.gltf y mapas PNG</div>
+        </div>
+        <input type="file" id="wm-input-carpeta" webkitdirectory directory multiple>
+      </label>
+    </div>
+    <div class="wm-footer">
+      <button id="btn-welcome-saltar">Saltar</button>
+      <button id="btn-welcome-abrir" disabled>Abrir Editor →</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ MODAL PREVIEW ════════════════════════════════════════ -->
 <div id="map-preview-modal">
@@ -887,6 +1499,33 @@ input[type="checkbox"] {
   </div>
 </div>
 
+<!-- ═══ MODAL SESIÓN ════════════════════════════════════════ -->
+<div id="sesion-modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);z-index:25000;">
+  <div style="width:400px;max-width:96vw;background:var(--panel);border:1px solid var(--border2);border-radius:var(--radius2);box-shadow:0 24px 80px rgba(0,0,0,.9);overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);background:var(--panel2);">
+      <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);">💾 Guardar / Cargar Sesión</div>
+      <button id="sesion-modal-close" class="btn btn-ghost btn-sm">✕</button>
+    </div>
+    <div style="padding:18px;display:flex;flex-direction:column;gap:14px;">
+      <div style="font-size:11px;color:var(--txt3);line-height:1.6;">Guarda todas las capas de vinilos, posiciones, colores y nombre del proyecto en un archivo <strong style="color:var(--txt2);">.json</strong>. Cárgalo después para continuar donde lo dejaste.</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);margin-bottom:6px;">Nombre del archivo</div>
+        <input type="text" id="sesion-filename" placeholder="mi-livery-sesion" style="font-size:12px;">
+      </div>
+      <button id="btn-guardar-sesion" style="width:100%;padding:12px;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#07080d;border:none;border-radius:var(--radius);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">⬇ Guardar sesión como JSON</button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+        <span style="font-size:10px;color:var(--txt3);font-family:'Rajdhani',sans-serif;letter-spacing:1px;text-transform:uppercase;">o cargar</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <label style="width:100%;padding:11px;background:var(--panel2);border:1px dashed var(--border2);border-radius:var(--radius);color:var(--txt2);font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;text-align:center;display:block;transition:all .15s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--txt)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--txt2)'">📂 Cargar sesión (.json)
+        <input type="file" id="input-cargar-sesion" accept=".json">
+      </label>
+      <div id="sesion-info" style="font-size:11px;color:var(--txt3);text-align:center;min-height:16px;"></div>
+    </div>
+  </div>
+</div>
+
 <div id="brush-cursor" class="brush-cursor-indicator"></div>
 <canvas id="canvas-texto-oculto" width="512" height="512" style="display:none;"></canvas>
 
@@ -934,10 +1573,10 @@ input[type="checkbox"] {
 
     // Push canvas below the topbar and sidebar
     renderer.domElement.style.position = 'fixed';
-    renderer.domElement.style.top = '46px';
-    renderer.domElement.style.left = '300px';
-    renderer.domElement.style.width = 'calc(100vw - 300px)';
-    renderer.domElement.style.height = 'calc(100vh - 46px)';
+    renderer.domElement.style.top = '0';
+    renderer.domElement.style.left = '0';
+    renderer.domElement.style.width = '100vw';
+    renderer.domElement.style.height = '100vh';
 
     const controls = new OrbitControls(camera, renderer.domElement);
     camera.position.set(0, 1.8, 4.5);
@@ -963,12 +1602,29 @@ input[type="checkbox"] {
     whitePixelCtx.fillRect(0, 0, 1, 1);
     const whiteTexture = new THREE.CanvasTexture(whitePixelCanvas);
 
-    // Floor
-    const sueloMaterial = new THREE.MeshStandardMaterial({ color: 0x050507, roughness: 0.15, metalness: 0.8 });
+    // Floor textures (procedural)
+    function _makeFloorTex(dark) {
+        const c = document.createElement('canvas'); c.width = 512; c.height = 512;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = dark ? '#0a0b10' : '#e8e8ec'; ctx.fillRect(0, 0, 512, 512);
+        for (let i = 0; i < 22000; i++) {
+            const x = Math.random()*512, y = Math.random()*512;
+            const v = dark ? Math.floor(Math.random()*22+5) : Math.floor(Math.random()*18+210);
+            const a = (Math.random()*0.22+0.06).toFixed(2);
+            ctx.fillStyle = dark ? `rgba(${v},${v},${v+3},${a})` : `rgba(${v},${v},${v},${a})`;
+            ctx.fillRect(x, y, Math.random()<0.3?2:1, Math.random()<0.3?2:1);
+        }
+        const t = new THREE.CanvasTexture(c);
+        t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(14, 14);
+        return t;
+    }
+    const _floorTexDark  = _makeFloorTex(true);
+    const _floorTexLight = _makeFloorTex(false);
+    const sueloMaterial = new THREE.MeshStandardMaterial({ map: _floorTexDark, color: 0xffffff, roughness: 0.93, metalness: 0.02 });
     const suelo = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), sueloMaterial);
     suelo.rotation.x = -Math.PI / 2; scene.add(suelo);
     const gridHelper = new THREE.GridHelper(30, 30, 0xc8a84b, 0x1a1d2a);
-    gridHelper.position.y = 0.005; scene.add(gridHelper);
+    gridHelper.position.y = 0.005; gridHelper.visible = false; scene.add(gridHelper);
 
     // ── Environment tabs wiring ──────────────────────────────
     const selectorEntorno = document.getElementById('selector-entorno');
@@ -985,12 +1641,12 @@ input[type="checkbox"] {
         if (amb === 'garaje') {
             scene.fog = scene.fog || new THREE.FogExp2(0x07080d, 0.05);
             renderer.setClearColor(0x07080d); scene.background = new THREE.Color(0x07080d); scene.fog.color.setHex(0x07080d);
-            suelo.visible = true; sueloMaterial.color.setHex(0x050507); sueloMaterial.roughness = 0.15; gridHelper.visible = true;
+            suelo.visible = true; sueloMaterial.map = _floorTexDark; sueloMaterial.color.setHex(0xffffff); sueloMaterial.roughness = 0.93; sueloMaterial.metalness = 0.02; sueloMaterial.needsUpdate = true; gridHelper.visible = document.getElementById('toggle-grid').checked;
             luzPrincipal.color.setHex(0xffffff); luzAmbiental.color.setHex(0xffffff); neonFucsia.intensity = 0; neonCian.intensity = 0;
         } else if (amb === 'estudio') {
             scene.fog = scene.fog || new THREE.FogExp2(0xf0f0f4, 0.05);
             renderer.setClearColor(0xf0f0f4); scene.background = new THREE.Color(0xf0f0f4); scene.fog.color.setHex(0xf0f0f4);
-            suelo.visible = true; sueloMaterial.color.setHex(0xe2e2e8); sueloMaterial.roughness = 0.3; gridHelper.visible = false;
+            suelo.visible = true; sueloMaterial.map = _floorTexLight; sueloMaterial.color.setHex(0xffffff); sueloMaterial.roughness = 0.93; sueloMaterial.metalness = 0.0; sueloMaterial.needsUpdate = true; gridHelper.visible = false;
             luzPrincipal.color.setHex(0xffffff); luzAmbiental.color.setHex(0xffffff); neonFucsia.intensity = 0; neonCian.intensity = 0;
         } else if (amb === 'neon') {
             new RGBELoader().load('derelict_airfield_02_1k.hdr', (hdrTex) => {
@@ -1027,6 +1683,7 @@ input[type="checkbox"] {
     let texturaActual = null, urlMiniaturaActual = '';
 
     const checkEspejo = document.getElementById('check-espejo');
+    const modoEspejo = () => checkEspejo.value;
     const selectorMatVinilo = document.getElementById('selector-material-vinilo');
 
     let materialFantasma = new THREE.MeshBasicMaterial({
@@ -1249,16 +1906,36 @@ input[type="checkbox"] {
     // ── Paint system (fill only) ─────────────────────────────
     let currentBaseColor = '#ffffff';
     let baseColorApplied = false;
+    let acabadoPintura = 'metalizado';
+
+    const acabadoPresets = {
+        brillante:  { roughness: 0.25, metalness: 0.04, clearcoat: 1.0,  clearcoatRoughness: 0.05 },
+        metalizado: { roughness: 0.35, metalness: 0.85, clearcoat: 0.6,  clearcoatRoughness: 0.1  },
+        cromado:    { roughness: 0.05, metalness: 1.0,  clearcoat: 1.0,  clearcoatRoughness: 0.0  },
+        mate:       { roughness: 0.95, metalness: 0.0,  clearcoat: 0.0,  clearcoatRoughness: 0.0  },
+    };
+
+    function aplicarAcabado(nombre) {
+        acabadoPintura = nombre;
+        document.querySelectorAll('#panel-pintura .paint-opt').forEach(el => el.classList.remove('active'));
+        document.getElementById('acabado-' + nombre)?.classList.add('active');
+        if (baseColorApplied) fillAllMeshes(currentBaseColor);
+    }
+
+    ['brillante','metalizado','cromado','mate'].forEach(id => {
+        document.getElementById('acabado-' + id)?.addEventListener('click', () => aplicarAcabado(id));
+    });
 
     function fillAllMeshes(color) {
         currentBaseColor = color; baseColorApplied = true;
+        const p = acabadoPresets[acabadoPintura] || acabadoPresets.brillante;
         objetosPintables.forEach(mesh => {
             if (!mesh.userData._matOriginal) mesh.userData._matOriginal = mesh.material;
             const mat = mesh.userData._matOriginal;
-            mat.map = null; // quitar textura para que el color sólido se vea limpio
+            mat.map = null;
             mat.color.set(color);
-            mat.roughness = 0.45; mat.metalness = 0.0;
-            if (mat.clearcoat !== undefined) { mat.clearcoat = 1.0; mat.clearcoatRoughness = 0.1; }
+            mat.roughness = p.roughness; mat.metalness = p.metalness;
+            if (mat.clearcoat !== undefined) { mat.clearcoat = p.clearcoat; mat.clearcoatRoughness = p.clearcoatRoughness; }
             mat.envMap = scene.environment;
             mat.needsUpdate = true;
             mesh.material = mat;
@@ -1268,29 +1945,94 @@ input[type="checkbox"] {
     document.getElementById('btn-rellenar-carroceria').addEventListener('click', () => {
         fillAllMeshes(document.getElementById('selector-color').value);
     });
+    document.getElementById('btn-quitar-pintura').addEventListener('click', () => {
+        currentBaseColor = '#ffffff'; baseColorApplied = false; window._baseTexturaBitmap = null;
+        objetosPintables.forEach(mesh => {
+            if (!mesh.userData._matOriginal) return;
+            const mat = mesh.userData._matOriginal;
+            mat.map = mesh.userData._originalMap || null;
+            mat.color.set(0xffffff);
+            mat.needsUpdate = true;
+            mesh.material = mat;
+        });
+    });
 
     function actualizarEstiloPinturaCoche() {}
     function limpiarOverlays() {}
     function actualizarOverlayPintura() {}
 
+    document.getElementById('toggle-grid').addEventListener('change', (e) => { gridHelper.visible = e.target.checked; });
     document.getElementById('toggle-select').addEventListener('change', (e) => { selectMode = e.target.checked; });
 
-    function getUVAtEvent(event) { return null; }
+    // ── Lighting sliders ───────────────────────────────────────────────
+    const _luzDefaults = { exposure: 1.0, amb: 0.4, prin: 1.2, lat: 0.5, env: 1.0, fog: 0.05 };
+    function _slLuz(id, txtId, fn) {
+        const el = document.getElementById(id), tx = document.getElementById(txtId);
+        el.addEventListener('input', () => { tx.textContent = parseFloat(el.value).toFixed(2); fn(parseFloat(el.value)); });
+    }
+    _slLuz('sl-exposure', 'txt-exposure', v => { renderer.toneMappingExposure = v; });
+    _slLuz('sl-luz-amb',  'txt-luz-amb',  v => { luzAmbiental.intensity = v; });
+    _slLuz('sl-luz-prin', 'txt-luz-prin', v => { luzPrincipal.intensity = v; });
+    _slLuz('sl-luz-lat',  'txt-luz-lat',  v => { luzLateralIzq.intensity = v; });
+    _slLuz('sl-env-int',  'txt-env-int',  v => { scene.environmentIntensity = v; });
+    _slLuz('sl-fog', 'txt-fog', v => { if (scene.fog) scene.fog.density = v; });
+    document.getElementById('btn-reset-luz').addEventListener('click', () => {
+        renderer.toneMappingExposure = _luzDefaults.exposure;
+        luzAmbiental.intensity  = _luzDefaults.amb;
+        luzPrincipal.intensity  = _luzDefaults.prin;
+        luzLateralIzq.intensity = _luzDefaults.lat;
+        scene.environmentIntensity = _luzDefaults.env;
+        if (scene.fog) scene.fog.density = _luzDefaults.fog;
+        [['sl-exposure','txt-exposure',_luzDefaults.exposure],['sl-luz-amb','txt-luz-amb',_luzDefaults.amb],
+         ['sl-luz-prin','txt-luz-prin',_luzDefaults.prin],['sl-luz-lat','txt-luz-lat',_luzDefaults.lat],
+         ['sl-env-int','txt-env-int',_luzDefaults.env],['sl-fog','txt-fog',_luzDefaults.fog]]
+        .forEach(([id,tx,v]) => { document.getElementById(id).value=v; document.getElementById(tx).textContent=v.toFixed(2); });
+    });
+
+    function getPanelWidth() { const p = document.getElementById('gt-panel'); return (p && p.classList.contains('open')) ? 300 : 0; }
 
     // ── Input / orbit coordination ───────────────────────────
     let _shiftHeld = false;
 
-    window.addEventListener('keydown', (e) => { if (e.key === 'Shift') _shiftHeld = true; });
-    window.addEventListener('keyup',   (e) => { if (e.key === 'Shift') { _shiftHeld = false; eliminarFantasma(); } });
-    window.addEventListener('blur',    ()  => { _shiftHeld = false; eliminarFantasma(); });
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Shift') {
+            const tag = document.activeElement.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable) return;
+            _shiftHeld = true; controls.enabled = false;
+        }
+    });
+    window.addEventListener('keyup', (e) => { if (e.key === 'Shift') { _shiftHeld = false; controls.enabled = true; eliminarFantasma(); } });
+    window.addEventListener('blur', () => { _shiftHeld = false; controls.enabled = true; eliminarFantasma(); });
+    // Si el usuario hace clic en cualquier input/textarea, asegurarse de salir del modo shift
+    document.addEventListener('focusin', (e) => {
+        const tag = e.target.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) {
+            _shiftHeld = false; controls.enabled = true; eliminarFantasma();
+        }
+    });
+
+    renderer.domElement.addEventListener('wheel', (e) => {
+        if (!_shiftHeld) return;
+        e.preventDefault(); e.stopPropagation();
+        const delta = e.deltaY > 0 ? -0.02 : 0.02;
+        tamañoActual = Math.min(1.5, Math.max(0.05, tamañoActual + delta));
+        tamañoActual = Math.round(tamañoActual * 100) / 100;
+        const slider = document.getElementById('slider-tamaño');
+        if (slider) slider.value = tamañoActual;
+        document.getElementById('txt-tamaño').innerText = tamañoActual;
+        actualizarFantasmaAlMover();
+    }, { passive: false });
 
     renderer.domElement.addEventListener('pointerdown', (e) => {
-        if (e.clientX < 300 || e.button !== 0) return;
-        if (e.shiftKey || _shiftHeld) { _shiftHeld = true; e.stopPropagation(); proyeccionViniloDefinitiva(e); }
+        if (e.clientX < getPanelWidth() || e.button !== 0) return;
+        if ((e.shiftKey || _shiftHeld) && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { _shiftHeld = true; e.stopPropagation(); proyeccionViniloDefinitiva(e); }
     });
     renderer.domElement.addEventListener('pointerleave', () => { eliminarFantasma(); });
     window.addEventListener('pointermove', (e) => {
-        if (e.shiftKey) _shiftHeld = true;
+        if (e.shiftKey) {
+            const tag = document.activeElement.tagName;
+            if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !document.activeElement.isContentEditable) _shiftHeld = true;
+        }
         actualizarFantasmaAlMover(e);
     });
 
@@ -1449,7 +2191,7 @@ input[type="checkbox"] {
         dummy.rotation.z += nuevaRotZ;
 
         capa.objetoMesh.geometry.dispose();
-        capa.objetoMesh.geometry = new DecalGeometry(capa.datosOrigen.targetMesh, newPos, dummy.rotation, new THREE.Vector3(nuevoTam, nuevoTam, 0.5));
+        capa.objetoMesh.geometry = new DecalGeometry(capa.datosOrigen.targetMesh, newPos, dummy.rotation, new THREE.Vector3(nuevoTam, nuevoTam * (capa.datosOrigen.ratioY || 1), capa.datosOrigen.ratioZ || 0.5));
 
         txtEditTam.innerText = nuevoTam;
         txtEditRot.innerText = parseInt(editSliderRot.value) + "°";
@@ -1467,7 +2209,7 @@ input[type="checkbox"] {
                     .addScaledVector(tangY, offsetY);
                 par.datosOrigen.pos = mirrorPos;
                 par.objetoMesh.geometry.dispose();
-                par.objetoMesh.geometry = new DecalGeometry(capa.datosOrigen.targetMesh, mirrorPos, obtenerOrientacionEspejoPrecisa(norm, nuevaRotZ), new THREE.Vector3(nuevoTam, nuevoTam, 0.5));
+                par.objetoMesh.geometry = new DecalGeometry(capa.datosOrigen.targetMesh, mirrorPos, obtenerOrientacionEspejoPrecisa(norm, nuevaRotZ), new THREE.Vector3(nuevoTam, nuevoTam * (capa.datosOrigen.ratioY || 1), capa.datosOrigen.ratioZ || 0.5));
             }
         }
     }
@@ -1486,7 +2228,7 @@ input[type="checkbox"] {
     });
 
     function actualizarInterfazCapas() {
-        const listaUI = document.getElementById('lista-capas-ui'); listaUI.innerHTML = '';
+        const listaUI = document.getElementById('vinilos-capas-list'); listaUI.innerHTML = '';
         if (capasStickers.length === 0) { listaUI.innerHTML = '<div class="empty-state">Ningún vinilo aplicado</div>'; return; }
         capasStickers.slice().reverse().forEach((capa, ri, arr) => {
             const indiceReal = (arr.length - 1) - ri;
@@ -1957,10 +2699,6 @@ input[type="checkbox"] {
         field.style.display = usedMaps.size > 0 ? 'block' : 'none';
     }
 
-    document.getElementById('btn-exportar').addEventListener('click', () => {
-        populateExportMapsUI();
-        document.getElementById('export-modal').style.display = 'flex';
-    });
     document.getElementById('export-modal-close').addEventListener('click', () => {
         document.getElementById('export-modal').style.display = 'none';
     });
@@ -2185,11 +2923,11 @@ input[type="checkbox"] {
     function actualizarFantasmaAlMover(event) {
         if (event) ultimoEventoMouse = event; if (!ultimoEventoMouse) return;
         if (!_shiftHeld || !texturaActual) { eliminarFantasma(); return; }
-        // Don't cast rays when cursor is inside sidebar
-        if (ultimoEventoMouse.clientX < 300) { eliminarFantasma(); return; }
-        const cw = window.innerWidth - 300, ch = window.innerHeight - 46;
-        mouse.x = ((ultimoEventoMouse.clientX - 300) / cw) * 2 - 1;
-        mouse.y = -((ultimoEventoMouse.clientY - 46) / ch) * 2 + 1;
+        // Don't cast rays when cursor is inside panel
+        if (ultimoEventoMouse.clientX < getPanelWidth()) { eliminarFantasma(); return; }
+        const cw = window.innerWidth, ch = window.innerHeight;
+        mouse.x = (ultimoEventoMouse.clientX / cw) * 2 - 1;
+        mouse.y = -(ultimoEventoMouse.clientY / ch) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
         scene.updateMatrixWorld();
         const intersects = raycaster.intersectObjects(objetosPintables, false);
@@ -2200,7 +2938,7 @@ input[type="checkbox"] {
             const dummy = new THREE.Object3D(); dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm)); dummy.rotation.z += rotacionActual;
             stickerFantasma = new THREE.Mesh(new DecalGeometry(intersect.object, pos, dummy.rotation, new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), materialFantasma);
             stickerFantasma.renderOrder = 9999; scene.add(stickerFantasma);
-            if (checkEspejo.checked) {
+            if (modoEspejo() !== 'ninguno') {
                 const espejo = encontrarMeshEspejo(intersect.object, pos);
                 const posE = espejo.pos;
                 const matEspejoFantasma = new THREE.MeshBasicMaterial({
@@ -2208,7 +2946,7 @@ input[type="checkbox"] {
                     transparent: true, opacity: 0.5,
                     depthWrite: false, depthTest: false, side: THREE.DoubleSide
                 });
-                stickerFantasmaEspejo = new THREE.Mesh(new DecalGeometry(espejo.mesh, posE, obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), matEspejoFantasma);
+                stickerFantasmaEspejo = new THREE.Mesh(new DecalGeometry(espejo.mesh, posE, modoEspejo()==='asimetrico' ? (() => { const d=new THREE.Object3D(); d.position.copy(posE); d.lookAt(posE.clone().add(norm)); d.rotation.z+=rotacionActual; return d.rotation; })() : obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), matEspejoFantasma);
                 stickerFantasmaEspejo.renderOrder = 9999; scene.add(stickerFantasmaEspejo);
             }
         } else { eliminarFantasma(); }
@@ -2220,11 +2958,11 @@ input[type="checkbox"] {
     }
 
     function proyeccionViniloDefinitiva(event) {
-        if (event.clientX < 300) return; // inside sidebar
+        if (event.clientX < getPanelWidth()) return; // inside panel
         if (event.ctrlKey && selectMode) {
             const ml = new THREE.Vector2();
-            const cw = window.innerWidth-300, ch = window.innerHeight-46;
-            ml.x = ((event.clientX-300)/cw)*2-1; ml.y = -((event.clientY-46)/ch)*2+1;
+            const cw = window.innerWidth, ch = window.innerHeight;
+            ml.x = (event.clientX/cw)*2-1; ml.y = -(event.clientY/ch)*2+1;
             raycaster.setFromCamera(ml, camera);
             const hits = raycaster.intersectObjects(objetosPintables);
             if (hits.length) {
@@ -2235,8 +2973,8 @@ input[type="checkbox"] {
             return;
         }
         if (!_shiftHeld || !texturaActual) return;
-        const cw = window.innerWidth-300, ch = window.innerHeight-46;
-        mouse.x = ((event.clientX-300)/cw)*2-1; mouse.y = -((event.clientY-46)/ch)*2+1;
+        const cw = window.innerWidth, ch = window.innerHeight;
+        mouse.x = (event.clientX/cw)*2-1; mouse.y = -(event.clientY/ch)*2+1;
         raycaster.setFromCamera(mouse, camera);
         scene.updateMatrixWorld();
         const intersects = raycaster.intersectObjects(objetosPintables, false);
@@ -2247,22 +2985,56 @@ input[type="checkbox"] {
             const baseNombre = esTexto ? `Texto: "${inputTexto.value.trim()}"` : `Vinilo #${contadorStickers+1}`;
             const cfg = obtenerConfiguracionMaterial();
             const dummy = new THREE.Object3D(); dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm)); dummy.rotation.z += rotacionActual;
-            const mat = new THREE.MeshStandardMaterial({ map:texturaActual, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-4, side:THREE.DoubleSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
+            const _texOrig = texturaActual;
+            const mat = new THREE.MeshStandardMaterial({ map:_texOrig, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-4, side:THREE.DoubleSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
             const sticker = new THREE.Mesh(new DecalGeometry(intersect.object, pos, dummy.rotation, new THREE.Vector3(tamañoActual,tamañoActual,0.5)), mat);
             scene.add(sticker); contadorStickers++;
-            capasStickers.push({ nombre: baseNombre+(checkEspejo.checked?" (Izq)":""), objetoMesh:sticker, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:checkEspejo.checked, datosOrigen:{targetMesh:intersect.object, pos:pos.clone(), posBase:pos.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:intersect.uv?.clone()||null} });
-            if (checkEspejo.checked) {
+            capasStickers.push({ nombre: baseNombre+(modoEspejo() !== 'ninguno'?" (Izq)":""), objetoMesh:sticker, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:modoEspejo() !== 'ninguno', datosOrigen:{targetMesh:intersect.object, pos:pos.clone(), posBase:pos.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:intersect.uv?.clone()||null} });
+            if (modoEspejo() !== 'ninguno') {
                 const espejo = encontrarMeshEspejo(intersect.object, pos);
                 const posE = espejo.pos;
                 const texFlipped = crearTexturaEspejo(texturaActual);
                 const matEspejo = new THREE.MeshStandardMaterial({ map:texFlipped, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-4, side:THREE.DoubleSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
-                const stickerE = new THREE.Mesh(new DecalGeometry(espejo.mesh, posE, obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual,tamañoActual,0.5)), matEspejo);
+                const stickerE = new THREE.Mesh(new DecalGeometry(espejo.mesh, posE, modoEspejo()==='asimetrico' ? (() => { const d=new THREE.Object3D(); d.position.copy(posE); d.lookAt(posE.clone().add(norm)); d.rotation.z+=rotacionActual; return d.rotation; })() : obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual,tamañoActual,0.5)), matEspejo);
                 scene.add(stickerE); contadorStickers++;
                 capasStickers.push({nombre:baseNombre+" (Der)", objetoMesh:stickerE, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:false, datosOrigen:{targetMesh:espejo.mesh, pos:posE.clone(), posBase:posE.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:null}});
             }
             actualizarProfundidades3D(); actualizarInterfazCapas();
         }
     }
+
+    // ── Vinilos panel navigation ─────────────────────────────
+    function mostrarVistaVinilos(vista) {
+        document.getElementById('vinilos-home').style.display = vista === 'home' ? 'flex' : 'none';
+        document.getElementById('vinilos-add').style.display  = vista === 'add'  ? 'flex' : 'none';
+        document.getElementById('gt-panel-title').textContent = vista === 'add' ? 'Añadir Vinilo' : 'Vinilos';
+    }
+    document.getElementById('btn-add-vinilo').addEventListener('click', () => mostrarVistaVinilos('add'));
+    document.getElementById('btn-vinilos-back').addEventListener('click', () => mostrarVistaVinilos('home'));
+    document.getElementById('btn-confirmar-vinilo').addEventListener('click', () => {
+        if (!texturaActual) { mostrarToast('⚠ Selecciona una imagen, escribe un texto o elige un sticker primero.'); return; }
+        mostrarVistaVinilos('home');
+        mostrarToast('✔ Vinilo listo — Shift+Clic sobre el modelo para colocarlo');
+    });
+
+    // Tabs dentro de la vista añadir
+    document.querySelectorAll('.vadd-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.vadd-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.vadd-section').forEach(s => s.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('vtab-' + tab.dataset.vtab)?.classList.add('active');
+        });
+    });
+
+    // Al abrir el panel de vinilos, asegurarse de mostrar la vista home
+    const _origAbrirPanel = abrirPanel;
+    // Patch: cuando se abre el panel vinilos, resetear a home
+    document.querySelectorAll('.bb-btn[data-panel]').forEach(btn => {
+        if (btn.dataset.panel === 'vinilos') {
+            btn.addEventListener('click', () => mostrarVistaVinilos('home'), true);
+        }
+    });
 
     // ── Collapsible sections ─────────────────────────────────
     document.querySelectorAll('.section-header').forEach(header => {
@@ -2277,7 +3049,7 @@ input[type="checkbox"] {
         requestAnimationFrame(animate);
         controls.update();
         // Resize renderer to match its CSS area
-        const cw = window.innerWidth - 300, ch = window.innerHeight - 46;
+        const cw = window.innerWidth, ch = window.innerHeight;
         if (renderer.domElement.width !== cw || renderer.domElement.height !== ch) {
             renderer.setSize(cw, ch, false);
             camera.aspect = cw / ch;
@@ -2286,7 +3058,7 @@ input[type="checkbox"] {
         renderer.render(scene, camera);
     }
     window.addEventListener('resize', () => {
-        const cw = window.innerWidth - 300, ch = window.innerHeight - 46;
+        const cw = window.innerWidth, ch = window.innerHeight;
         renderer.setSize(cw, ch, false);
         camera.aspect = cw / ch; camera.updateProjectionMatrix();
     });
@@ -2345,6 +3117,7 @@ input[type="checkbox"] {
         bibliotecaGuardarEnStorage(items); bibliotecaRenderizar();
     });
     document.getElementById('btn-limpiar-biblioteca').addEventListener('click', () => {
+        if (!confirm('¿Borrar toda la biblioteca de stickers?')) return;
         localStorage.removeItem(BIBLIOTECA_KEY); bibliotecaRenderizar();
     });
     bibliotecaRenderizar();
@@ -2352,7 +3125,466 @@ input[type="checkbox"] {
     selectorEntorno.dispatchEvent(new Event('change'));
     actualizarInterfazCapas();
 
+    function mostrarToast(msg, duracion = 2500) {
+        let t = document.getElementById('_toast');
+        if (!t) {
+            t = document.createElement('div');
+            t.id = '_toast';
+            Object.assign(t.style, {
+                position:'fixed', bottom:'110px', left:'50%', transform:'translateX(-50%)',
+                background:'rgba(16,18,30,.95)', border:'1px solid var(--border2)',
+                color:'var(--txt)', fontFamily:'Rajdhani,sans-serif', fontWeight:'600',
+                fontSize:'13px', letterSpacing:'.8px', padding:'10px 22px',
+                borderRadius:'var(--radius2)', zIndex:'50000', pointerEvents:'none',
+                transition:'opacity .3s', whiteSpace:'nowrap'
+            });
+            document.body.appendChild(t);
+        }
+        t.textContent = msg;
+        t.style.opacity = '1';
+        clearTimeout(t._hide);
+        t._hide = setTimeout(() => { t.style.opacity = '0'; }, duracion);
+    }
+
+    // ── Dorsal de carrera ────────────────────────────────────────
+    function generarTexturaDorsal(numero, colorTexto, colorFondo) {
+        const W = 256, H = 192;
+        const c = document.createElement('canvas'); c.width = W; c.height = H;
+        const ctx = c.getContext('2d');
+        // Fondo con bordes redondeados
+        const r = 24;
+        ctx.fillStyle = colorFondo;
+        ctx.beginPath();
+        ctx.moveTo(r, 0); ctx.lineTo(W-r, 0); ctx.quadraticCurveTo(W, 0, W, r);
+        ctx.lineTo(W, H-r); ctx.quadraticCurveTo(W, H, W-r, H);
+        ctx.lineTo(r, H); ctx.quadraticCurveTo(0, H, 0, H-r);
+        ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
+        ctx.closePath(); ctx.fill();
+        // Borde fino
+        ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 3; ctx.stroke();
+        // Número
+        ctx.fillStyle = colorTexto;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        const fontSize = numero.length > 2 ? 100 : 120;
+        ctx.font = `900 ${fontSize}px Impact, sans-serif`;
+        ctx.fillText(numero, W/2, H/2 + 6);
+        return c;
+    }
+
+    function actualizarPreviewDorsal() {
+        const num = document.getElementById('input-numero-carrera').value.trim() || '47';
+        const ct  = document.getElementById('color-numero').value;
+        const cf  = document.getElementById('color-fondo-numero').value;
+        const prev = document.getElementById('canvas-dorsal-preview');
+        const src  = generarTexturaDorsal(num, ct, cf);
+        prev.getContext('2d').drawImage(src, 0, 0, prev.width, prev.height);
+    }
+
+    document.getElementById('input-numero-carrera').addEventListener('input', actualizarPreviewDorsal);
+    document.getElementById('color-numero').addEventListener('input', actualizarPreviewDorsal);
+    document.getElementById('color-fondo-numero').addEventListener('input', actualizarPreviewDorsal);
+    actualizarPreviewDorsal();
+
+    document.getElementById('btn-aplicar-dorsal').addEventListener('click', () => {
+        const num = document.getElementById('input-numero-carrera').value.trim();
+        if (!num) { mostrarToast('⚠ Escribe un número de carrera primero.'); return; }
+        if (!objetosPintables.length) { mostrarToast('⚠ Carga un modelo primero.'); return; }
+        const ct = document.getElementById('color-numero').value;
+        const cf = document.getElementById('color-fondo-numero').value;
+        const canvas = generarTexturaDorsal(num, ct, cf);
+        const miniUrl = canvas.toDataURL();
+
+        const texOrig = new THREE.CanvasTexture(canvas);
+
+        const cfg = obtenerConfiguracionMaterial();
+        const tam = tamañoActual;
+
+        // Buscar punto de impacto lateral lanzando rayos desde los lados del modelo
+        const modelBox = new THREE.Box3().setFromObject(coche);
+        const modelCenter = modelBox.getCenter(new THREE.Vector3());
+        const modelSize = modelBox.getSize(new THREE.Vector3());
+        // Altura a 1/3 desde abajo (zona de puertas)
+        const alturaObjetivo = modelBox.min.y + modelSize.y * 0.38;
+        // Profundidad: centro del modelo
+        const zObjetivo = modelCenter.z;
+
+        function raycastLateral(desdeX, haciaDirX) {
+            const rayOrigen = new THREE.Vector3(desdeX, alturaObjetivo, zObjetivo);
+            const rayDir = new THREE.Vector3(haciaDirX, 0, 0);
+            const rc = new THREE.Raycaster(rayOrigen, rayDir, 0, modelSize.x * 2);
+            // Probar varias alturas y profundidades para mayor robustez
+            const offsets = [[0,0],[0, modelSize.z*0.15],[0,-modelSize.z*0.15],[modelSize.y*0.08,0],[-modelSize.y*0.08,0]];
+            for (const [dy, dz] of offsets) {
+                rc.ray.origin.set(desdeX, alturaObjetivo + dy, zObjetivo + dz);
+                const hits = rc.intersectObjects(objetosPintables, false);
+                if (hits.length) return hits[0];
+            }
+            return null;
+        }
+
+        const hitIzq = raycastLateral(modelBox.max.x + 0.5, -1);
+        const hitDer = raycastLateral(modelBox.min.x - 0.5,  1);
+        if (!hitIzq || !hitDer) { mostrarToast('⚠ No se pudo detectar la superficie lateral. Usa Shift+Clic.'); return; }
+        const meshIzq = hitIzq.object, meshDer = hitDer.object;
+
+        function colocarDorsal(mesh, pos, norm, tex, nombre) {
+            const dummy = new THREE.Object3D();
+            dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm));
+            const mat = new THREE.MeshStandardMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: true, polygonOffset: true, polygonOffsetFactor: -4, side: THREE.DoubleSide, roughness: cfg.roughness, metalness: cfg.metalness, envMap: scene.environment });
+            const sticker = new THREE.Mesh(new DecalGeometry(mesh, pos, dummy.rotation, new THREE.Vector3(tam, tam * 0.75, 0.5)), mat);
+            scene.add(sticker); contadorStickers++;
+            capasStickers.push({ nombre, objetoMesh: sticker, miniaturaUrl: miniUrl, vinculoEspejo: false, datosOrigen: { targetMesh: mesh, pos: pos.clone(), posBase: pos.clone(), norm: norm.clone(), size: tam, rotZ: 0, offsetX: 0, offsetY: 0, uv: null } });
+        }
+
+        colocarDorsal(meshIzq, hitIzq.point, hitIzq.face.normal.clone().transformDirection(meshIzq.matrixWorld), texOrig, `Dorsal #${num} (Izq)`);
+        colocarDorsal(meshDer, hitDer.point, hitDer.face.normal.clone().transformDirection(meshDer.matrixWorld), texOrig, `Dorsal #${num} (Der)`);
+        actualizarProfundidades3D(); actualizarInterfazCapas();
+        mostrarToast(`✔ Dorsal #${num} aplicado en ambos lados`);
+    }); //──────────────────────
+
+    // ── Nombre del piloto (techo) ───────────────────────────────────
+    function generarTexturaPiloto(nombre, colorTexto) {
+        const W = 512, H = 128;
+        const c = document.createElement('canvas'); c.width = W; c.height = H;
+        const ctx = c.getContext('2d');
+        // Sin fondo, solo texto
+        ctx.fillStyle = colorTexto;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        let fontSize = 80;
+        ctx.font = `900 ${fontSize}px Impact, sans-serif`;
+        while (ctx.measureText(nombre).width > W * 0.92 && fontSize > 20) {
+            fontSize -= 4; ctx.font = `900 ${fontSize}px Impact, sans-serif`;
+        }
+        ctx.fillText(nombre, W/2, H/2 + 4);
+        return c;
+    }
+
+    document.getElementById('btn-aplicar-piloto').addEventListener('click', () => {
+        const nombre = document.getElementById('input-nombre-piloto').value.trim().toUpperCase();
+        if (!nombre) { mostrarToast('⚠ Escribe el nombre del piloto primero.'); return; }
+        if (!objetosPintables.length) { mostrarToast('⚠ Carga un modelo primero.'); return; }
+        const ct = document.getElementById('color-piloto-texto').value;
+        const canvas = generarTexturaPiloto(nombre, ct);
+        const miniUrl = canvas.toDataURL();
+        const texOrig = new THREE.CanvasTexture(canvas);
+        const cfg = obtenerConfiguracionMaterial();
+        const tam = tamañoActual;
+
+        // Raycast desde arriba hacia abajo para encontrar el techo
+        const modelBox = new THREE.Box3().setFromObject(coche);
+        const modelCenter = modelBox.getCenter(new THREE.Vector3());
+        const modelSize = modelBox.getSize(new THREE.Vector3());
+
+        function raycastTecho(offsetX) {
+            const rc = new THREE.Raycaster(
+                new THREE.Vector3(modelCenter.x + offsetX, modelBox.max.y + 0.5, modelCenter.z),
+                new THREE.Vector3(0, -1, 0), 0, modelSize.y * 2
+            );
+            // Probar varios offsets en Z para mayor robustez
+            const zsOffsets = [0, modelSize.z * 0.1, -modelSize.z * 0.1];
+            for (const dz of zsOffsets) {
+                rc.ray.origin.set(modelCenter.x + offsetX, modelBox.max.y + 0.5, modelCenter.z + dz);
+                const hits = rc.intersectObjects(objetosPintables, false);
+                if (hits.length) return hits[0];
+            }
+            return null;
+        }
+
+        // Lado izquierdo del techo (+X) y derecho (-X), ligeramente desplazados del centro
+        const offsetTecho = modelSize.x * 0.18;
+        const hitIzq = raycastTecho(offsetTecho);
+        const hitDer = raycastTecho(-offsetTecho);
+        if (!hitIzq || !hitDer) { mostrarToast('⚠ No se pudo detectar el techo. Usa Shift+Clic.'); return; }
+
+        function colocarPiloto(hit, tex, nombre) {
+            const pos = hit.point;
+            const norm = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
+            const dummy = new THREE.Object3D();
+            dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm));
+            const mat = new THREE.MeshStandardMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: true, polygonOffset: true, polygonOffsetFactor: -4, side: THREE.DoubleSide, roughness: cfg.roughness, metalness: cfg.metalness, envMap: scene.environment });
+            // Ratio 4:1 para texto horizontal
+            const sticker = new THREE.Mesh(new DecalGeometry(hit.object, pos, dummy.rotation, new THREE.Vector3(tam, tam * 0.25, 0.3)), mat);
+            scene.add(sticker); contadorStickers++;
+            capasStickers.push({ nombre, objetoMesh: sticker, miniaturaUrl: miniUrl, vinculoEspejo: false, datosOrigen: { targetMesh: hit.object, pos: pos.clone(), posBase: pos.clone(), norm: norm.clone(), size: tam, ratioY: 0.25, ratioZ: 0.3, rotZ: 0, offsetX: 0, offsetY: 0, uv: null } });
+        }
+
+        colocarPiloto(hitIzq, texOrig, `Piloto: ${nombre} (Izq)`);
+        colocarPiloto(hitDer, texOrig, `Piloto: ${nombre} (Der)`);
+        actualizarProfundidades3D(); actualizarInterfazCapas();
+        mostrarToast(`✔ Nombre "${nombre}" aplicado en el techo`);
+    });
+    //──────────────────────
+    const gtPanel = document.getElementById('gt-panel');
+    const gtPanelTitle = document.getElementById('gt-panel-title');
+    const panelTitles = { modelo:'Vista Previa', pintura:'Pintura', vinilos:'Vinilos', carrera:'Opciones de Carrera', editor:'Opciones del Editor' };
+    let panelActivo = null;
+
+    function abrirPanel(nombre) {
+        document.querySelectorAll('.gt-subpanel').forEach(p => p.style.display = 'none');
+        const p = document.getElementById('panel-' + nombre);
+        if (p) p.style.display = 'block';
+        gtPanelTitle.textContent = panelTitles[nombre] || nombre;
+        gtPanel.classList.add('open');
+        panelActivo = nombre;
+        document.querySelectorAll('.bb-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById('bb-' + nombre);
+        if (btn) btn.classList.add('active');
+    }
+
+    function cerrarPanel() {
+        gtPanel.classList.remove('open');
+        document.querySelectorAll('.bb-btn').forEach(b => b.classList.remove('active'));
+        panelActivo = null;
+    }
+
+    document.querySelectorAll('.bb-btn[data-panel]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const nombre = btn.dataset.panel;
+            if (panelActivo === nombre) { cerrarPanel(); }
+            else { abrirPanel(nombre); }
+        });
+    });
+
+    document.getElementById('gt-panel-close').addEventListener('click', cerrarPanel);
+
+    document.getElementById('bb-guardar').addEventListener('click', () => {
+        populateExportMapsUI();
+        document.getElementById('export-modal').style.display = 'flex';
+    });
+
+    // ── Sesión JSON ────────────────────────────────────────────
+    function guardarSesionJSON() {
+        const nombre = document.getElementById('hud-design-name').textContent || 'Mi Livery';
+        const capas = capasStickers.map(capa => ({
+            nombre: capa.nombre,
+            miniaturaUrl: capa.miniaturaUrl,
+            vinculoEspejo: capa.vinculoEspejo,
+            visible: capa.objetoMesh.visible,
+            datosOrigen: {
+                meshName: capa.datosOrigen.targetMesh?.name || '',
+                meshUuid: capa.datosOrigen.targetMesh?.uuid || '',
+                pos:     { x: capa.datosOrigen.pos.x,     y: capa.datosOrigen.pos.y,     z: capa.datosOrigen.pos.z },
+                posBase: { x: capa.datosOrigen.posBase.x, y: capa.datosOrigen.posBase.y, z: capa.datosOrigen.posBase.z },
+                norm:    { x: capa.datosOrigen.norm.x,    y: capa.datosOrigen.norm.y,    z: capa.datosOrigen.norm.z },
+                size:    capa.datosOrigen.size,
+                rotZ:    capa.datosOrigen.rotZ,
+                offsetX: capa.datosOrigen.offsetX || 0,
+                offsetY: capa.datosOrigen.offsetY || 0,
+                ratioY:  capa.datosOrigen.ratioY  || 1,
+                ratioZ:  capa.datosOrigen.ratioZ  || 0.5,
+            }
+        }));
+        const sesion = {
+            version: 1,
+            nombre,
+            fecha: new Date().toISOString(),
+            baseColor: baseColorApplied ? currentBaseColor : null,
+            capas
+        };
+        const blob = new Blob([JSON.stringify(sesion, null, 2)], { type: 'application/json' });
+        const rawName = document.getElementById('sesion-filename').value.trim() || 'mi-livery-sesion';
+        const fileName = rawName.replace(/\.json$/i, '') + '.json';
+        const a = document.createElement('a'); a.style.display = 'none';
+        a.href = URL.createObjectURL(blob); a.download = fileName;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        mostrarToast(`✔ Sesión guardada: ${fileName}`);
+        document.getElementById('sesion-modal').style.display = 'none';
+    }
+
+    async function cargarSesionJSON(datos) {
+        if (!datos?.capas?.length) { mostrarToast('⚠ El archivo no contiene capas válidas.'); return; }
+        if (!objetosPintables.length) { mostrarToast('⚠ Carga primero el modelo 3D antes de restaurar la sesión.'); return; }
+
+        // Restaurar nombre
+        if (datos.nombre) {
+            document.getElementById('hud-design-name').textContent = datos.nombre.toUpperCase();
+            document.getElementById('sesion-filename').value = datos.nombre;
+        }
+        // Restaurar color base
+        if (datos.baseColor) fillAllMeshes(datos.baseColor);
+
+        // Limpiar capas actuales
+        while (capasStickers.length) { const c = capasStickers.pop(); scene.remove(c.objetoMesh); c.objetoMesh.geometry.dispose(); }
+        indexCapaSeleccionada = null;
+        subpanelEditor.style.display = 'none';
+
+        let restauradas = 0, fallidas = 0;
+        const cfg = obtenerConfiguracionMaterial();
+
+        for (const capaData of datos.capas) {
+            try {
+                const d = capaData.datosOrigen;
+                // Buscar mesh por nombre o uuid
+                let mesh = objetosPintables.find(m => m.uuid === d.meshUuid)
+                        || objetosPintables.find(m => m.name && m.name === d.meshName)
+                        || objetosPintables[0];
+                if (!mesh) { fallidas++; continue; }
+
+                const pos     = new THREE.Vector3(d.pos.x,     d.pos.y,     d.pos.z);
+                const posBase  = new THREE.Vector3(d.posBase.x, d.posBase.y, d.posBase.z);
+                const norm     = new THREE.Vector3(d.norm.x,    d.norm.y,    d.norm.z);
+                const ratioY   = d.ratioY  || 1;
+                const ratioZ   = d.ratioZ  || 0.5;
+
+                // Cargar miniatura como textura
+                const tex = await new Promise((res, rej) => {
+                    textureLoader.load(capaData.miniaturaUrl, res, undefined, rej);
+                });
+
+                const dummy = new THREE.Object3D();
+                dummy.position.copy(pos);
+                dummy.lookAt(pos.clone().add(norm));
+                dummy.rotation.z += d.rotZ || 0;
+
+                const mat = new THREE.MeshStandardMaterial({
+                    map: tex, transparent: true, depthWrite: false, depthTest: true,
+                    polygonOffset: true, polygonOffsetFactor: -4, side: THREE.DoubleSide,
+                    roughness: cfg.roughness, metalness: cfg.metalness, envMap: scene.environment
+                });
+                const geom = new DecalGeometry(mesh, pos, dummy.rotation,
+                    new THREE.Vector3(d.size, d.size * ratioY, ratioZ));
+                const sticker = new THREE.Mesh(geom, mat);
+                sticker.visible = capaData.visible !== false;
+                scene.add(sticker); contadorStickers++;
+
+                capasStickers.push({
+                    nombre: capaData.nombre,
+                    objetoMesh: sticker,
+                    miniaturaUrl: capaData.miniaturaUrl,
+                    vinculoEspejo: capaData.vinculoEspejo || false,
+                    datosOrigen: { targetMesh: mesh, pos, posBase, norm,
+                        size: d.size, rotZ: d.rotZ || 0,
+                        offsetX: d.offsetX || 0, offsetY: d.offsetY || 0,
+                        ratioY, ratioZ }
+                });
+                restauradas++;
+            } catch(e) { console.warn('Capa no restaurada:', e); fallidas++; }
+        }
+
+        actualizarProfundidades3D();
+        actualizarInterfazCapas();
+        document.getElementById('sesion-modal').style.display = 'none';
+        mostrarToast(`✔ Sesión cargada: ${restauradas} capa(s)${fallidas ? ` (⚠ ${fallidas} fallidas)` : ''}`, 3500);
+    }
+
+    document.getElementById('bb-sesion').addEventListener('click', () => {
+        const nombre = document.getElementById('hud-design-name').textContent || 'Mi Livery';
+        document.getElementById('sesion-filename').value = nombre.toLowerCase().replace(/\s+/g, '-');
+        document.getElementById('sesion-info').textContent =
+            capasStickers.length ? `${capasStickers.length} capa(s) listas para guardar` : 'Sin capas aún';
+        document.getElementById('sesion-modal').style.display = 'flex';
+    });
+    document.getElementById('sesion-modal-close').addEventListener('click', () => {
+        document.getElementById('sesion-modal').style.display = 'none';
+    });
+    document.getElementById('sesion-modal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('sesion-modal'))
+            document.getElementById('sesion-modal').style.display = 'none';
+    });
+    document.getElementById('btn-guardar-sesion').addEventListener('click', guardarSesionJSON);
+    document.getElementById('input-cargar-sesion').addEventListener('change', (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const datos = JSON.parse(ev.target.result);
+                cargarSesionJSON(datos);
+            } catch(err) { mostrarToast('⚠ Archivo JSON inválido.'); }
+        };
+        reader.readAsText(f);
+        e.target.value = '';
+    });
+
+    document.getElementById('bb-cerrar').addEventListener('click', () => {
+        if (!confirm('¿Volver al menú? Los cambios no guardados se perderán.')) return;
+        wmModal.style.display = 'flex';
+        wmCarpetaFiles = null;
+        const slot = document.getElementById('wm-slot-carpeta');
+        slot.classList.remove('filled');
+        slot.querySelector('.wm-slot-label').textContent = 'Carpeta del modelo';
+        slot.querySelector('.wm-slot-hint').textContent = 'Selecciona la carpeta con .fbx/.gltf y mapas PNG';
+        wmBtnAbrir.disabled = true;
+    });
+
+
+    // ── Welcome modal ────────────────────────────────────────────
+    const wmModal = document.getElementById('welcome-modal');
+    const wmBtnAbrir = document.getElementById('btn-welcome-abrir');
+    let wmCarpetaFiles = null;
+
+    // Language dropdown inside welcome modal
+    const wmLangBtn = document.getElementById('wm-lang-btn');
+    const wmLangDropdown = document.getElementById('wm-lang-dropdown');
+    wmLangBtn.addEventListener('click', (e) => { e.stopPropagation(); wmLangDropdown.classList.toggle('open'); });
+    document.addEventListener('click', () => wmLangDropdown.classList.remove('open'));
+
+    // Folder slot
+    document.getElementById('wm-input-carpeta').addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        const tieneModelo = files.some(f => /\.(fbx|gltf|glb)$/i.test(f.name));
+        const slot = document.getElementById('wm-slot-carpeta');
+        if (tieneModelo) {
+            wmCarpetaFiles = files;
+            slot.classList.add('filled');
+            slot.querySelector('.wm-slot-label').textContent = '✔ Carpeta seleccionada';
+            slot.querySelector('.wm-slot-hint').textContent = files[0].webkitRelativePath.split('/')[0] + ' — ' + files.length + ' archivos';
+            wmBtnAbrir.disabled = false;
+        } else {
+            slot.classList.remove('filled');
+            slot.querySelector('.wm-slot-label').textContent = 'Carpeta del modelo';
+            slot.querySelector('.wm-slot-hint').textContent = 'No se encontró ningún .fbx/.gltf en la carpeta';
+            wmBtnAbrir.disabled = true;
+        }
+    });
+
+    async function wmProcesarCarpeta(files) {
+        const archivos = files;
+        const modeloArchivo = archivos.find(f => /\.(fbx|gltf|glb)$/i.test(f.name));
+        const maskExtRegex = /\.(png|jpg|jpeg|dds|tga)$/i;
+        const maskNameRegex = /mask|body|carroceria|livery|overlay|skin|ext[_\- ]?skin|ext|diffuse|albedo|base/i;
+        let mascaraArchivo = archivos.find(f => maskExtRegex.test(f.name) && maskNameRegex.test(f.name));
+        const partsNameRegex = /parts|polygons|poly|parts_map|partsMask|parts-map|green|poligono|polygon|partsmap/i;
+        let partsArchivo = archivos.find(f => /\.(png|jpg|jpeg)$/i.test(f.name) && partsNameRegex.test(f.name));
+        if (mascaraArchivo && /\.(dds|tga)$/i.test(mascaraArchivo.name)) {
+            const base = mascaraArchivo.name.replace(/\.[^\.]+$/, '');
+            const alt = archivos.find(f => /\.(png|jpg|jpeg)$/i.test(f.name) && f.name.replace(/\.[^\.]+$/, '') === base);
+            if (alt) mascaraArchivo = alt;
+        }
+        const texturaArchivo = archivos.find(f => /\.(png|jpg|jpeg)$/i.test(f.name) && f !== mascaraArchivo && f !== partsArchivo);
+        if (!partsArchivo) {
+            const candidatos = archivos.filter(f => /\.(png|jpg|jpeg)$/i.test(f.name) && f !== mascaraArchivo && f !== texturaArchivo);
+            for (const c of candidatos) { try { if (await analyzeIsPartsMap(c)) { partsArchivo = c; break; } } catch(e){} }
+        }
+        const aoNameRegex = /ao|ambient.?occlusion/i;
+        const aoArchivo = archivos.find(f => /\.(png|jpg|jpeg|dds)$/i.test(f.name) && aoNameRegex.test(f.name) && f !== mascaraArchivo && f !== partsArchivo);
+        const iniArchivo = archivos.find(f => /\.ini$/i.test(f.name));
+        if (iniArchivo) { try { await parseModelIni(iniArchivo); } catch(e){} }
+        if (mascaraArchivo && /\.(png|jpg|jpeg)$/i.test(mascaraArchivo.name)) uploadedMaps.push({ name: mascaraArchivo.name, file: mascaraArchivo, url: URL.createObjectURL(mascaraArchivo) });
+        if (partsArchivo) uploadedMaps.push({ name: partsArchivo.name, file: partsArchivo, url: URL.createObjectURL(partsArchivo) });
+        if (texturaArchivo) { window.tempTexturaFile = texturaArchivo; uploadedMaps.push({ name: texturaArchivo.name, file: texturaArchivo, url: URL.createObjectURL(texturaArchivo) }); }
+        refreshMapsListUI();
+        if (aoArchivo) window.tempAoFile = aoArchivo;
+        if (modeloArchivo) { window.tempModeloFile = modeloArchivo; cargarCochePersonalizado(modeloArchivo, window.tempTexturaFile || null); }
+    }
+
+    wmBtnAbrir.addEventListener('click', async () => {
+        if (!wmCarpetaFiles) return;
+        wmModal.style.display = 'none';
+        const nombre = document.getElementById('wm-nombre-proyecto').value.trim() || 'Mi Livery';
+        document.getElementById('hud-design-name').textContent = nombre.toUpperCase();
+        const carpetaNombre = wmCarpetaFiles[0]?.webkitRelativePath?.split('/')[0] || 'carpeta';
+        await wmProcesarCarpeta(wmCarpetaFiles);
+    });
+
+    document.getElementById('btn-welcome-saltar').addEventListener('click', () => {
+        const nombre = document.getElementById('wm-nombre-proyecto').value.trim();
+        if (nombre) document.getElementById('hud-design-name').textContent = nombre.toUpperCase();
+        wmModal.style.display = 'none';
+    });
+
     animate();
 </script>
 </body>
 </html>
+

@@ -21,8 +21,8 @@
   --green:       #1adf80;
   --red:         #ff4455;
   --txt:         #e8ecf5;
-  --txt2:        #8b92aa;
-  --txt3:        #4a5068;
+  --txt2:        #c0c6d8;
+  --txt3:        #8b92aa;
   --radius:      3px;
   --radius2:     6px;
   --sidebar-w:   300px;
@@ -584,18 +584,17 @@ input[type="checkbox"] {
 <!-- ═══ TOP BAR ═══════════════════════════════════════════════ -->
 <div id="topbar">
   <div id="topbar-logo">
-    <div class="logo-mark"></div>
-    <div>
-      <div class="logo-text">Livery Studio</div>
-      <div class="logo-sub">Assetto Corsa</div>
-    </div>
+    <img src="logo.png" style="height:30px; width:auto; object-fit:contain;">
+    <div class="logo-text" style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; letter-spacing:2px; text-transform:uppercase; color:var(--txt);">Livery Editor</div>
   </div>
   <div id="topbar-center">
-    <span class="topbar-hint"><kbd>Shift</kbd> + Clic → vinilo</span>
+    <span class="topbar-hint"><kbd>Shift</kbd> + Clic → colocar vinilo</span>
     <div class="topbar-sep"></div>
-    <span class="topbar-hint"><kbd>Alt</kbd> + arrastra → pincel/borrador</span>
+    <span class="topbar-hint">🖱 Arrastrar → rotar cámara</span>
     <div class="topbar-sep"></div>
-    <span class="topbar-hint" id="hint-paint-mode">🪣 Relleno activo</span>
+    <span class="topbar-hint">🖱 Rueda → zoom</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-hint">🖱 Clic derecho + arrastra → desplazar cámara</span>
   </div>
   <div id="topbar-actions">
     <button id="btn-exportar">⬇ Exportar</button>
@@ -614,17 +613,14 @@ input[type="checkbox"] {
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
-        <label class="btn-upload">📂 Subir Textura Base (.png/.jpg)
+        <label class="btn-upload">🎨 Subir Textura Base (.png/.jpg)
           <input type="file" id="input-textura-base" accept="image/png, image/jpeg">
         </label>
-        <label class="btn-upload">📁 Subir Carpeta FBX + Mapas
+        <div id="texto-textura-base" style="font-size:10px; color:var(--txt3); margin-top:4px; line-height:1.5;">Aplica una textura a toda la carrocería (carbono, fibra, etc.)</div>
+        <label class="btn-upload">📁 Subir Carpeta FBX 
           <input type="file" id="input-carpeta" webkitdirectory directory multiple>
         </label>
         <div id="texto-mapa-body" style="font-size:10px; color:var(--txt3); margin-top:6px; line-height:1.5;">Carga una carpeta con .fbx/.gltf y mapas PNG.</div>
-        <div class="toggle-row" style="margin-top:8px;">
-          <label for="toggle-select">Selección de Partes (Ctrl+Click)</label>
-          <input type="checkbox" id="toggle-select">
-        </div>
       </div>
     </div>
 
@@ -632,7 +628,7 @@ input[type="checkbox"] {
     <div class="section" data-accent="blue">
       <div class="section-header">
         <div class="section-icon">🗺️</div>
-        <div class="section-title">Mapeo de Partes</div>
+        <div class="section-title">Mapeo de Partes /DEV TOOL/</div>
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
@@ -655,6 +651,10 @@ input[type="checkbox"] {
           <input type="file" id="input-maps" accept="image/png, image/jpeg" multiple>
         </label>
         <button id="btn-show-all-meshes" class="btn btn-ghost btn-sm btn-full" style="margin-top:6px;">Mostrar todo</button>
+        <div class="toggle-row" style="margin-top:8px;">
+          <label for="toggle-select">Selección de Partes (Ctrl+Click)</label>
+          <input type="checkbox" id="toggle-select">
+        </div>
       </div>
     </div>
 
@@ -669,12 +669,12 @@ input[type="checkbox"] {
         <div class="env-tabs">
           <div class="env-tab active" data-env="garaje">🏁<br>Garaje</div>
           <div class="env-tab" data-env="estudio">📸<br>Estudio</div>
-          <div class="env-tab" data-env="neon">🔮<br>Neón</div>
+          <div class="env-tab" data-env="neon">🔧<br>Hangar Work in Progress</div>
         </div>
         <select id="selector-entorno" style="display:none;">
           <option value="garaje">Garaje Industrial</option>
           <option value="estudio">Estudio Fotográfico</option>
-          <option value="neon">Tuning Neón</option>
+          <option value="neon">Taller Mecánico</option>
         </select>
       </div>
     </div>
@@ -689,14 +689,14 @@ input[type="checkbox"] {
       </div>
       <div class="section-body">
         <div class="field">
-          <div class="field-label">Color Principal</div>
+          <div class="field-label">Color</div>
           <div class="color-row">
-            <input type="color" id="selector-color" value="#ffffff">
-            <span style="font-size:11px; color:var(--txt2);">Color base de la carrocería</span>
+            <input type="color" id="selector-color" value="#ff0000">
+            <span style="font-size:11px; color:var(--txt2);">Color de pintura</span>
           </div>
         </div>
         <div class="btn-row" style="margin-top:10px;">
-            <button class="btn btn-accent btn-full" id="btn-rellenar-carroceria">🪣 Rellenar Carrocería</button>
+          <button class="btn btn-accent btn-full" id="btn-rellenar-carroceria">🪣 Rellenar Todo</button>
         </div>
       </div>
     </div>
@@ -805,6 +805,26 @@ input[type="checkbox"] {
       </div>
     </div>
 
+    <!-- 8. Biblioteca de Stickers -->
+    <div class="section open" data-accent="gold">
+      <div class="section-header">
+        <div class="section-icon">🗂️</div>
+        <div class="section-title">Biblioteca de Stickers</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="section-body">
+        <div style="font-size:10px; color:var(--txt3); margin-bottom:8px; line-height:1.5;">Selecciona una carpeta de stickers. Se guardan para la próxima sesión.</div>
+        <label class="btn-upload">📁 Seleccionar carpeta de stickers
+          <input type="file" id="input-biblioteca" webkitdirectory directory multiple>
+        </label>
+        <div id="biblioteca-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-top:8px; max-height:200px; overflow-y:auto;"></div>
+        <div class="btn-row" style="margin-top:6px;">
+          <button id="btn-borrar-sticker-sel" class="btn btn-ghost btn-sm btn-full">✕ Borrar seleccionado</button>
+          <button id="btn-limpiar-biblioteca" class="btn btn-danger btn-sm btn-full">🗑 Limpiar todo</button>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /sidebar-scroll -->
 </div><!-- /sidebar -->
 
@@ -858,6 +878,10 @@ input[type="checkbox"] {
           <option value="4">Baja</option>
         </select>
       </div>
+      <div class="field" id="export-maps-field" style="display:none;">
+        <div class="field-label">Mapas a exportar</div>
+        <div id="export-maps-list" style="display:flex; flex-direction:column; gap:6px; margin-top:4px;"></div>
+      </div>
       <button id="export-modal-confirm" class="btn btn-primary btn-full" style="margin-top:4px; padding:11px; font-size:13px; letter-spacing:1.5px;">⬇ Exportar PNG</button>
     </div>
   </div>
@@ -874,6 +898,7 @@ input[type="checkbox"] {
     import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry.js';
     import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
     import { DDSLoader } from 'three/examples/jsm/loaders/DDSLoader.js';
+    import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
     // ── Texture loader patches ──────────────────────────────
     const originalTextureLoaderLoad = THREE.TextureLoader.prototype.load;
@@ -902,8 +927,9 @@ input[type="checkbox"] {
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMapping = THREE.LinearToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
     document.body.appendChild(renderer.domElement);
 
     // Push canvas below the topbar and sidebar
@@ -957,17 +983,27 @@ input[type="checkbox"] {
     selectorEntorno.addEventListener('change', (e) => {
         const amb = e.target.value;
         if (amb === 'garaje') {
+            scene.fog = scene.fog || new THREE.FogExp2(0x07080d, 0.05);
             renderer.setClearColor(0x07080d); scene.background = new THREE.Color(0x07080d); scene.fog.color.setHex(0x07080d);
-            sueloMaterial.color.setHex(0x050507); sueloMaterial.roughness = 0.15; gridHelper.visible = true;
+            suelo.visible = true; sueloMaterial.color.setHex(0x050507); sueloMaterial.roughness = 0.15; gridHelper.visible = true;
             luzPrincipal.color.setHex(0xffffff); luzAmbiental.color.setHex(0xffffff); neonFucsia.intensity = 0; neonCian.intensity = 0;
         } else if (amb === 'estudio') {
+            scene.fog = scene.fog || new THREE.FogExp2(0xf0f0f4, 0.05);
             renderer.setClearColor(0xf0f0f4); scene.background = new THREE.Color(0xf0f0f4); scene.fog.color.setHex(0xf0f0f4);
-            sueloMaterial.color.setHex(0xe2e2e8); sueloMaterial.roughness = 0.3; gridHelper.visible = false;
+            suelo.visible = true; sueloMaterial.color.setHex(0xe2e2e8); sueloMaterial.roughness = 0.3; gridHelper.visible = false;
             luzPrincipal.color.setHex(0xffffff); luzAmbiental.color.setHex(0xffffff); neonFucsia.intensity = 0; neonCian.intensity = 0;
         } else if (amb === 'neon') {
-            renderer.setClearColor(0x030305); scene.background = new THREE.Color(0x030305); scene.fog.color.setHex(0x030305);
-            sueloMaterial.color.setHex(0x020204); sueloMaterial.roughness = 0.08; gridHelper.visible = true;
-            luzPrincipal.color.setHex(0x223344); luzAmbiental.color.setHex(0x111122); neonFucsia.intensity = 8; neonCian.intensity = 8;
+            new RGBELoader().load('derelict_airfield_02_1k.hdr', (hdrTex) => {
+                hdrTex.mapping = THREE.EquirectangularReflectionMapping;
+                scene.background = hdrTex;
+                scene.environment = hdrTex;
+                scene.fog = null;
+            });
+            suelo.visible = false; gridHelper.visible = false;
+            luzPrincipal.color.setHex(0xfff5e0); luzPrincipal.intensity = 1.5; luzPrincipal.position.set(0, 12, 0);
+            luzAmbiental.color.setHex(0x8899aa); luzAmbiental.intensity = 0.3;
+            luzLateralIzq.color.setHex(0xfff5e0); luzLateralIzq.intensity = 0.6;
+            neonFucsia.intensity = 0; neonCian.intensity = 0;
         }
     });
 
@@ -1210,113 +1246,49 @@ input[type="checkbox"] {
         });
     }
 
-    // ════════════════════════════════════════════════════════════
-    // ── NEW PAINT SYSTEM ─────────────────────────────────────────
-    // Each mesh gets its own 2048×2048 CanvasTexture (paintCanvases).
-    // Fill, Brush, and Eraser all draw onto that canvas; the texture
-    // is live-updated so the 3D view reflects changes instantly.
-    // Export reads these canvases instead of the old bodyMaskCanvas.
-    // ════════════════════════════════════════════════════════════
-
-    const PAINT_RES = 2048; // resolution of each mesh paint canvas
-
-    // Paint functionality removed, only orbit and fill are used.
-    let paintMode = 'orbit';
-    let isPainting = false;
-    const selectorColorPaint = document.getElementById('selector-color'); // Use the main picker
+    // ── Paint system (fill only) ─────────────────────────────
     let currentBaseColor = '#ffffff';
     let baseColorApplied = false;
 
-    function syncColorPickers(color) {
-        document.getElementById('selector-color').value = color;
-    };
-    document.getElementById('btn-rellenar-carroceria').addEventListener('click', () => {
-        fillAllMeshes(document.getElementById('selector-color').value);
-    });
-
-    function applyPaintMode(mode) {
-        paintMode = mode;
-        const hintEl = document.getElementById('hint-paint-mode');
-        if (hintEl) hintEl.textContent = '🔄 Órbita — Arrastra para mover la cámara';
-        renderer.domElement.style.cursor = '';
-        isPainting = false;
-        eliminarFantasma();
-    }
-
-    // ── Fill entire car ──────────────────────────────────────
-    // This function now directly manipulates material properties for a solid color look.
     function fillAllMeshes(color) {
-        currentBaseColor = color;
-        baseColorApplied = true;
-        syncColorPickers(color);
-        actualizarEstiloPinturaCoche();
-    }
-
-    // ── actualizarEstiloPinturaCoche: solo se llama al pulsar "Rellenar Carrocería" ─
-    function actualizarEstiloPinturaCoche() {
-        piezasCarroceria.forEach(mesh => {
-            if (!mesh.material) return;
-            // Guardar material original la primera vez
+        currentBaseColor = color; baseColorApplied = true;
+        objetosPintables.forEach(mesh => {
             if (!mesh.userData._matOriginal) mesh.userData._matOriginal = mesh.material;
             const mat = mesh.userData._matOriginal;
-            mat.color.set(currentBaseColor);
-            mat.map = null;
-            mat.roughness = 0.15;
-            mat.metalness = 0.1;
-            if (mat.clearcoat !== undefined) mat.clearcoat = 0.3;
+            mat.map = null; // quitar textura para que el color sólido se vea limpio
+            mat.color.set(color);
+            mat.roughness = 0.45; mat.metalness = 0.0;
+            if (mat.clearcoat !== undefined) { mat.clearcoat = 1.0; mat.clearcoatRoughness = 0.1; }
             mat.envMap = scene.environment;
-            luzLateralIzq.color.set(0xffffff);
             mat.needsUpdate = true;
             mesh.material = mat;
         });
     }
 
-    // Keep old callers working
+    document.getElementById('btn-rellenar-carroceria').addEventListener('click', () => {
+        fillAllMeshes(document.getElementById('selector-color').value);
+    });
+
+    function actualizarEstiloPinturaCoche() {}
     function limpiarOverlays() {}
     function actualizarOverlayPintura() {}
 
-    // ── Wire up paint/finish listeners (after actualizarEstiloPinturaCoche is defined) ──
     document.getElementById('toggle-select').addEventListener('change', (e) => { selectMode = e.target.checked; });
 
-    // ── Paint support helpers ─────────────────────────────────
-    let _fillPointerStart = null;
+    function getUVAtEvent(event) { return null; }
 
-    function getUVAtEvent(event) {
-        // This function is no longer used by the simplified paint system.
-        return null;
-    }
-
-    // ════════════════════════════════════════════════════════════
-    // ── INPUT / ORBIT COORDINATION ───────────────────────────────
-    // ════════════════════════════════════════════════════════════
-
+    // ── Input / orbit coordination ───────────────────────────
     let _shiftHeld = false;
 
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Shift') { _shiftHeld = true; }
-    });
-    window.addEventListener('keyup', (e) => {
-        if (e.key === 'Shift') { _shiftHeld = false; eliminarFantasma(); }
-    });
-    window.addEventListener('blur', () => {
-        _shiftHeld = false; eliminarFantasma();
-    });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Shift') _shiftHeld = true; });
+    window.addEventListener('keyup',   (e) => { if (e.key === 'Shift') { _shiftHeld = false; eliminarFantasma(); } });
+    window.addEventListener('blur',    ()  => { _shiftHeld = false; eliminarFantasma(); });
 
-    // ── Canvas pointer events ────────────────────────────────────
-    // OrbitControls siempre activo; el sticker se coloca si Shift está pulsado.
     renderer.domElement.addEventListener('pointerdown', (e) => {
-        if (e.clientX < 300) return;
-        if (e.button !== 0) return;
-        if (e.shiftKey || _shiftHeld) {
-            _shiftHeld = true;
-            e.stopPropagation();
-            proyeccionViniloDefinitiva(e);
-        }
+        if (e.clientX < 300 || e.button !== 0) return;
+        if (e.shiftKey || _shiftHeld) { _shiftHeld = true; e.stopPropagation(); proyeccionViniloDefinitiva(e); }
     });
-
     renderer.domElement.addEventListener('pointerleave', () => { eliminarFantasma(); });
-
-    // ── Window pointer events (ghost preview) ────────────────────
     window.addEventListener('pointermove', (e) => {
         if (e.shiftKey) _shiftHeld = true;
         actualizarFantasmaAlMover(e);
@@ -1333,6 +1305,17 @@ input[type="checkbox"] {
         inputTexto.value = ''; urlMiniaturaActual = URL.createObjectURL(archivo);
         vistaPrevia.innerHTML = `<img src="${urlMiniaturaActual}">`;
         textureLoader.load(urlMiniaturaActual, (tex) => { texturaActual = tex; materialFantasma.map = tex; materialFantasma.needsUpdate = true; actualizarFantasmaAlMover(); });
+        // Auto-guardar en biblioteca
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const items = bibliotecaCargarDesdeStorage();
+            if (!items.find(i => i.name === archivo.name)) {
+                items.push({ name: archivo.name, data: ev.target.result });
+                bibliotecaGuardarEnStorage(items);
+                bibliotecaRenderizar();
+            }
+        };
+        reader.readAsDataURL(archivo);
     });
 
     document.getElementById('input-maps').addEventListener('change', (e) => {
@@ -1358,19 +1341,40 @@ input[type="checkbox"] {
             const candidatos = archivos.filter(f => /\.(png|jpg|jpeg)$/i.test(f.name) && f !== mascaraArchivo && f !== texturaArchivo);
             for (const c of candidatos) { try { if (await analyzeIsPartsMap(c)) { partsArchivo = c; break; } } catch(e){} }
         }
+        const aoNameRegex = /ao|ambient.?occlusion/i;
+        const aoArchivo = archivos.find(f => /\.(png|jpg|jpeg|dds)$/i.test(f.name) && aoNameRegex.test(f.name) && f !== mascaraArchivo && f !== partsArchivo);
         const iniArchivo = archivos.find(f => /\.ini$/i.test(f.name));
         if (iniArchivo) { try { await parseModelIni(iniArchivo); } catch(e){} }
         if (mascaraArchivo && /\.(png|jpg|jpeg)$/i.test(mascaraArchivo.name)) uploadedMaps.push({ name: mascaraArchivo.name, file: mascaraArchivo, url: URL.createObjectURL(mascaraArchivo) });
         if (partsArchivo) uploadedMaps.push({ name: partsArchivo.name, file: partsArchivo, url: URL.createObjectURL(partsArchivo) });
         if (texturaArchivo) { window.tempTexturaFile = texturaArchivo; uploadedMaps.push({ name: texturaArchivo.name, file: texturaArchivo, url: URL.createObjectURL(texturaArchivo) }); }
         refreshMapsListUI();
+        if (aoArchivo) window.tempAoFile = aoArchivo;
         if (modeloArchivo) { window.tempModeloFile = modeloArchivo; cargarCochePersonalizado(modeloArchivo, window.tempTexturaFile || null); }
     });
 
     document.getElementById('input-textura-base').addEventListener('change', (e) => {
         const f = e.target.files[0]; if (!f) return;
-        window.tempTexturaFile = f;
-        if (window.tempModeloFile) cargarCochePersonalizado(window.tempModeloFile, f);
+        const url = URL.createObjectURL(f);
+        // If a model is loaded, apply as body texture directly without reloading
+        const img = new Image();
+        img.onload = () => { window._baseTexturaBitmap = img; };
+        img.src = url;
+        if (piezasCarroceria.length) {
+            new THREE.TextureLoader().load(url, (tex) => {
+                tex.flipY = false; tex.colorSpace = THREE.SRGBColorSpace;
+                piezasCarroceria.forEach(mesh => {
+                    if (!mesh.userData._matOriginal) mesh.userData._matOriginal = mesh.material;
+                    const mat = mesh.userData._matOriginal;
+                    mat.map = tex; mat.color.set(0xffffff);
+                    mat.needsUpdate = true;
+                });
+                document.getElementById('texto-textura-base').textContent = '\u2714 Textura aplicada: ' + f.name;
+            });
+        } else {
+            window.tempTexturaFile = f;
+            if (window.tempModeloFile) cargarCochePersonalizado(window.tempModeloFile, f);
+        }
     });
 
     // ── Material config ──────────────────────────────────────
@@ -1518,7 +1522,17 @@ input[type="checkbox"] {
     });
     document.getElementById('btn-limpiar').addEventListener('click', () => {
         while (capasStickers.length) { const c = capasStickers.pop(); scene.remove(c.objetoMesh); c.objetoMesh.geometry.dispose(); }
-        currentBaseColor = '#ffffff'; baseColorApplied = false; actualizarEstiloPinturaCoche(); inputTexto.value = '';
+        currentBaseColor = '#ffffff'; baseColorApplied = false; window._baseTexturaBitmap = null;
+        // Restore original materials
+        objetosPintables.forEach(mesh => {
+            if (mesh.userData._matOriginal) {
+                mesh.userData._matOriginal.map = mesh.userData._originalMap || null;
+                mesh.userData._matOriginal.color.set(0xffffff);
+                mesh.userData._matOriginal.needsUpdate = true;
+                mesh.material = mesh.userData._matOriginal;
+            }
+        });
+        inputTexto.value = '';
         subpanelEditor.style.display = 'none'; actualizarInterfazCapas();
     });
 
@@ -1687,11 +1701,17 @@ input[type="checkbox"] {
         Object.assign(overlay.style, {position:'fixed',inset:'0',background:'rgba(0,0,0,0.75)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:'20000'});
         const box = document.createElement('div');
         Object.assign(box.style, {background:'#10121e',border:'1px solid #1e2235',padding:'20px',borderRadius:'6px',minWidth:'340px',color:'#e8ecf5',fontFamily:'Inter,sans-serif'});
-        box.innerHTML = `<div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:#c8a84b;margin-bottom:12px">Exportando livery...</div><div style="height:4px;background:#1e2235;border-radius:2px;overflow:hidden;margin-bottom:10px"><div id="ep-fill" style="width:0%;height:100%;background:linear-gradient(90deg,#c8a84b,#e8c96e);transition:width .2s"></div></div><div id="ep-txt" style="font-size:11px;color:#8b92aa;margin-bottom:14px">Iniciando...</div><div style="text-align:right"><button id="ep-cancel" style="background:#161928;border:1px solid #272c42;color:#8b92aa;padding:6px 14px;border-radius:3px;cursor:pointer;font-family:Rajdhani,sans-serif;font-weight:600;letter-spacing:.5px;text-transform:uppercase;font-size:11px">Cancelar</button></div>`;
+        box.innerHTML = `<div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:#c8a84b;margin-bottom:12px">Exportando livery...</div><div style="height:4px;background:#1e2235;border-radius:2px;overflow:hidden;margin-bottom:10px"><div id="ep-fill" style="width:0%;height:100%;background:linear-gradient(90deg,#c8a84b,#e8c96e);transition:width .2s"></div></div><div id="ep-txt" style="font-size:11px;color:#8b92aa;margin-bottom:6px">Iniciando...</div><div id="ep-eta" style="font-size:10px;color:#c8a84b;margin-bottom:14px;min-height:14px"></div><div style="text-align:right"><button id="ep-cancel" style="background:#161928;border:1px solid #272c42;color:#8b92aa;padding:6px 14px;border-radius:3px;cursor:pointer;font-family:Rajdhani,sans-serif;font-weight:600;letter-spacing:.5px;text-transform:uppercase;font-size:11px">Cancelar</button></div>`;
         overlay.appendChild(box); document.body.appendChild(overlay);
         overlay.querySelector('#ep-cancel').addEventListener('click', () => { cancelled = true; });
+        const startTime = Date.now();
         return {
-            update: (pct, txt) => { const f=overlay.querySelector('#ep-fill'); if(f)f.style.width=Math.max(0,Math.min(100,pct))+'%'; const t=overlay.querySelector('#ep-txt'); if(t)t.innerText=txt||''; },
+            update: (pct, txt) => {
+                const f=overlay.querySelector('#ep-fill'); if(f)f.style.width=Math.max(0,Math.min(100,pct))+'%';
+                const t=overlay.querySelector('#ep-txt'); if(t)t.innerText=txt||'';
+                const eta=overlay.querySelector('#ep-eta');
+                if(eta&&pct>2){const elapsed=(Date.now()-startTime)/1000;const rem=Math.max(0,Math.round(elapsed/(pct/100)-elapsed));eta.innerText=rem>0?'Tiempo restante: '+(rem>=60?Math.floor(rem/60)+'m '+String(rem%60).padStart(2,'0')+'s':rem+'s'):'';}
+            },
             close: () => { try { document.body.removeChild(overlay); } catch(e){} },
             canceled: () => cancelled
         };
@@ -1728,20 +1748,10 @@ input[type="checkbox"] {
         return exportMaps[0];
     }
 
-    async function prepareExportMapCanvases(w, h, baseImg) {
-        const candidates = uploadedMaps.filter(isValidExportMapUpload); // This function seems to be gone, I'll assume it's ok.
-        const exports = [];
-        for (const map of candidates) {
-            const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            exports.push({ map, canvas, ctx, fileName: normalizeExportFileName(map.name) });
-        }
-        if (!exports.length) {
-            const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            exports.push({ map: null, canvas, ctx, fileName: 'livery-map' });
-        }
-        return exports;
+    async function prepareExportMapCanvases(w, h) {
+        const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        return [{ map: null, canvas, ctx, fileName: 'livery-map' }];
     }
 
     // ── UV-space rasterizer ──────────────────────────────────
@@ -1754,7 +1764,6 @@ input[type="checkbox"] {
         if (!capa.miniaturaUrl || !capa.datosOrigen) return;
         const mapEntry = resolveExportMapForSticker(capa, exportMaps); if (!mapEntry) return;
 
-        // Load sticker image into a canvas for sampling
         const img = await loadImageFromUrl(capa.miniaturaUrl);
         const sc = document.createElement('canvas'); sc.width = img.width; sc.height = img.height;
         const sctx = sc.getContext('2d'); sctx.drawImage(img, 0, 0);
@@ -1764,156 +1773,123 @@ input[type="checkbox"] {
         const mesh = capa.datosOrigen.targetMesh;
         if (!mesh) return;
 
-        // Build decal local-space transform matrix (inverse of decal world matrix)
-        // The decal is centred at pos, oriented so +Z points along norm, with rotZ applied.
-        const decalPos   = capa.datosOrigen.pos.clone();
-        const decalNorm  = capa.datosOrigen.norm.clone().normalize();
-        const decalSize  = capa.datosOrigen.size;
-        const decalRotZ  = capa.datosOrigen.rotZ || 0;
+        const decalPos  = capa.datosOrigen.pos.clone();
+        const decalNorm = capa.datosOrigen.norm.clone().normalize();
+        const decalSize = capa.datosOrigen.size;
+        const decalRotZ = capa.datosOrigen.rotZ || 0;
+        const halfSize  = decalSize * 0.5;
 
-        // Build decal world matrix the same way the 3D placement does it
         const dummyObj = new THREE.Object3D();
         dummyObj.position.copy(decalPos);
-        // lookAt: +Z toward norm direction
         dummyObj.lookAt(decalPos.clone().add(decalNorm));
         dummyObj.rotation.z += decalRotZ;
         dummyObj.updateMatrixWorld(true);
+        const decalInv = dummyObj.matrixWorld.clone().invert();
 
-        // We need to go: world position → decal local position
-        const decalMatrixWorldInverse = dummyObj.matrixWorld.clone().invert();
+        // Precompute decal AABB in world space for fast triangle rejection.
+        // The decal box is [-halfSize,halfSize]^3 in local space; transform its 8 corners to world.
+        const decalAABB = new THREE.Box3();
+        for (let sx = -1; sx <= 1; sx += 2)
+        for (let sy = -1; sy <= 1; sy += 2)
+        for (let sz = -1; sz <= 1; sz += 2) {
+            const corner = new THREE.Vector3(sx * halfSize, sy * halfSize, sz * halfSize)
+                .applyMatrix4(dummyObj.matrixWorld);
+            decalAABB.expandByPoint(corner);
+        }
 
-        // Also need the mesh's own world matrix to convert local vertex positions to world
         mesh.updateMatrixWorld(true);
-        const meshMatrixWorld = mesh.matrixWorld;
+        const meshMW = mesh.matrixWorld;
 
         const geom = mesh.geometry;
         if (!geom?.attributes?.position || !geom?.attributes?.uv) return;
 
-        const posAttr = geom.attributes.position;
-        const uvAttr  = geom.attributes.uv;
-        const idxBuf  = geom.index;
+        const posAttr  = geom.attributes.position;
+        const uvAttr   = geom.attributes.uv;
+        const idxBuf   = geom.index;
         const triCount = idxBuf ? (idxBuf.count / 3) : (posAttr.count / 3);
-
-        // Sub-pixel density: quality factor controls how many samples per output pixel
-        // qf=1 (High) → ~2 samples/px, qf=4 (Low) → ~0.5 samples/px
-        const samplesPerTexel = Math.max(0.25, 2.0 / (qf || 2));
-
-        // Reusable vectors to avoid GC pressure
-        const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3();
-        const uvA = new THREE.Vector2(), uvB = new THREE.Vector2(), uvC = new THREE.Vector2();
-        const pWorld = new THREE.Vector3();
-        const pLocal = new THREE.Vector3(); // in decal space
 
         if (prog) prog.update(Math.round((index / Math.max(1, total)) * 100), `Iniciando vinilo ${index + 1}/${total}...`);
         await new Promise(r => setTimeout(r, 0));
 
-        let processedTris = 0;
-        const yieldEvery = 200; // yield to event loop every N triangles
-
-        // Pre-read output pixels so we can alpha-blend correctly
         const outImgData = mapEntry.ctx.getImageData(0, 0, w, h);
-        const outData = outImgData.data;
+        const outData    = outImgData.data;
+
+        const vA = new THREE.Vector3(), vB = new THREE.Vector3(), vC = new THREE.Vector3();
+        const uvA = new THREE.Vector2(), uvB = new THREE.Vector2(), uvC = new THREE.Vector2();
+        const pWorld = new THREE.Vector3(), pLocal = new THREE.Vector3();
+        const triBB  = new THREE.Box3();
+
+        let processedTris = 0;
+        const yieldEvery = 500;
 
         for (let t = 0; t < triCount; t++) {
             if (prog?.canceled?.()) throw new Error('cancelled');
 
-            // Get vertex indices
             let ia, ib, ic;
             if (idxBuf) { ia = idxBuf.getX(t*3); ib = idxBuf.getX(t*3+1); ic = idxBuf.getX(t*3+2); }
-            else         { ia = t*3;               ib = t*3+1;              ic = t*3+2; }
+            else        { ia = t*3; ib = t*3+1; ic = t*3+2; }
 
-            // Vertex positions in world space
-            vA.fromBufferAttribute(posAttr, ia).applyMatrix4(meshMatrixWorld);
-            vB.fromBufferAttribute(posAttr, ib).applyMatrix4(meshMatrixWorld);
-            vC.fromBufferAttribute(posAttr, ic).applyMatrix4(meshMatrixWorld);
+            vA.fromBufferAttribute(posAttr, ia).applyMatrix4(meshMW);
+            vB.fromBufferAttribute(posAttr, ib).applyMatrix4(meshMW);
+            vC.fromBufferAttribute(posAttr, ic).applyMatrix4(meshMW);
 
-            // Vertex UVs (in [0,1])
+            // Fast AABB rejection: skip triangle if its world bbox doesn't overlap the decal bbox
+            triBB.setFromPoints([vA, vB, vC]);
+            if (!triBB.intersectsBox(decalAABB)) { processedTris++; continue; }
+
             uvA.fromBufferAttribute(uvAttr, ia);
             uvB.fromBufferAttribute(uvAttr, ib);
             uvC.fromBufferAttribute(uvAttr, ic);
 
-            // Compute UV bounding box in output texture space [0,w] x [0,h]
-            const minUx = Math.min(uvA.x, uvB.x, uvC.x);
-            const maxUx = Math.max(uvA.x, uvB.x, uvC.x);
-            const minUy = Math.min(uvA.y, uvB.y, uvC.y);
-            const maxUy = Math.max(uvA.y, uvB.y, uvC.y);
+            // Pixel bbox of this triangle in the output texture
+            const px0 = Math.max(0,     Math.floor(Math.min(uvA.x, uvB.x, uvC.x) * w));
+            const px1 = Math.min(w - 1, Math.ceil (Math.max(uvA.x, uvB.x, uvC.x) * w));
+            const py0 = Math.max(0,     Math.floor((1 - Math.max(uvA.y, uvB.y, uvC.y)) * h));
+            const py1 = Math.min(h - 1, Math.ceil ((1 - Math.min(uvA.y, uvB.y, uvC.y)) * h));
+            if (px1 < px0 || py1 < py0) { processedTris++; continue; }
 
-            // Convert to output pixel coordinates (note: UV y=0 → bottom → pixel y=h-1)
-            const px0 = Math.max(0,     Math.floor(minUx * w));
-            const px1 = Math.min(w - 1, Math.ceil (maxUx * w));
-            const py0 = Math.max(0,     Math.floor((1 - maxUy) * h));
-            const py1 = Math.min(h - 1, Math.ceil ((1 - minUy) * h));
+            // Walk output pixels directly — one sample per pixel, no floating-point step loops
+            for (let py = py0; py <= py1; py++) {
+                const sv = 1.0 - (py + 0.5) / h; // UV v at pixel centre
+                for (let px = px0; px <= px1; px++) {
+                    const su = (px + 0.5) / w;    // UV u at pixel centre
 
-            if (px1 < px0 || py1 < py0) continue;
-
-            // Step size in UV space for the desired sample density
-            const uvStepX = 1.0 / (w * samplesPerTexel);
-            const uvStepY = 1.0 / (h * samplesPerTexel);
-
-            // Walk UV space inside this triangle's bounding box
-            const uStart = (px0 / w);
-            const uEnd   = ((px1 + 1) / w);
-            const vStart = (1.0 - (py1 + 1) / h);
-            const vEnd   = (1.0 - py0 / h);
-
-            for (let su = uStart; su <= uEnd; su += uvStepX) {
-                for (let sv = vStart; sv <= vEnd; sv += uvStepY) {
-
-                    // Barycentric coords for (su, sv) in triangle (uvA, uvB, uvC)
                     const bary = barycentricUV(su, sv, uvA, uvB, uvC);
-                    if (!bary) continue; // outside triangle
-
+                    if (!bary) continue;
                     const { u: ba, v: bb } = bary;
                     const bc = 1 - ba - bb;
-                    if (ba < 0 || bb < 0 || bc < 0) continue;
+                    if (ba < -1e-5 || bb < -1e-5 || bc < -1e-5) continue;
 
-                    // Interpolate world position
                     pWorld.set(
                         ba * vA.x + bb * vB.x + bc * vC.x,
                         ba * vA.y + bb * vB.y + bc * vC.y,
                         ba * vA.z + bb * vB.z + bc * vC.z
                     );
+                    pLocal.copy(pWorld).applyMatrix4(decalInv);
 
-                    // Transform to decal local space
-                    pLocal.copy(pWorld).applyMatrix4(decalMatrixWorldInverse);
-
-                    // In decal local space: X and Y are in [-decalSize/2, decalSize/2]
-                    // Z should be small (near the surface); reject if too far
-                    const halfSize = decalSize * 0.5;
                     if (Math.abs(pLocal.x) > halfSize || Math.abs(pLocal.y) > halfSize) continue;
-                    if (Math.abs(pLocal.z) > decalSize * 0.1) continue;
+                    if (Math.abs(pLocal.z) > decalSize * 0.15) continue;
 
-                    // Map decal local X,Y → sticker pixel coords
-                    // pLocal.x in [-halfSize, halfSize] → sticker u in [0, 1]
                     const stu = (pLocal.x / decalSize) + 0.5;
                     const stv = (pLocal.y / decalSize) + 0.5;
                     if (stu < 0 || stu > 1 || stv < 0 || stv > 1) continue;
 
-                    // Sample sticker (bilinear would be ideal but nearest is fast enough)
                     const spx = Math.min(sW - 1, Math.floor(stu * sW));
                     const spy = Math.min(sH - 1, Math.floor((1 - stv) * sH));
                     const si  = (spy * sW + spx) * 4;
                     const sa  = sData[si + 3];
                     if (sa < 8) continue;
 
-                    // Output pixel coords
-                    const opx = Math.min(w - 1, Math.max(0, Math.round(su * w)));
-                    const opy = Math.min(h - 1, Math.max(0, Math.round((1 - sv) * h)));
-
-                    // Optional: skip pixels outside parts-map
                     if (partsData) {
-                        const ip = (opy * w + opx) * 4;
+                        const ip = (py * w + px) * 4;
                         if (!(partsData[ip+3] > 50 && partsData[ip+1] > partsData[ip]+20 && partsData[ip+1] > partsData[ip+2]+20)) continue;
                     }
 
-                    // Alpha-composite sticker pixel onto output
-                    const oi  = (opy * w + opx) * 4;
-                    const sr  = sData[si], sg = sData[si+1], sb = sData[si+2];
-                    const alpha = sa / 255;
-                    const invA  = 1 - alpha;
-                    outData[oi]     = Math.round(sr * alpha + outData[oi]     * invA);
-                    outData[oi + 1] = Math.round(sg * alpha + outData[oi + 1] * invA);
-                    outData[oi + 2] = Math.round(sb * alpha + outData[oi + 2] * invA);
+                    const oi    = (py * w + px) * 4;
+                    const alpha = sa / 255, invA = 1 - alpha;
+                    outData[oi]     = (sData[si]   * alpha + outData[oi]     * invA) | 0;
+                    outData[oi + 1] = (sData[si+1] * alpha + outData[oi + 1] * invA) | 0;
+                    outData[oi + 2] = (sData[si+2] * alpha + outData[oi + 2] * invA) | 0;
                     outData[oi + 3] = Math.min(255, outData[oi + 3] + sa);
                 }
             }
@@ -1928,9 +1904,7 @@ input[type="checkbox"] {
             }
         }
 
-        // Write back composited output
         mapEntry.ctx.putImageData(outImgData, 0, 0);
-
         if (prog) prog.update(Math.round(((index + 1) / Math.max(1, total)) * 100), `Vinilo ${index + 1}/${total} listo`);
     }
 
@@ -1955,7 +1929,36 @@ input[type="checkbox"] {
     }
 
     // ── Export handler ───────────────────────────────────────
+    function populateExportMapsUI() {
+        const usedMaps = new Map();
+        for (const capa of capasStickers) {
+            const mesh = capa?.datosOrigen?.targetMesh;
+            const map = mesh?.userData?.assignedMap;
+            if (map?.name) {
+                if (!usedMaps.has(map.name)) usedMaps.set(map.name, map);
+            }
+        }
+        const field = document.getElementById('export-maps-field');
+        const list = document.getElementById('export-maps-list');
+        list.innerHTML = '';
+        // Always add main map entry
+        const mainLabel = uploadedMaps.filter(isValidExportMapUpload)[0]?.name || 'livery-map (principal)';
+        const mainRow = document.createElement('label');
+        mainRow.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt2);cursor:pointer;';
+        mainRow.innerHTML = "<input type='checkbox' checked data-map='__main__' style='accent-color:#c8a84b;'> " + mainLabel;
+        list.appendChild(mainRow);
+        for (const [name, map] of usedMaps) {
+            if (name === mainLabel) continue;
+            const row = document.createElement('label');
+            row.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt2);cursor:pointer;';
+        row.innerHTML = "<input type='checkbox' checked data-map='" + name + "' style='accent-color:#c8a84b;'> " + name;
+            list.appendChild(row);
+        }
+        field.style.display = usedMaps.size > 0 ? 'block' : 'none';
+    }
+
     document.getElementById('btn-exportar').addEventListener('click', () => {
+        populateExportMapsUI();
         document.getElementById('export-modal').style.display = 'flex';
     });
     document.getElementById('export-modal-close').addEventListener('click', () => {
@@ -1973,14 +1976,24 @@ input[type="checkbox"] {
             if (isNaN(requested)||requested<=0) requested=1024;
             const w = requested, h = requested;
             const exportMaps = await prepareExportMapCanvases(w, h);
+            // Filter by checked maps in UI
+            const checkedMaps = Array.from(document.querySelectorAll('#export-maps-list input[type=checkbox]:checked')).map(cb => cb.dataset.map);
+            if (checkedMaps.length > 0 && !checkedMaps.includes('__main__') || checkedMaps.length > 0) {
+                const filtered = exportMaps.filter((e,idx) => {
+                    if (idx === 0) return checkedMaps.includes('__main__') || checkedMaps.length === 0;
+                    return checkedMaps.includes(e.map?.name||'');
+                });
+                if (filtered.length > 0) exportMaps.length = 0, filtered.forEach(e => exportMaps.push(e));
+            }
 
-            // Bake the base color onto all export maps (solo si el usuario aplicó color)
+            // Bake base color or texture onto export map
             for (const entry of exportMaps) {
-                if (baseColorApplied) {
+                if (window._baseTexturaBitmap) {
+                    entry.ctx.drawImage(window._baseTexturaBitmap, 0, 0, w, h);
+                } else if (baseColorApplied) {
                     entry.ctx.fillStyle = currentBaseColor;
                     entry.ctx.fillRect(0, 0, w, h);
                 }
-                // Si no, el canvas queda transparente (fondo del coche visible)
             }
 
             let partsData = null;
@@ -1989,18 +2002,25 @@ input[type="checkbox"] {
             try {
                 for (let i=0; i<capasStickers.length; i++) {
                     if (prog.canceled?.()) throw new Error('cancelled');
-                    await processStickerChunked(capasStickers[i], exportMaps, w, h, partsData, prog, i, capasStickers.length, parseInt(document.getElementById('export-quality-select')?.value||'2'));
+                    await processStickerChunked(capasStickers[i], exportMaps, w, h, partsData, prog, i, capasStickers.length);
                 }
             } catch(procErr) {
                 if (procErr?.message==='cancelled') { prog.update(0,'Cancelado'); } else console.warn(procErr);
             } finally { try { prog.close(); } catch(e){} }
+            const customName = document.getElementById('export-filename').value.trim() || 'livery-map';
             let count = 0;
             for (const entry of exportMaps) {
-                const customName = document.getElementById('export-filename').value.trim() || 'livery-map';
-                const a = document.createElement('a'); a.style.display='none'; a.download=`${customName}.png`; a.href=entry.canvas.toDataURL('image/png');
-                document.body.appendChild(a); a.click(); document.body.removeChild(a); count++;
+                const dataUrl = entry.canvas.toDataURL('image/png');
+                const fileName = exportMaps.length > 1 ? `${customName}_${count+1}.png` : `${customName}.png`;
+                if (window.electronAPI?.saveFile) {
+                    const res = await window.electronAPI.saveFile(fileName, dataUrl);
+                    if (!res?.canceled) count++;
+                } else {
+                    const a = document.createElement('a'); a.style.display='none'; a.download=fileName; a.href=dataUrl;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a); count++;
+                }
             }
-            alert(`Exportación completada: ${count} mapa(s) descargado(s)`);
+            if (count > 0) alert(`Exportación completada: ${count} mapa(s) guardado(s)`);
         } catch(err) { console.error(err); alert('Error exportando: '+(err?.message||err)); }
     });
 
@@ -2039,7 +2059,7 @@ input[type="checkbox"] {
         const ext = archivoModelo.name.split('.').pop().toLowerCase();
         const loader = ext === 'fbx' ? loaderFBX : loaderGLTF;
         if (coche) scene.remove(coche);
-        objetosPintables.length = 0; piezasCarroceria.length = 0; currentBaseColor = '#ffffff';
+        objetosPintables.length = 0; piezasCarroceria.length = 0; currentBaseColor = '#ffffff'; baseColorApplied = false;
         let texturaCargada = null;
         if (archivoTextura) {
             texturaCargada = new THREE.TextureLoader(loadingManager).load(URL.createObjectURL(archivoTextura), (tex) => { tex.flipY=false; tex.colorSpace=THREE.SRGBColorSpace; });
@@ -2051,6 +2071,10 @@ input[type="checkbox"] {
             coche.traverse((child) => {
                 if (child.isMesh) {
                     child.material = normalizarMaterialFBX(child.material);
+                    // Copy uv to uv2 if missing (required for aoMap in Three.js)
+                    if (!child.geometry.attributes.uv2 && child.geometry.attributes.uv) {
+                        child.geometry.setAttribute('uv2', child.geometry.attributes.uv);
+                    }
                     if (texturaCargada) {
                         child.material.map = texturaCargada;
                         child.material.needsUpdate = true;
@@ -2080,6 +2104,17 @@ input[type="checkbox"] {
             scene.add(coche);
             scene.updateMatrixWorld(true);
             actualizarOverlayPintura();
+            if (window.tempAoFile) {
+                const aoUrl = URL.createObjectURL(window.tempAoFile);
+                new THREE.TextureLoader().load(aoUrl, (tex) => {
+                    tex.flipY = false;
+                    piezasCarroceria.forEach(mesh => {
+                        mesh.material.aoMap = tex;
+                        mesh.material.aoMapIntensity = 1.0;
+                        mesh.material.needsUpdate = true;
+                    });
+                });
+            }
             if (partsMapImageData || modelIniData) computeTriangleLabelsForModel();
         }, undefined, (err) => console.error('Error modelo:', err));
     }
@@ -2113,11 +2148,38 @@ input[type="checkbox"] {
         return tex;
     }
 
+    function encontrarMeshEspejo(meshOriginal, posOriginal) {
+        // Si el mesh está cerca del plano X=0 (capó, techo, etc.) no hay mesh espejo separado
+        const meshCenterX = new THREE.Box3().setFromObject(meshOriginal).getCenter(new THREE.Vector3()).x;
+        if (Math.abs(meshCenterX) < 0.15) return { mesh: meshOriginal, pos: new THREE.Vector3(-posOriginal.x, posOriginal.y, posOriginal.z) };
+        // Buscar mesh cuyo centro esté en X opuesto al original
+        let mejor = null, mejorDist = Infinity;
+        for (const m of objetosPintables) {
+            if (m === meshOriginal) continue;
+            const c = new THREE.Box3().setFromObject(m).getCenter(new THREE.Vector3());
+            const dist = Math.abs(c.x + meshCenterX) + Math.abs(c.y - new THREE.Box3().setFromObject(meshOriginal).getCenter(new THREE.Vector3()).y) * 0.5;
+            if (dist < mejorDist) { mejorDist = dist; mejor = m; }
+        }
+        if (mejor && mejorDist < 1.5) {
+            // Calcular posición relativa dentro del mesh original y aplicarla al espejo
+            const origCenter = new THREE.Box3().setFromObject(meshOriginal).getCenter(new THREE.Vector3());
+            const mirrorCenter = new THREE.Box3().setFromObject(mejor).getCenter(new THREE.Vector3());
+            const offset = posOriginal.clone().sub(origCenter);
+            offset.x = -offset.x;
+            return { mesh: mejor, pos: mirrorCenter.clone().add(offset) };
+        }
+        // Fallback: mismo mesh, posición reflejada
+        return { mesh: meshOriginal, pos: new THREE.Vector3(-posOriginal.x, posOriginal.y, posOriginal.z) };
+    }
+
     function obtenerOrientacionEspejoPrecisa(normalOriginal, rotacionZ) {
         const normalEspejo = normalOriginal.clone(); normalEspejo.x = -normalEspejo.x;
-        const matriz = new THREE.Matrix4(); matriz.lookAt(new THREE.Vector3(), normalEspejo, new THREE.Vector3(0,1,0));
-        const o = new THREE.Euler().setFromRotationMatrix(matriz);
-        o.z += (Math.PI - rotacionZ); return o;
+        const posEspejo = new THREE.Vector3(0, 0, 0);
+        const dummy = new THREE.Object3D();
+        dummy.position.copy(posEspejo);
+        dummy.lookAt(posEspejo.clone().add(normalEspejo));
+        dummy.rotation.z += -rotacionZ;
+        return dummy.rotation.clone();
     }
 
     function actualizarFantasmaAlMover(event) {
@@ -2139,14 +2201,14 @@ input[type="checkbox"] {
             stickerFantasma = new THREE.Mesh(new DecalGeometry(intersect.object, pos, dummy.rotation, new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), materialFantasma);
             stickerFantasma.renderOrder = 9999; scene.add(stickerFantasma);
             if (checkEspejo.checked) {
-                const posE = pos.clone(); posE.x = -posE.x;
-                // Ghost preview with flipped texture so user sees the correct mirrored image
+                const espejo = encontrarMeshEspejo(intersect.object, pos);
+                const posE = espejo.pos;
                 const matEspejoFantasma = new THREE.MeshBasicMaterial({
                     map: crearTexturaEspejo(texturaActual),
                     transparent: true, opacity: 0.5,
                     depthWrite: false, depthTest: false, side: THREE.DoubleSide
                 });
-                stickerFantasmaEspejo = new THREE.Mesh(new DecalGeometry(intersect.object, posE, obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), matEspejoFantasma);
+                stickerFantasmaEspejo = new THREE.Mesh(new DecalGeometry(espejo.mesh, posE, obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), matEspejoFantasma);
                 stickerFantasmaEspejo.renderOrder = 9999; scene.add(stickerFantasmaEspejo);
             }
         } else { eliminarFantasma(); }
@@ -2190,13 +2252,13 @@ input[type="checkbox"] {
             scene.add(sticker); contadorStickers++;
             capasStickers.push({ nombre: baseNombre+(checkEspejo.checked?" (Izq)":""), objetoMesh:sticker, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:checkEspejo.checked, datosOrigen:{targetMesh:intersect.object, pos:pos.clone(), posBase:pos.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:intersect.uv?.clone()||null} });
             if (checkEspejo.checked) {
-                const posE = pos.clone(); posE.x = -posE.x;
-                // Flip the texture horizontally so the mirror reads correctly (e.g. "47" not "Lq")
+                const espejo = encontrarMeshEspejo(intersect.object, pos);
+                const posE = espejo.pos;
                 const texFlipped = crearTexturaEspejo(texturaActual);
                 const matEspejo = new THREE.MeshStandardMaterial({ map:texFlipped, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-4, side:THREE.DoubleSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
-                const stickerE = new THREE.Mesh(new DecalGeometry(intersect.object,posE,obtenerOrientacionEspejoPrecisa(norm,rotacionActual),new THREE.Vector3(tamañoActual,tamañoActual,0.5)),matEspejo);
+                const stickerE = new THREE.Mesh(new DecalGeometry(espejo.mesh, posE, obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual,tamañoActual,0.5)), matEspejo);
                 scene.add(stickerE); contadorStickers++;
-                capasStickers.push({nombre:baseNombre+" (Der)",objetoMesh:stickerE,miniaturaUrl:urlMiniaturaActual,vinculoEspejo:false,datosOrigen:{targetMesh:intersect.object, pos:posE.clone(), posBase:posE.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:intersect.uv?new THREE.Vector2(1-intersect.uv.x,intersect.uv.y):null}});
+                capasStickers.push({nombre:baseNombre+" (Der)", objetoMesh:stickerE, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:false, datosOrigen:{targetMesh:espejo.mesh, pos:posE.clone(), posBase:posE.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:null}});
             }
             actualizarProfundidades3D(); actualizarInterfazCapas();
         }
@@ -2229,8 +2291,65 @@ input[type="checkbox"] {
         camera.aspect = cw / ch; camera.updateProjectionMatrix();
     });
 
+    // ── Biblioteca de stickers (localStorage) ──────────────────
+    const BIBLIOTECA_KEY = 'livery_stickers_v1';
+
+    function bibliotecaCargarDesdeStorage() {
+        try { return JSON.parse(localStorage.getItem(BIBLIOTECA_KEY) || '[]'); } catch { return []; }
+    }
+    function bibliotecaGuardarEnStorage(items) {
+        try { localStorage.setItem(BIBLIOTECA_KEY, JSON.stringify(items)); } catch(e) { console.warn('localStorage lleno:', e); }
+    }
+    let _bibliotecaSeleccionado = null;
+
+    function bibliotecaRenderizar() {
+        const grid = document.getElementById('biblioteca-grid');
+        const items = bibliotecaCargarDesdeStorage();
+        grid.innerHTML = '';
+        if (!items.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Sin stickers guardados</div>'; return; }
+        items.forEach(item => {
+            const img = document.createElement('img');
+            img.src = item.data; img.title = item.name;
+            Object.assign(img.style, { width:'100%', aspectRatio:'1', objectFit:'contain', background:'var(--panel2)', border:'1px solid var(--border)', borderRadius:'var(--radius)', cursor:'pointer', padding:'2px' });
+            if (_bibliotecaSeleccionado === item.name) img.style.borderColor = 'var(--gold)';
+            img.addEventListener('click', () => {
+                inputTexto.value = ''; urlMiniaturaActual = item.data;
+                vistaPrevia.innerHTML = `<img src="${item.data}">`;
+                textureLoader.load(item.data, (tex) => { texturaActual = tex; materialFantasma.map = tex; materialFantasma.needsUpdate = true; actualizarFantasmaAlMover(); });
+                _bibliotecaSeleccionado = item.name;
+                grid.querySelectorAll('img').forEach(i => i.style.borderColor = 'var(--border)');
+                img.style.borderColor = 'var(--gold)';
+            });
+            grid.appendChild(img);
+        });
+    }
+    document.getElementById('input-biblioteca').addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []).filter(f => /\.(png|jpg|jpeg)$/i.test(f.name));
+        if (!files.length) return;
+        const items = bibliotecaCargarDesdeStorage();
+        let pending = files.length;
+        files.forEach(f => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                if (!items.find(i => i.name === f.name)) items.push({ name: f.name, data: ev.target.result });
+                if (--pending === 0) { bibliotecaGuardarEnStorage(items); bibliotecaRenderizar(); }
+            };
+            reader.readAsDataURL(f);
+        });
+        e.target.value = '';
+    });
+    document.getElementById('btn-borrar-sticker-sel').addEventListener('click', () => {
+        if (!_bibliotecaSeleccionado) return;
+        const items = bibliotecaCargarDesdeStorage().filter(i => i.name !== _bibliotecaSeleccionado);
+        _bibliotecaSeleccionado = null;
+        bibliotecaGuardarEnStorage(items); bibliotecaRenderizar();
+    });
+    document.getElementById('btn-limpiar-biblioteca').addEventListener('click', () => {
+        localStorage.removeItem(BIBLIOTECA_KEY); bibliotecaRenderizar();
+    });
+    bibliotecaRenderizar();
+
     selectorEntorno.dispatchEvent(new Event('change'));
-    applyPaintMode('orbit');
     actualizarInterfazCapas();
 
     animate();

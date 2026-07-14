@@ -1,4 +1,7 @@
 (Requesito activar modo desarrollador en el Content Manager para descomprimir los KN5)
+
+Last version of the app always on the realeses
+
 1. Descargar rar
 2. Descomprimirlo
 3. Ejecutar archivo Index.html

@@ -9,4 +9,4 @@ Last version of the app always on the realeses
 5. Haz tu diseño y exportalo en la resolución que más te guste
 6. Usa tu programa para convertir el PNG a DDS y añade tu skin al juego
 
-Discord of community https://discord.gg/aBdFs9km4
+Discord of community https://discord.gg/9W9Ea3XdYS 

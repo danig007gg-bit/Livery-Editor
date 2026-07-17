@@ -602,6 +602,14 @@ input[type="checkbox"] {
   background: rgba(255,68,85,.15);
   border-color: var(--red); color: var(--red);
 }
+#brush-mode-indicator.bucket {
+  background: rgba(200,168,75,.15);
+  border-color: var(--gold); color: var(--gold);
+}
+#brush-mode-indicator.sticker {
+  background: rgba(26,223,128,.12);
+  border-color: var(--green); color: var(--green);
+}
 .brush-tool-grid {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 4px; margin-top: 8px;
@@ -621,6 +629,47 @@ input[type="checkbox"] {
 .brush-tool-btn.active-paint { border-color: var(--accent2); color: var(--accent2); background: rgba(90,132,255,.12); }
 .brush-tool-btn.active-erase { border-color: var(--red); color: var(--red); background: rgba(255,68,85,.1); }
 .brush-tool-btn.active-bucket { border-color: var(--gold); color: var(--gold); background: rgba(200,168,75,.12); }
+
+/* ── Camera preset menu (GT7 style) ─────────────────────────── */
+#camera-presets {
+  position: fixed; bottom: 100px; left: 50%;
+  transform: translateX(-50%) translateY(12px) scale(0.95);
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(13,15,24,.92);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 8px 14px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  z-index: 1100;
+  opacity: 0; pointer-events: none;
+  transition: opacity .18s, transform .18s;
+}
+#camera-presets.open {
+  opacity: 1; pointer-events: all;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+.cam-preset-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; width: 62px; height: 54px;
+  background: rgba(22,25,40,.8);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  cursor: pointer; transition: all .15s;
+  color: var(--txt2);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 9px; font-weight: 600;
+  letter-spacing: .5px; text-transform: uppercase;
+  user-select: none;
+}
+.cam-preset-btn:hover { border-color: rgba(200,168,75,.5); color: var(--txt); background: rgba(200,168,75,.08); }
+.cam-preset-btn:active { background: rgba(200,168,75,.18); border-color: var(--gold); color: var(--gold); }
+.cam-preset-btn .cam-icon { font-size: 18px; line-height: 1; }
+.cam-preset-hint {
+  position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; color: var(--txt3); white-space: nowrap;
+  font-family: 'Rajdhani', sans-serif; letter-spacing: 1px;
+}
 
 /* ── Section accent lines ────────────────────────────────────── */
 .section[data-accent="gold"] .section-title { color: var(--gold); }
@@ -886,21 +935,23 @@ canvas { display: block; z-index: 0; }
   color: var(--gold); margin-bottom: 10px;
 }
 .ayuda-row {
-  display: flex; align-items: flex-start; gap: 10px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
   padding: 6px 0;
   border-bottom: 1px solid var(--border);
 }
 .ayuda-row:last-child { border-bottom: none; }
 .ayuda-key {
-  flex-shrink: 0;
+  flex-shrink: 0; min-width: 70px;
   background: var(--panel2); border: 1px solid var(--border2);
   border-radius: 5px; padding: 3px 7px;
   font-family: 'Rajdhani', sans-serif; font-weight: 700;
   font-size: 10px; letter-spacing: .5px; text-transform: uppercase;
   color: var(--txt2); white-space: nowrap; line-height: 1.4;
+  text-align: center;
 }
 .ayuda-desc {
   font-size: 11px; color: var(--txt3); line-height: 1.4;
+  text-align: right; flex: 1;
 }
 
 /* ── Topbar Export btn ──────────────────────────────────────── */
@@ -979,15 +1030,15 @@ canvas { display: block; z-index: 0; }
 
     <!-- PANEL: MODELO -->
     <div id="panel-modelo" class="gt-subpanel" style="display:none">
-      <label class="btn-upload" id="lbl-cargar-carpeta">📁 Cargar carpeta del modelo
+      <label class="btn-upload" id="lbl-cargar-carpeta">📁 Load model folder
         <input type="file" id="input-carpeta" webkitdirectory directory multiple>
       </label>
-      <div id="texto-mapa-body" style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;">Carga una carpeta con .fbx/.gltf y mapas PNG.</div>
+      <div id="texto-mapa-body" style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;">Load a folder with .fbx/.gltf and PNG maps.</div>
       <div class="divider"></div>
-      <div class="field-label" style="margin-top:8px;">Entorno</div>
+      <div class="field-label" style="margin-top:8px;">Environment</div>
       <div class="env-tabs" style="margin-top:6px;">
-        <div class="env-tab active" data-env="garaje">🏁<br>Garaje</div>
-        <div class="env-tab" data-env="estudio">📸<br>Estudio</div>
+        <div class="env-tab active" data-env="garaje">🏁<br>Garage</div>
+        <div class="env-tab" data-env="estudio">📸<br>Studio</div>
         <div class="env-tab" data-env="neon">🔧<br>Hangar</div>
       </div>
       <select id="selector-entorno" style="display:none;">
@@ -996,7 +1047,7 @@ canvas { display: block; z-index: 0; }
         <option value="neon">Taller Mecánico</option>
       </select>
       <label class="toggle-row" style="margin-top:10px;" for="toggle-grid">
-        <span>Cuadr&#237;cula del suelo</span>
+        <span>Floor grid</span>
         <input type="checkbox" id="toggle-grid">
       </label>
     </div>
@@ -1015,10 +1066,10 @@ canvas { display: block; z-index: 0; }
         </div>
       </div>
       <div class="divider"></div>
-      <label class="btn-upload" id="lbl-upload-base-tex-btn">🎨 Textura base (.png/.jpg)
-        <input type="file" id="input-textura-base" accept="image/png, image/jpeg">
+      <label class="btn-upload" id="lbl-upload-livery-png">&#x1F3A8; Apply Livery PNG
+        <input type="file" id="input-livery-png" accept="image/png, image/jpeg" multiple>
       </label>
-      <div id="texto-textura-base" style="font-size:10px;color:var(--txt3);margin-top:4px;line-height:1.5;">Aplica una textura a toda la carrocería.</div>
+      <div id="texto-livery-png" style="font-size:10px;color:var(--txt3);margin-top:4px;line-height:1.5;">Upload PNG files named after the mesh (e.g. body.png, hood.png)</div>
       <div class="divider"></div>
       <div class="field-label" id="lbl-quick-colors-paint">Colores rápidos</div>
       <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:8px;">
@@ -1034,35 +1085,35 @@ canvas { display: block; z-index: 0; }
 
       <div class="divider"></div>
 
-      <!-- ── PINCEL LIBRE ──────────────────────────────── -->
-      <div class="field-label" style="margin-bottom:6px;">🖌️ Herramientas de pincel <span style="font-size:9px;color:var(--txt3);">(Alt + arrastrar / Ctrl + clic)</span></div>
+      <!-- ── BRUSH TOOLS ──────────────────────────────── -->
+      <div class="field-label" style="margin-bottom:6px;">🖌️ Paint Tools <span style="font-size:9px;color:var(--txt3);">(Alt + drag / Ctrl + click)</span></div>
       <div class="brush-tool-grid" style="grid-template-columns:1fr 1fr 1fr;">
-        <div class="brush-tool-btn active-paint" id="brush-btn-paint">🖌️<br>Pincel</div>
-        <div class="brush-tool-btn" id="brush-btn-bucket">🪣<br>Cubo</div>
-        <div class="brush-tool-btn" id="brush-btn-erase">⬜<br>Borrar</div>
+        <div class="brush-tool-btn active-paint" id="brush-btn-paint">🖌️<br>Brush</div>
+        <div class="brush-tool-btn" id="brush-btn-bucket">🪣<br>Bucket</div>
+        <div class="brush-tool-btn" id="brush-btn-erase">⬜<br>Erase</div>
       </div>
       <div class="field" style="margin-top:8px;">
-        <div class="field-label" id="lbl-brush-color">Color del pincel</div>
+        <div class="field-label" id="lbl-brush-color">Brush color</div>
         <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
           <input type="color" id="brush-color" value="#ff0000" style="width:40px;height:40px;min-width:40px;flex-shrink:0;">
-          <span style="font-size:11px;color:var(--txt2);" id="lbl-brush-color2">Color activo</span>
+          <span style="font-size:11px;color:var(--txt2);" id="lbl-brush-color2">Active color</span>
         </div>
       </div>
       <div class="field" style="margin-top:8px;">
-        <div class="field-label" id="lbl-brush-size">Tamaño <span class="val" id="txt-brush-size">32</span></div>
+        <div class="field-label" id="lbl-brush-size">Size <span class="val" id="txt-brush-size">32</span></div>
         <input type="range" id="brush-size" min="4" max="128" step="2" value="32">
       </div>
       <div class="field" style="margin-top:8px;">
-        <div class="field-label" id="lbl-brush-opacity">Opacidad <span class="val" id="txt-brush-opacity">80%</span></div>
+        <div class="field-label" id="lbl-brush-opacity">Opacity <span class="val" id="txt-brush-opacity">80%</span></div>
         <input type="range" id="brush-opacity" min="5" max="100" step="5" value="80">
       </div>
       <div class="field" style="margin-top:8px;">
-        <div class="field-label" id="lbl-brush-hardness">Dureza <span class="val" id="txt-brush-hardness">60%</span></div>
+        <div class="field-label" id="lbl-brush-hardness">Hardness <span class="val" id="txt-brush-hardness">60%</span></div>
         <input type="range" id="brush-hardness" min="0" max="100" step="5" value="60">
       </div>
       <div class="btn-row" style="margin-top:8px;">
-        <button class="btn btn-ghost btn-full btn-sm" id="btn-brush-undo">↩ Deshacer</button>
-        <button class="btn btn-danger btn-full btn-sm" id="btn-brush-clear">🗑 Limpiar pincel</button>
+        <button class="btn btn-ghost btn-full btn-sm" id="btn-brush-undo">↩ Undo</button>
+        <button class="btn btn-danger btn-full btn-sm" id="btn-brush-clear">🗑 Clear brush</button>
       </div>
     </div>
 
@@ -1091,7 +1142,10 @@ canvas { display: block; z-index: 0; }
             <div class="field-label" id="lbl-edit-oy">Mover Y <span class="val" id="txt-edit-oy">0</span></div>
             <input type="range" id="edit-slider-oy" min="-1" max="1" step="0.01" value="0">
           </div>
-          <button class="btn btn-secondary btn-full" id="btn-cerrar-editor" style="margin-top:10px;">Aceptar Cambios</button>
+          <div class="btn-row" style="margin-top:10px;">
+            <button class="btn btn-accent btn-full btn-sm" id="btn-mover-vinilo">🔀 Move</button>
+            <button class="btn btn-secondary btn-full btn-sm" id="btn-cerrar-editor">Accept</button>
+          </div>
         </div>
       <div id="vinilos-footer">
         <div class="btn-row">
@@ -1284,7 +1338,8 @@ canvas { display: block; z-index: 0; }
       <div class="divider"></div>
 
       <div class="field-label" id="lbl-editor-mapping">Mapeo de partes <span style="font-size:9px;color:var(--txt3);">/DEV/</span></div>
-      <div style="font-size:10px;color:var(--txt3);margin:6px 0 8px;line-height:1.5;">Selecciona una parte y asígnale un mapa PNG.</div>
+      <div style="font-size:10px;color:var(--red);margin:6px 0 4px;line-height:1.5;font-weight:600;">⚠️ Developer tool. Do not modify if you don't know what it does.</div>
+      <div style="font-size:10px;color:var(--txt3);margin:0 0 8px;line-height:1.5;">Select a part and assign a PNG map.</div>
       <div class="map-cols">
         <div class="map-col">
           <div class="map-col-label">Meshes</div>
@@ -1358,10 +1413,10 @@ canvas { display: block; z-index: 0; }
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
-        <label class="btn-upload" id="lbl-upload-base-tex-btn">🎨 Subir Textura Base (.png/.jpg)
-          <input type="file" id="input-textura-base" accept="image/png, image/jpeg">
+        <label class="btn-upload" id="lbl-upload-livery-png-2">&#x1F3A8; Apply Livery PNG
+          <input type="file" id="input-livery-png-2" accept="image/png, image/jpeg" multiple>
         </label>
-        <div id="texto-textura-base" style="font-size:10px; color:var(--txt3); margin-top:4px; line-height:1.5;">Aplica una textura a toda la carrocería (carbono, fibra, etc.)</div>
+        <div id="texto-livery-png-2" style="font-size:10px; color:var(--txt3); margin-top:4px; line-height:1.5;">Upload PNG files named after the mesh (e.g. body.png)</div>
         <label class="btn-upload">📁 Subir Carpeta FBX 
           <input type="file" id="input-carpeta" webkitdirectory directory multiple>
         </label>
@@ -1377,7 +1432,8 @@ canvas { display: block; z-index: 0; }
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
-        <div style="font-size:10px; color:var(--txt3); margin-bottom:8px; line-height:1.5;">Selecciona una parte y asígnale un mapa PNG.</div>
+        <div style="font-size:10px;color:var(--red);margin-bottom:4px;line-height:1.5;font-weight:600;">⚠️ Developer tool. Do not modify if you don't know what it does.</div>
+        <div style="font-size:10px; color:var(--txt3); margin-bottom:8px; line-height:1.5;">Select a part and assign a PNG map.</div>
         <div class="map-cols">
           <div class="map-col">
             <div class="map-col-label" id="lbl-meshes">Partes (meshes)</div>
@@ -1550,7 +1606,7 @@ canvas { display: block; z-index: 0; }
             <div class="field-label" id="lbl-move-y">Mover Y (vertical) <span class="val" id="txt-edit-oy">0</span></div>
             <input type="range" id="edit-slider-oy" min="-1" max="1" step="0.01" value="0">
           </div>
-          <button class="btn btn-secondary btn-full" id="btn-cerrar-editor" style="margin-top:10px;">Aceptar Cambios</button>
+          <button class="btn btn-secondary btn-full" id="btn-cerrar-editor" style="margin-top:10px;">Accept Changes</button>
         </div>
       </div>
     </div>
@@ -1599,13 +1655,13 @@ canvas { display: block; z-index: 0; }
     <div class="wm-body">
       <div style="display:flex;flex-direction:column;gap:6px;">
         <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);font-weight:600;" id="lbl-wm-projname">Nombre del proyecto</div>
-        <input type="text" id="wm-nombre-proyecto" placeholder="Mi Livery" style="background:var(--panel2);border:1px solid var(--border2);border-radius:var(--radius);color:var(--txt);padding:9px 12px;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;outline:none;width:100%;">
+        <input type="text" id="wm-nombre-proyecto" placeholder="Mi Livery" maxlength="30" style="background:var(--panel2);border:1px solid var(--border2);border-radius:var(--radius);color:var(--txt);padding:9px 12px;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;outline:none;width:100%;">
       </div>
       <label class="wm-slot" id="wm-slot-carpeta" for="wm-input-carpeta"><span id="lbl-wm-folder-icon" style="display:none;"></span>
         <div class="wm-slot-icon">📁</div>
         <div class="wm-slot-info">
-          <div class="wm-slot-label">Carpeta del modelo</div>
-          <div class="wm-slot-hint">Selecciona la carpeta con .fbx/.gltf y mapas PNG</div>
+          <div class="wm-slot-label">Model folder</div>
+          <div class="wm-slot-hint">Select folder with .fbx/.gltf and PNG maps</div>
         </div>
         <input type="file" id="wm-input-carpeta" webkitdirectory directory multiple>
       </label>
@@ -1663,6 +1719,15 @@ canvas { display: block; z-index: 0; }
             <option value="1">Alta</option>
             <option value="2" selected>Media</option>
             <option value="4">Baja</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <div class="field" style="flex:1;">
+          <div class="field-label" id="lbl-exp-format">Formato</div>
+          <select id="export-format-select">
+            <option value="png" selected>PNG</option>
+            <option value="dds">DDS (DXT5/BC3)</option>
           </select>
         </div>
       </div>
@@ -1750,6 +1815,22 @@ canvas { display: block; z-index: 0; }
     <span class="ayuda-key" id="ayuda-k9">Alt<br>+ rueda</span>
     <span class="ayuda-desc" id="ayuda-d9">Tamaño del pincel</span>
   </div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k10">C</span>
+    <span class="ayuda-desc" id="ayuda-d10">Posiciones de cámara</span>
+  </div>
+</div>
+
+<!-- ═══ CAMERA PRESETS (GT7 style) ══════════════════════════ -->
+<div id="camera-presets">
+  <div class="cam-preset-btn" data-cam="front"><div class="cam-icon">🚗</div><span class="cam-label">Frontal</span></div>
+  <div class="cam-preset-btn" data-cam="rear"><div class="cam-icon">🔙</div><span class="cam-label">Trasera</span></div>
+  <div class="cam-preset-btn" data-cam="left"><div class="cam-icon">◀</div><span class="cam-label">Izquierda</span></div>
+  <div class="cam-preset-btn" data-cam="right"><div class="cam-icon">▶</div><span class="cam-label">Derecha</span></div>
+  <div class="cam-preset-btn" data-cam="top"><div class="cam-icon">⬆</div><span class="cam-label">Techo</span></div>
+  <div class="cam-preset-btn" data-cam="34front"><div class="cam-icon">↗</div><span class="cam-label">3/4 Front</span></div>
+  <div class="cam-preset-btn" data-cam="34rear"><div class="cam-icon">↙</div><span class="cam-label">3/4 Rear</span></div>
+  <span class="cam-preset-hint" id="cam-hint">C — cerrar</span>
 </div>
 
 <div id="brush-mode-indicator">🖌️ MODO PINCEL</div>
@@ -2235,7 +2316,7 @@ canvas { display: block; z-index: 0; }
             mat.needsUpdate = true;
             mesh.material = mat;
         });
-        mostrarToast('Texturas originales restauradas');
+        mostrarToast('Original textures restored');
     });
 
     function actualizarEstiloPinturaCoche() {}
@@ -2274,16 +2355,23 @@ canvas { display: block; z-index: 0; }
 
     // ── Input / orbit coordination ───────────────────────────
     let _shiftHeld = false;
+    let _ctrlHeld  = false;
 
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Shift') {
             const tag = document.activeElement.tagName;
             if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable) return;
             _shiftHeld = true; controls.enabled = false;
+            _brushIndicador();
+        }
+        if (e.key === 'Control') {
+            _ctrlHeld = true;
+            if (!_shiftHeld && !brushActive) _brushIndicador();
         }
     });
-    window.addEventListener('keyup', (e) => { if (e.key === 'Shift') { _shiftHeld = false; controls.enabled = !brushActive; eliminarFantasma(); } });
-    window.addEventListener('blur', () => { _shiftHeld = false; controls.enabled = true; eliminarFantasma(); });
+    window.addEventListener('keyup', (e) => { if (e.key === 'Shift') { _shiftHeld = false; controls.enabled = !brushActive; eliminarFantasma(); _brushIndicador(); } });
+    window.addEventListener('keyup', (e) => { if (e.key === 'Control') { _ctrlHeld = false; _brushIndicador(); } });
+    window.addEventListener('blur', () => { _shiftHeld = false; _ctrlHeld = false; controls.enabled = true; eliminarFantasma(); });
     // Si el usuario hace clic en cualquier input/textarea, asegurarse de salir del modo shift
     document.addEventListener('focusin', (e) => {
         const tag = e.target.tagName;
@@ -2403,28 +2491,105 @@ canvas { display: block; z-index: 0; }
         if (modeloArchivo) { window.tempModeloFile = modeloArchivo; cargarCochePersonalizado(modeloArchivo, window.tempTexturaFile || null); }
     });
 
-    document.getElementById('input-textura-base').addEventListener('change', (e) => {
-        const f = e.target.files[0]; if (!f) return;
-        const url = URL.createObjectURL(f);
-        // If a model is loaded, apply as body texture directly without reloading
-        const img = new Image();
-        img.onload = () => { window._baseTexturaBitmap = img; };
-        img.src = url;
-        if (piezasCarroceria.length) {
+    // ── Aplicar livery PNG por nombre de mesh ──────────────────────
+    // Aplica uno o varios PNG como livery sobre el modelo.
+    // Matching: compara nombre del archivo con _ddsName y mesh.name.
+    // En AC la livery es un mapa UV compartido por varias meshes de carrocería.
+    function _applyLiveryPngs(files) {
+        if (!objetosPintables.length) { mostrarToast('⚠ Load a model first.'); return; }
+        let aplicadas = 0;
+
+        for (const f of files) {
+            const baseName = f.name.replace(/\.[^.]+$/, '').toLowerCase();
+            let targetMeshes = [];
+
+            // 1. Match exacto con _ddsName (prioridad máxima en AC)
+            targetMeshes = objetosPintables.filter(m =>
+                m.userData._ddsName && m.userData._ddsName.toLowerCase() === baseName
+            );
+
+            // 2. Match exacto con mesh.name
+            if (!targetMeshes.length) {
+                targetMeshes = objetosPintables.filter(m =>
+                    (m.name || '').toLowerCase().replace(/\.[^.]+$/, '') === baseName
+                );
+            }
+
+            // 3. _ddsName contiene el nombre del archivo o viceversa
+            if (!targetMeshes.length) {
+                targetMeshes = objetosPintables.filter(m => {
+                    const dds = (m.userData._ddsName || '').toLowerCase();
+                    return dds && dds.length > 2 && (dds.includes(baseName) || baseName.includes(dds));
+                });
+            }
+
+            // 4. mesh.name contiene el nombre del archivo o viceversa (solo nombres > 3 chars)
+            if (!targetMeshes.length && baseName.length > 3) {
+                targetMeshes = objetosPintables.filter(m => {
+                    const mn = (m.name || '').toLowerCase();
+                    return mn.length > 3 && (mn.includes(baseName) || baseName.includes(mn));
+                });
+            }
+
+            // 5. Fallback: si es un solo archivo, aplicar a todas las meshes que comparten
+            //    el _ddsName más común (carrocería), o a piezasCarroceria
+            if (!targetMeshes.length && files.length === 1) {
+                // Buscar el _ddsName más frecuente entre los objetos pintables
+                const ddsCount = {};
+                for (const m of objetosPintables) {
+                    const d = m.userData._ddsName;
+                    if (d) ddsCount[d] = (ddsCount[d] || 0) + 1;
+                }
+                const topDds = Object.entries(ddsCount).sort((a,b) => b[1] - a[1])[0];
+                if (topDds) {
+                    targetMeshes = objetosPintables.filter(m => m.userData._ddsName === topDds[0]);
+                } else {
+                    targetMeshes = [...piezasCarroceria];
+                }
+            }
+
+            if (!targetMeshes.length) continue;
+
+            const url = URL.createObjectURL(f);
             new THREE.TextureLoader().load(url, (tex) => {
-                tex.flipY = false; tex.colorSpace = THREE.SRGBColorSpace;
-                piezasCarroceria.forEach(mesh => {
+                tex.colorSpace = THREE.SRGBColorSpace;
+                for (const mesh of targetMeshes) {
                     if (!mesh.userData._matOriginal) mesh.userData._matOriginal = mesh.material;
                     const mat = mesh.userData._matOriginal;
-                    mat.map = tex; mat.color.set(0xffffff);
+                    mat.map = tex;
+                    mat.color.set(0xffffff);
                     mat.needsUpdate = true;
-                });
-                document.getElementById('texto-textura-base').textContent = '\u2714 Textura aplicada: ' + f.name;
+                    mesh.material = mat;
+                    mesh.userData._liveryTexture = tex;
+                }
+                // Bitmap para export
+                const img = new Image();
+                img.onload = () => { for (const m of targetMeshes) m.userData._liveryBitmap = img; };
+                img.src = url;
             });
-        } else {
-            window.tempTexturaFile = f;
-            if (window.tempModeloFile) cargarCochePersonalizado(window.tempModeloFile, f);
+            aplicadas++;
+            console.log(`[Livery] "${f.name}" → ${targetMeshes.length} mesh(es): ${targetMeshes.map(m => m.name || m.uuid.slice(0,8)).join(', ')}`);
         }
+
+        if (aplicadas) {
+            mostrarToast(`✔ Livery applied (${aplicadas} file/s)`);
+        } else {
+            mostrarToast('⚠ No compatible mesh found. Open console (Ctrl+Shift+I) to see mesh names.');
+            console.log('[Livery] Meshes disponibles:', objetosPintables.map(m => `"${m.name}" (dds: ${m.userData._ddsName || 'none'})`).join(', '));
+        }
+    }
+
+    document.getElementById('input-livery-png').addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []); if (!files.length) return;
+        _applyLiveryPngs(files);
+        e.target.value = '';
+    });
+    // Segunda instancia (sidebar)
+    const _inputLivery2 = document.getElementById('input-livery-png-2');
+    if (_inputLivery2) _inputLivery2.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []); if (!files.length) return;
+        _applyLiveryPngs(files);
+        e.target.value = '';
     });
 
     // ── Material config ──────────────────────────────────────
@@ -2532,8 +2697,121 @@ canvas { display: block; z-index: 0; }
         sl.addEventListener('mouseup',   () => { document.getElementById('lista-capas-ui').style.overflowY = 'auto'; });
     });
     document.getElementById('btn-cerrar-editor').addEventListener('click', () => {
-        indexCapaSeleccionada = null; subpanelEditor.style.display = 'none'; actualizarInterfazCapas();
+        indexCapaSeleccionada = null; subpanelEditor.style.display = 'none';
+        _dragMoveEnabled = false; _dragVinylActive = false; controls.enabled = true;
+        const btn = document.getElementById('btn-mover-vinilo');
+        if (btn) { btn.classList.remove('active-paint'); btn.textContent = '🔀 Move'; }
+        actualizarInterfazCapas();
     });
+
+    // ── Arrastrar vinilos con el mouse ──────────────────────────────
+    // Se activa solo con el botón "Mover" del editor de capa.
+    // Mientras está activo: clic izquierdo + arrastrar reposiciona el vinilo.
+    let _dragVinylActive = false;
+    let _dragMoveEnabled = false; // toggle del botón Mover
+
+    document.getElementById('btn-mover-vinilo').addEventListener('click', () => {
+        _dragMoveEnabled = !_dragMoveEnabled;
+        const btn = document.getElementById('btn-mover-vinilo');
+        btn.classList.toggle('active-paint', _dragMoveEnabled);
+        btn.textContent = _dragMoveEnabled ? '🔀 Moving...' : '🔀 Move';
+        if (_dragMoveEnabled) {
+            controls.enabled = false;
+            mostrarToast('Drag over the model to move the vinyl. Press "Accept" to finish.');
+        } else {
+            controls.enabled = true;
+        }
+    });
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+        if (!_dragMoveEnabled) return;
+        if (indexCapaSeleccionada === null) return;
+        if (e.button !== 0 || e.shiftKey || e.altKey || e.ctrlKey) return;
+        if (brushActive || _shiftHeld) return;
+        if (e.clientX < getPanelWidth()) return;
+
+        const cw = window.innerWidth, ch = window.innerHeight;
+        const rc = new THREE.Raycaster();
+        rc.setFromCamera(new THREE.Vector2((e.clientX/cw)*2-1, -(e.clientY/ch)*2+1), camera);
+        scene.updateMatrixWorld();
+        const hits = rc.intersectObjects(objetosPintables, false);
+        if (!hits.length) return;
+
+        _dragVinylActive = true;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        _dragVinylMoveTo(hits[0]);
+    }, { capture: true });
+
+    renderer.domElement.addEventListener('pointermove', (e) => {
+        if (!_dragVinylActive) return;
+
+        const cw = window.innerWidth, ch = window.innerHeight;
+        const rc = new THREE.Raycaster();
+        rc.setFromCamera(new THREE.Vector2((e.clientX/cw)*2-1, -(e.clientY/ch)*2+1), camera);
+        scene.updateMatrixWorld();
+        const hits = rc.intersectObjects(objetosPintables, false);
+        if (hits.length) _dragVinylMoveTo(hits[0]);
+    }, { capture: true });
+
+    renderer.domElement.addEventListener('pointerup', (e) => {
+        if (!_dragVinylActive) return;
+        _dragVinylActive = false;
+    }, { capture: true });
+
+    function _dragVinylMoveTo(hit) {
+        if (indexCapaSeleccionada === null) return;
+        const capa = capasStickers[indexCapaSeleccionada];
+        if (!capa) return;
+
+        const newPos = hit.point.clone();
+        const newNorm = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
+
+        // Actualizar datos de origen
+        capa.datosOrigen.pos = newPos;
+        capa.datosOrigen.posBase = newPos.clone();
+        capa.datosOrigen.norm = newNorm;
+        capa.datosOrigen.targetMesh = hit.object;
+        capa.datosOrigen.offsetX = 0;
+        capa.datosOrigen.offsetY = 0;
+
+        // Recalcular rotación del decal
+        const rot = calcularRotacionDecal(newPos, newNorm, capa.datosOrigen.rotZ || 0);
+        capa.datosOrigen.rotEuler = rot.clone();
+
+        // Regenerar geometría
+        const size = capa.datosOrigen.size;
+        const ratioY = capa.datosOrigen.ratioY || 1;
+        const ratioZ = capa.datosOrigen.ratioZ || 0.5;
+        capa.objetoMesh.geometry.dispose();
+        capa.objetoMesh.geometry = mkDecal(hit.object, newPos, rot, new THREE.Vector3(size, size * ratioY, ratioZ));
+
+        // Actualizar sliders si están visibles
+        editSliderOX.value = 0;
+        editSliderOY.value = 0;
+        txtEditOX.innerText = '0.00';
+        txtEditOY.innerText = '0.00';
+
+        // Mover el espejo si existe
+        if (capa.vinculoEspejo && indexCapaSeleccionada + 1 < capasStickers.length) {
+            const par = capasStickers[indexCapaSeleccionada + 1];
+            if (par) {
+                const espejo = encontrarMeshEspejo(hit.object, newPos);
+                const posE = espejo.pos;
+                const normE = newNorm.clone(); normE.x = -normE.x;
+                const rotE = calcularRotacionDecal(posE, normE, -(capa.datosOrigen.rotZ || 0));
+                par.datosOrigen.pos = posE;
+                par.datosOrigen.posBase = posE.clone();
+                par.datosOrigen.norm = normE;
+                par.datosOrigen.targetMesh = espejo.mesh;
+                par.datosOrigen.offsetX = 0;
+                par.datosOrigen.offsetY = 0;
+                par.datosOrigen.rotEuler = rotE.clone();
+                par.objetoMesh.geometry.dispose();
+                par.objetoMesh.geometry = mkDecal(espejo.mesh, posE, rotE, new THREE.Vector3(size, size * ratioY, ratioZ));
+            }
+        }
+    }
 
     function actualizarInterfazCapas() {
         const listaUI = document.getElementById('vinilos-capas-list'); listaUI.innerHTML = '';
@@ -2801,6 +3079,9 @@ canvas { display: block; z-index: 0; }
             if (mesh.userData._bucketColor && mesh.userData._ddsName) {
                 ddsNames.add(mesh.userData._ddsName);
             }
+            if (mesh.userData._liveryBitmap && mesh.userData._ddsName) {
+                ddsNames.add(mesh.userData._ddsName);
+            }
         }
         // Y meshes con brushDecals
         for (const d of brushDecals) {
@@ -3009,12 +3290,89 @@ canvas { display: block; z-index: 0; }
         if (e.target === document.getElementById('export-modal')) document.getElementById('export-modal').style.display = 'none';
     });
 
+    // ── Generador de archivo DDS (formato A8R8G8B8 sin comprimir) ──
+    // Formato aceptado nativamente por Assetto Corsa y la mayoría de herramientas.
+    // Estructura: Magic (4) + DDS_HEADER (124) + pixel data (BGRA 32bpp)
+    function _canvasToDDS(canvas, w, h) {
+        const ctx = canvas.getContext('2d');
+        const imgData = ctx.getImageData(0, 0, w, h);
+        const rgba = imgData.data;
+
+        const pixelCount = w * h;
+        const bgra = new Uint8Array(pixelCount * 4);
+        for (let i = 0; i < pixelCount; i++) {
+            const si = i * 4;
+            bgra[si]     = rgba[si + 2]; // B
+            bgra[si + 1] = rgba[si + 1]; // G
+            bgra[si + 2] = rgba[si];     // R
+            bgra[si + 3] = rgba[si + 3]; // A
+        }
+
+        // File = Magic(4) + Header(124) + Data
+        const headerSize = 128; // 4 (magic) + 124 (header struct)
+        const buffer = new ArrayBuffer(headerSize + bgra.length);
+        const view = new DataView(buffer);
+
+        // Magic number: "DDS " (0x20534444 little-endian)
+        view.setUint32(0, 0x20534444, true);
+
+        // DDS_HEADER (starts at offset 4, size 124)
+        view.setUint32(4, 124, true);      // dwSize = 124
+        // dwFlags: DDSD_CAPS(0x1) | DDSD_HEIGHT(0x2) | DDSD_WIDTH(0x4) | DDSD_PITCH(0x8) | DDSD_PIXELFORMAT(0x1000)
+        view.setUint32(8, 0x100F, true);
+        view.setUint32(12, h, true);       // dwHeight
+        view.setUint32(16, w, true);       // dwWidth
+        view.setUint32(20, w * 4, true);   // dwPitchOrLinearSize = pitch = width * 4 bytes
+        view.setUint32(24, 0, true);       // dwDepth (unused)
+        view.setUint32(28, 0, true);       // dwMipMapCount (no mipmaps)
+        // dwReserved1[11] — offsets 32..75 — all zeros (already)
+
+        // DDS_PIXELFORMAT (starts at offset 76 from start of file, i.e. offset 72 from header start)
+        view.setUint32(76, 32, true);            // ddspf.dwSize = 32
+        // dwFlags: DDPF_ALPHAPIXELS(0x1) | DDPF_RGB(0x40) = 0x41
+        view.setUint32(80, 0x41, true);
+        view.setUint32(84, 0, true);             // dwFourCC = 0 (no compression)
+        view.setUint32(88, 32, true);            // dwRGBBitCount = 32
+        view.setUint32(92, 0x00FF0000, true);    // dwRBitMask
+        view.setUint32(96, 0x0000FF00, true);    // dwGBitMask
+        view.setUint32(100, 0x000000FF, true);   // dwBBitMask
+        view.setUint32(104, 0xFF000000, true);   // dwABitMask
+
+        // dwCaps: DDSCAPS_TEXTURE(0x1000)
+        view.setUint32(108, 0x1000, true);
+        view.setUint32(112, 0, true);      // dwCaps2
+        view.setUint32(116, 0, true);      // dwCaps3
+        view.setUint32(120, 0, true);      // dwCaps4
+        view.setUint32(124, 0, true);      // dwReserved2
+
+        // Pixel data after header
+        new Uint8Array(buffer, headerSize).set(bgra);
+
+        return new Blob([buffer], { type: 'application/octet-stream' });
+    }
+
+    // Convertir Uint8Array/Uint8ClampedArray a base64
+    function _uint8ToBase64(uint8) {
+        let binary = '';
+        const len = uint8.length;
+        for (let i = 0; i < len; i++) binary += String.fromCharCode(uint8[i]);
+        return btoa(binary);
+    }
+
+    // Convertir Blob a base64 (async) — ya no se usa para DDS pero se mantiene por compatibilidad
+    function _blobToBase64Sync(blob) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.readAsDataURL(blob);
+        });
+    }
+
     // ── Combina stickers + brushDecals en un array compatible con processStickerChunked ──
     function _buildExportCapas() {
-        const capas = [...capasStickers]; // stickers primero
-        // Añadir brushDecals visibles como capas fake
+        const capas = [...capasStickers];
         for (const d of brushDecals) {
-            if (!d.mesh3d.visible) continue; // borrados/ocultos
+            if (!d.mesh3d.visible) continue;
             capas.push({
                 nombre: 'Brush',
                 miniaturaUrl: d.texDataUrl,
@@ -3055,6 +3413,8 @@ canvas { display: block; z-index: 0; }
                     entry.ctx.fillStyle = currentBaseColor;
                     entry.ctx.fillRect(0, 0, w, h);
                 }
+                // Aplicar liveries PNG por mesh
+                _liveryFillExportCanvas(single, w, h);
                 let partsData = null;
                 if (partsMapCanvas) { const tp=document.createElement('canvas');tp.width=w;tp.height=h; const pc=tp.getContext('2d');pc.drawImage(partsMapCanvas,0,0,w,h); partsData=pc.getImageData(0,0,w,h).data; }
                 // Rellenar piezas pintadas con cubo
@@ -3071,13 +3431,27 @@ canvas { display: block; z-index: 0; }
                 } catch(procErr) {
                     if (procErr?.message==='cancelled') { prog.update(0,'Cancelado'); return; } else console.warn(procErr);
                 } finally { try { prog.close(); } catch(e){} }
-                const dataUrl = entry.canvas.toDataURL('image/png');
-                const fn = (fileName || 'livery-map').replace(/\.png$/i,'') + '.png';
-                if (window.electronAPI?.saveFile) {
-                    await window.electronAPI.saveFile(fn, dataUrl);
+                const format = document.getElementById('export-format-select')?.value || 'png';
+                const baseFn = (fileName || 'livery-map').replace(/\.(png|dds)$/i, '');
+                if (format === 'dds') {
+                    const fn = baseFn + '.dds';
+                    if (window.electronAPI?.saveDDS) {
+                        const imgData = entry.ctx.getImageData(0, 0, w, h);
+                        const rgbaBase64 = _uint8ToBase64(imgData.data);
+                        const result = await window.electronAPI.saveDDS(fn, rgbaBase64, w, h);
+                        if (result?.error) mostrarToast('⚠ Error DDS: ' + result.error);
+                    } else {
+                        mostrarToast('⚠ DDS export only available in the desktop app.');
+                    }
                 } else {
-                    const a = document.createElement('a'); a.style.display='none'; a.download=fn; a.href=dataUrl;
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    const dataUrl = entry.canvas.toDataURL('image/png');
+                    const fn = baseFn + '.png';
+                    if (window.electronAPI?.saveFile) {
+                        await window.electronAPI.saveFile(fn, dataUrl);
+                    } else {
+                        const a = document.createElement('a'); a.style.display='none'; a.download=fn; a.href=dataUrl;
+                        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    }
                 }
             } catch(err) { console.error(err); alert('Error exportando: '+(err?.message||err)); }
         })();
@@ -3099,6 +3473,8 @@ canvas { display: block; z-index: 0; }
                     entry.ctx.fillRect(0, 0, w, h);
                 }
             }
+            // Aplicar liveries PNG por mesh
+            _liveryFillExportCanvas(exportMaps, w, h);
             let partsData = null;
             if (partsMapCanvas) { const tp=document.createElement('canvas');tp.width=w;tp.height=h; const pc=tp.getContext('2d');pc.drawImage(partsMapCanvas,0,0,w,h); partsData=pc.getImageData(0,0,w,h).data; }
             // Rellenar piezas pintadas con cubo
@@ -3117,15 +3493,29 @@ canvas { display: block; z-index: 0; }
             // Obtener nombres de los inputs del modal
             const inputs = document.querySelectorAll('#export-maps-list input[type=text]');
             let count = 0;
+            const format = document.getElementById('export-format-select')?.value || 'png';
             for (const entry of exportMaps) {
                 const inp = inputs[count];
-                const fn = ((inp?.value.trim()) || entry.fileName || 'livery-map').replace(/\.png$/i,'') + '.png';
-                const dataUrl = entry.canvas.toDataURL('image/png');
-                if (window.electronAPI?.saveFile) {
-                    await window.electronAPI.saveFile(fn, dataUrl);
+                const baseFn = ((inp?.value.trim()) || entry.fileName || 'livery-map').replace(/\.(png|dds)$/i, '');
+                if (format === 'dds') {
+                    const fn = baseFn + '.dds';
+                    if (window.electronAPI?.saveDDS) {
+                        const imgData = entry.ctx.getImageData(0, 0, w, h);
+                        const rgbaBase64 = _uint8ToBase64(imgData.data);
+                        const result = await window.electronAPI.saveDDS(fn, rgbaBase64, w, h);
+                        if (result?.error) mostrarToast('⚠ Error DDS: ' + result.error);
+                    } else {
+                        mostrarToast('⚠ DDS export only available in the desktop app.');
+                    }
                 } else {
-                    const a = document.createElement('a'); a.style.display='none'; a.download=fn; a.href=dataUrl;
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    const dataUrl = entry.canvas.toDataURL('image/png');
+                    const fn = baseFn + '.png';
+                    if (window.electronAPI?.saveFile) {
+                        await window.electronAPI.saveFile(fn, dataUrl);
+                    } else {
+                        const a = document.createElement('a'); a.style.display='none'; a.download=fn; a.href=dataUrl;
+                        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    }
                 }
                 count++;
             }
@@ -3143,6 +3533,7 @@ canvas { display: block; z-index: 0; }
         // También considerar meshes pintados con cubo y brushDecals
         for (const mesh of objetosPintables) {
             if (mesh.userData._bucketColor && mesh.userData._ddsName) ddsNames.add(mesh.userData._ddsName);
+            if (mesh.userData._liveryBitmap && mesh.userData._ddsName) ddsNames.add(mesh.userData._ddsName);
         }
         for (const d of brushDecals) {
             if (d.targetMesh?.userData?._ddsName) ddsNames.add(d.targetMesh.userData._ddsName);
@@ -3333,9 +3724,9 @@ canvas { display: block; z-index: 0; }
             console.error('Error modelo:', err);
             const msg = err?.message || String(err);
             if (/unknown property type/i.test(msg)) {
-                mostrarToast('⚠ Error FBX: tipo de propiedad desconocido. Re-exporta el modelo desde Blender como FBX 7.4 (Binario) o conviértelo a GLTF/GLB.', 8000);
+                mostrarToast('⚠ FBX Error: unknown property type. Re-export from Blender as FBX 7.4 (Binary) or convert to GLTF/GLB.', 8000);
             } else {
-                mostrarToast('⚠ Error al cargar el modelo: ' + msg.slice(0, 80), 6000);
+                mostrarToast('⚠ Error loading model: ' + msg.slice(0, 80), 6000);
             }
         });
     }
@@ -3545,9 +3936,9 @@ canvas { display: block; z-index: 0; }
     document.getElementById('btn-add-vinilo').addEventListener('click', () => mostrarVistaVinilos('add'));
     document.getElementById('btn-vinilos-back').addEventListener('click', () => mostrarVistaVinilos('home'));
     document.getElementById('btn-confirmar-vinilo').addEventListener('click', () => {
-        if (!texturaActual) { mostrarToast('⚠ Selecciona una imagen, escribe un texto o elige un sticker primero.'); return; }
+        if (!texturaActual) { mostrarToast('⚠ Select an image, type text, or choose a sticker first.'); return; }
         mostrarVistaVinilos('home');
-        mostrarToast('✔ Vinilo listo — Shift+Clic sobre el modelo para colocarlo');
+        mostrarToast('✔ Vinyl ready — Shift+Click on the model to place it');
     });
 
     // Tabs dentro de la vista añadir
@@ -3696,7 +4087,7 @@ canvas { display: block; z-index: 0; }
                 // Marcar seleccionada
                 grid.querySelectorAll('div').forEach(d => d.style.borderColor = 'var(--border)');
                 wrapper.style.borderColor = 'var(--gold)';
-                mostrarToast(`✔ Forma "${forma.label}" lista — Shift+Clic para colocar`);
+                mostrarToast(`✔ Shape "${forma.label}" ready — Shift+Click to place`);
                 actualizarFantasmaAlMover();
             });
             grid.appendChild(wrapper);
@@ -3738,7 +4129,7 @@ canvas { display: block; z-index: 0; }
         const grid = document.getElementById('biblioteca-grid');
         const items = bibliotecaCargarDesdeStorage();
         grid.innerHTML = '';
-        if (!items.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Sin stickers guardados</div>'; return; }
+        if (!items.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">No saved stickers</div>'; return; }
         items.forEach(item => {
             const img = document.createElement('img');
             img.src = item.data; img.title = item.name;
@@ -3782,7 +4173,7 @@ canvas { display: block; z-index: 0; }
         bibliotecaGuardarEnStorage(items); bibliotecaRenderizar();
     });
     document.getElementById('btn-limpiar-biblioteca').addEventListener('click', () => {
-        if (!confirm('¿Borrar toda la biblioteca de stickers?')) return;
+        if (!confirm('Delete entire sticker library?')) return;
         localStorage.removeItem(BIBLIOTECA_KEY); bibliotecaRenderizar();
     });
     bibliotecaRenderizar();
@@ -3852,8 +4243,8 @@ canvas { display: block; z-index: 0; }
 
     document.getElementById('btn-aplicar-dorsal').addEventListener('click', () => {
         const num = document.getElementById('input-numero-carrera').value.trim();
-        if (!num) { mostrarToast('⚠ Escribe un número de carrera primero.'); return; }
-        if (!objetosPintables.length) { mostrarToast('⚠ Carga un modelo primero.'); return; }
+        if (!num) { mostrarToast('⚠ Enter a race number first.'); return; }
+        if (!objetosPintables.length) { mostrarToast('⚠ Load a model first.'); return; }
         const ct = document.getElementById('color-numero').value;
         const cf = document.getElementById('color-fondo-numero').value;
         const canvas = generarTexturaDorsal(num, ct, cf);
@@ -3889,7 +4280,7 @@ canvas { display: block; z-index: 0; }
 
         const hitIzq = raycastLateral(modelBox.max.x + 0.5, -1);
         const hitDer = raycastLateral(modelBox.min.x - 0.5,  1);
-        if (!hitIzq || !hitDer) { mostrarToast('⚠ No se pudo detectar la superficie lateral. Usa Shift+Clic.'); return; }
+        if (!hitIzq || !hitDer) { mostrarToast('⚠ Could not detect side surface. Use Shift+Click.'); return; }
         const meshIzq = hitIzq.object, meshDer = hitDer.object;
 
         function colocarDorsal(mesh, pos, norm, tex, nombre) {
@@ -3904,7 +4295,7 @@ canvas { display: block; z-index: 0; }
         colocarDorsal(meshIzq, hitIzq.point, hitIzq.face.normal.clone().transformDirection(meshIzq.matrixWorld), texOrig, `Dorsal #${num} (Izq)`);
         colocarDorsal(meshDer, hitDer.point, hitDer.face.normal.clone().transformDirection(meshDer.matrixWorld), texOrig, `Dorsal #${num} (Der)`);
         actualizarProfundidades3D(); actualizarInterfazCapas();
-        mostrarToast(`✔ Dorsal #${num} aplicado en ambos lados`);
+        mostrarToast(`✔ Dorsal #${num} applied on both sides`);
     }); //──────────────────────
 
     // ── Nombre del piloto (techo) ───────────────────────────────────
@@ -3926,8 +4317,8 @@ canvas { display: block; z-index: 0; }
 
     document.getElementById('btn-aplicar-piloto').addEventListener('click', () => {
         const nombre = document.getElementById('input-nombre-piloto').value.trim().toUpperCase();
-        if (!nombre) { mostrarToast('⚠ Escribe el nombre del piloto primero.'); return; }
-        if (!objetosPintables.length) { mostrarToast('⚠ Carga un modelo primero.'); return; }
+        if (!nombre) { mostrarToast('⚠ Enter the driver name first.'); return; }
+        if (!objetosPintables.length) { mostrarToast('⚠ Load a model first.'); return; }
         const ct = document.getElementById('color-piloto-texto').value;
         const canvas = generarTexturaPiloto(nombre, ct);
         const miniUrl = canvas.toDataURL();
@@ -3959,7 +4350,7 @@ canvas { display: block; z-index: 0; }
         const offsetTecho = modelSize.x * 0.18;
         const hitIzq = raycastTecho(offsetTecho);
         const hitDer = raycastTecho(-offsetTecho);
-        if (!hitIzq || !hitDer) { mostrarToast('⚠ No se pudo detectar el techo. Usa Shift+Clic.'); return; }
+        if (!hitIzq || !hitDer) { mostrarToast('⚠ Could not detect roof. Use Shift+Click.'); return; }
 
         function colocarPiloto(hit, tex, nombre) {
             const pos = hit.point;
@@ -3976,7 +4367,7 @@ canvas { display: block; z-index: 0; }
         colocarPiloto(hitIzq, texOrig, `Piloto: ${nombre} (Izq)`);
         colocarPiloto(hitDer, texOrig, `Piloto: ${nombre} (Der)`);
         actualizarProfundidades3D(); actualizarInterfazCapas();
-        mostrarToast(`✔ Nombre "${nombre}" aplicado en el techo`);
+        mostrarToast(`✔ Name "${nombre}" applied on roof`);
     });
     //──────────────────────
     const gtPanel = document.getElementById('gt-panel');
@@ -4020,45 +4411,86 @@ canvas { display: block; z-index: 0; }
     // ── Sesión JSON ────────────────────────────────────────────
     function guardarSesionJSON() {
         const nombre = document.getElementById('hud-design-name').textContent || 'Mi Livery';
+
+        // ── Deduplicar imágenes: almacenar una vez, referenciar por índice ──
+        const imageBank = []; // array de dataURLs únicos
+        const imageIndex = new Map(); // dataURL → índice en imageBank
+
+        function getImageIdx(dataUrl) {
+            if (!dataUrl) return -1;
+            if (imageIndex.has(dataUrl)) return imageIndex.get(dataUrl);
+            const idx = imageBank.length;
+            imageBank.push(dataUrl);
+            imageIndex.set(dataUrl, idx);
+            return idx;
+        }
+
+        // ── Serializar vinilos (capasStickers) ──
         const capas = capasStickers.map(capa => ({
             nombre: capa.nombre,
-            miniaturaUrl: capa.miniaturaUrl,
+            imgIdx: getImageIdx(capa.miniaturaUrl),
             vinculoEspejo: capa.vinculoEspejo,
             visible: capa.objetoMesh.visible,
-            datosOrigen: {
-                meshName: capa.datosOrigen.targetMesh?.name || '',
-                meshUuid: capa.datosOrigen.targetMesh?.uuid || '',
-                pos:     { x: capa.datosOrigen.pos.x,     y: capa.datosOrigen.pos.y,     z: capa.datosOrigen.pos.z },
-                posBase: { x: capa.datosOrigen.posBase.x, y: capa.datosOrigen.posBase.y, z: capa.datosOrigen.posBase.z },
-                norm:    { x: capa.datosOrigen.norm.x,    y: capa.datosOrigen.norm.y,    z: capa.datosOrigen.norm.z },
-                size:    capa.datosOrigen.size,
-                rotZ:    capa.datosOrigen.rotZ,
-                offsetX: capa.datosOrigen.offsetX || 0,
-                offsetY: capa.datosOrigen.offsetY || 0,
-                ratioY:  capa.datosOrigen.ratioY  || 1,
-                ratioZ:  capa.datosOrigen.ratioZ  || 0.5,
+            d: {
+                mn: capa.datosOrigen.targetMesh?.name || '',
+                p:  [capa.datosOrigen.pos.x, capa.datosOrigen.pos.y, capa.datosOrigen.pos.z],
+                pb: [capa.datosOrigen.posBase.x, capa.datosOrigen.posBase.y, capa.datosOrigen.posBase.z],
+                n:  [capa.datosOrigen.norm.x, capa.datosOrigen.norm.y, capa.datosOrigen.norm.z],
+                s:  capa.datosOrigen.size,
+                rz: capa.datosOrigen.rotZ || 0,
+                ox: capa.datosOrigen.offsetX || 0,
+                oy: capa.datosOrigen.offsetY || 0,
+                ry: capa.datosOrigen.ratioY || 1,
+                rZ: capa.datosOrigen.ratioZ || 0.5,
             }
         }));
+
+        // ── Serializar brushDecals ──
+        const pincel = brushDecals.filter(d => d.mesh3d.visible).map(d => ({
+            imgIdx: getImageIdx(d.texDataUrl),
+            mn: d.targetMesh?.name || '',
+            p:  [d.pos.x, d.pos.y, d.pos.z],
+            n:  [d.norm.x, d.norm.y, d.norm.z],
+            s:  d.worldSize,
+            re: d.rotEuler ? [d.rotEuler.x, d.rotEuler.y, d.rotEuler.z, d.rotEuler.order] : null
+        }));
+
+        // ── Serializar cubo de pintura ──
+        const cubo = [];
+        for (const mesh of objetosPintables) {
+            if (mesh.userData._bucketColor) {
+                cubo.push({ mn: mesh.name || '', color: mesh.userData._bucketColor });
+            }
+        }
+
         const sesion = {
-            version: 1,
+            version: 2,
             nombre,
             fecha: new Date().toISOString(),
             baseColor: baseColorApplied ? currentBaseColor : null,
-            capas
+            images: imageBank,
+            capas,
+            pincel: pincel.length ? pincel : undefined,
+            cubo: cubo.length ? cubo : undefined
         };
-        const blob = new Blob([JSON.stringify(sesion, null, 2)], { type: 'application/json' });
+
+        // JSON sin pretty-print para reducir tamaño
+        const blob = new Blob([JSON.stringify(sesion)], { type: 'application/json' });
         const rawName = document.getElementById('sesion-filename').value.trim() || 'mi-livery-sesion';
         const fileName = rawName.replace(/\.json$/i, '') + '.json';
         const a = document.createElement('a'); a.style.display = 'none';
         a.href = URL.createObjectURL(blob); a.download = fileName;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        mostrarToast(`✔ Sesión guardada: ${fileName}`);
+        const sizeMB = (blob.size / 1048576).toFixed(1);
+        mostrarToast(`✔ Session saved: ${fileName} (${sizeMB} MB)`);
         document.getElementById('sesion-modal').style.display = 'none';
     }
 
     async function cargarSesionJSON(datos) {
-        if (!datos?.capas?.length) { mostrarToast('⚠ El archivo no contiene capas válidas.'); return; }
-        if (!objetosPintables.length) { mostrarToast('⚠ Carga primero el modelo 3D antes de restaurar la sesión.'); return; }
+        if (!objetosPintables.length) { mostrarToast('⚠ Load the 3D model before restoring the session.'); return; }
+
+        // Soporte para v1 y v2
+        const isV2 = datos.version >= 2;
 
         // Restaurar nombre
         if (datos.nombre) {
@@ -4068,38 +4500,62 @@ canvas { display: block; z-index: 0; }
         // Restaurar color base
         if (datos.baseColor) fillAllMeshes(datos.baseColor);
 
-        // Limpiar capas actuales
+        // Limpiar estado actual
         while (capasStickers.length) { const c = capasStickers.pop(); scene.remove(c.objetoMesh); c.objetoMesh.geometry.dispose(); }
+        while (brushDecals.length) { const d = brushDecals.pop(); scene.remove(d.mesh3d); d.mesh3d.geometry.dispose(); d.mesh3d.material.dispose(); }
+        brushUndoStack.length = 0;
+        // Limpiar cubo
+        for (const mesh of objetosPintables) {
+            if (mesh.userData._bucketColor) {
+                mesh.material.color.set(0xffffff);
+                mesh.material.map = mesh.userData._originalMap || null;
+                mesh.material.needsUpdate = true;
+                delete mesh.userData._bucketColor;
+            }
+        }
         indexCapaSeleccionada = null;
         subpanelEditor.style.display = 'none';
 
+        // Banco de imágenes (v2) o miniaturaUrl directa (v1)
+        const images = datos.images || [];
+
+        // ── Restaurar vinilos ──
+        const capasData = datos.capas || [];
         let restauradas = 0, fallidas = 0;
         const cfg = obtenerConfiguracionMaterial();
 
-        for (const capaData of datos.capas) {
+        for (const capaData of capasData) {
             try {
-                const d = capaData.datosOrigen;
-                // Buscar mesh por nombre o uuid
-                let mesh = objetosPintables.find(m => m.uuid === d.meshUuid)
-                        || objetosPintables.find(m => m.name && m.name === d.meshName)
+                const d = isV2 ? capaData.d : capaData.datosOrigen;
+                const meshName = isV2 ? d.mn : (d.meshName || '');
+                const meshUuid = isV2 ? '' : (d.meshUuid || '');
+
+                let mesh = objetosPintables.find(m => meshUuid && m.uuid === meshUuid)
+                        || objetosPintables.find(m => m.name && m.name === meshName)
                         || objetosPintables[0];
                 if (!mesh) { fallidas++; continue; }
 
-                const pos     = new THREE.Vector3(d.pos.x,     d.pos.y,     d.pos.z);
-                const posBase  = new THREE.Vector3(d.posBase.x, d.posBase.y, d.posBase.z);
-                const norm     = new THREE.Vector3(d.norm.x,    d.norm.y,    d.norm.z);
-                const ratioY   = d.ratioY  || 1;
-                const ratioZ   = d.ratioZ  || 0.5;
+                const pos    = isV2 ? new THREE.Vector3(...d.p) : new THREE.Vector3(d.pos.x, d.pos.y, d.pos.z);
+                const posBase = isV2 ? new THREE.Vector3(...d.pb) : new THREE.Vector3(d.posBase.x, d.posBase.y, d.posBase.z);
+                const norm   = isV2 ? new THREE.Vector3(...d.n) : new THREE.Vector3(d.norm.x, d.norm.y, d.norm.z);
+                const size   = isV2 ? d.s : d.size;
+                const rotZ   = isV2 ? d.rz : (d.rotZ || 0);
+                const ratioY = isV2 ? d.ry : (d.ratioY || 1);
+                const ratioZ = isV2 ? d.rZ : (d.ratioZ || 0.5);
+                const offsetX = isV2 ? d.ox : (d.offsetX || 0);
+                const offsetY = isV2 ? d.oy : (d.offsetY || 0);
 
-                // Cargar miniatura como textura
+                const imgUrl = isV2 ? images[capaData.imgIdx] : capaData.miniaturaUrl;
+                if (!imgUrl) { fallidas++; continue; }
+
                 const tex = await new Promise((res, rej) => {
-                    textureLoader.load(capaData.miniaturaUrl, res, undefined, rej);
+                    textureLoader.load(imgUrl, res, undefined, rej);
                 });
 
                 const dummy = new THREE.Object3D();
                 dummy.position.copy(pos);
                 dummy.lookAt(pos.clone().add(norm));
-                dummy.rotation.z += d.rotZ || 0;
+                dummy.rotation.z += rotZ;
 
                 const mat = new THREE.MeshStandardMaterial({
                     map: tex, transparent: true, depthWrite: false, depthTest: true,
@@ -4107,7 +4563,7 @@ canvas { display: block; z-index: 0; }
                     roughness: cfg.roughness, metalness: cfg.metalness, envMap: scene.environment
                 });
                 const geom = mkDecal(mesh, pos, dummy.rotation,
-                    new THREE.Vector3(d.size, d.size * ratioY, ratioZ));
+                    new THREE.Vector3(size, size * ratioY, ratioZ));
                 const sticker = new THREE.Mesh(geom, mat);
                 sticker.visible = capaData.visible !== false;
                 scene.add(sticker); contadorStickers++;
@@ -4115,21 +4571,78 @@ canvas { display: block; z-index: 0; }
                 capasStickers.push({
                     nombre: capaData.nombre,
                     objetoMesh: sticker,
-                    miniaturaUrl: capaData.miniaturaUrl,
+                    miniaturaUrl: imgUrl,
                     vinculoEspejo: capaData.vinculoEspejo || false,
                     datosOrigen: { targetMesh: mesh, pos, posBase, norm,
-                        size: d.size, rotZ: d.rotZ || 0,
-                        offsetX: d.offsetX || 0, offsetY: d.offsetY || 0,
-                        ratioY, ratioZ }
+                        size, rotZ, offsetX, offsetY, ratioY, ratioZ }
                 });
                 restauradas++;
             } catch(e) { console.warn('Capa no restaurada:', e); fallidas++; }
         }
 
+        // ── Restaurar pincel (v2) ──
+        let pincelRestauradas = 0;
+        if (isV2 && datos.pincel?.length) {
+            for (const bd of datos.pincel) {
+                try {
+                    const mesh = objetosPintables.find(m => m.name && m.name === bd.mn) || objetosPintables[0];
+                    if (!mesh) continue;
+                    const imgUrl = images[bd.imgIdx];
+                    if (!imgUrl) continue;
+
+                    const pos  = new THREE.Vector3(...bd.p);
+                    const norm = new THREE.Vector3(...bd.n);
+                    const rot  = bd.re ? new THREE.Euler(bd.re[0], bd.re[1], bd.re[2], bd.re[3] || 'XYZ') : calcularRotacionDecal(pos, norm, 0);
+
+                    const decalSize = new THREE.Vector3(bd.s, bd.s, bd.s * 2);
+                    let geom;
+                    try { geom = mkDecal(mesh, pos, rot, decalSize); } catch(e) { continue; }
+
+                    const tex = await new Promise((res, rej) => {
+                        textureLoader.load(imgUrl, res, undefined, rej);
+                    });
+                    const mat = new THREE.MeshBasicMaterial({
+                        map: tex, transparent: true, depthWrite: false, depthTest: true,
+                        polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -1,
+                        blending: THREE.NormalBlending, side: THREE.FrontSide,
+                    });
+                    const decalMesh = new THREE.Mesh(geom, mat);
+                    decalMesh.renderOrder = 50 + brushDecals.length;
+                    decalMesh.userData._isBrushDecal = true;
+                    scene.add(decalMesh);
+                    brushDecals.push({
+                        mesh3d: decalMesh, pos: pos.clone(), norm: norm.clone(),
+                        worldSize: bd.s, targetMesh: mesh, rotEuler: rot,
+                        texDataUrl: imgUrl
+                    });
+                    pincelRestauradas++;
+                } catch(e) { console.warn('Brush decal no restaurado:', e); }
+            }
+        }
+
+        // ── Restaurar cubo (v2) ──
+        let cuboRestauradas = 0;
+        if (isV2 && datos.cubo?.length) {
+            for (const bc of datos.cubo) {
+                const mesh = objetosPintables.find(m => m.name && m.name === bc.mn);
+                if (!mesh) continue;
+                mesh.material.color.set(bc.color);
+                mesh.material.map = null;
+                mesh.material.needsUpdate = true;
+                mesh.userData._bucketColor = bc.color;
+                cuboRestauradas++;
+            }
+        }
+
         actualizarProfundidades3D();
         actualizarInterfazCapas();
         document.getElementById('sesion-modal').style.display = 'none';
-        mostrarToast(`✔ Sesión cargada: ${restauradas} capa(s)${fallidas ? ` (⚠ ${fallidas} fallidas)` : ''}`, 3500);
+
+        let msg = `✔ Sesión cargada: ${restauradas} vinilo(s)`;
+        if (pincelRestauradas) msg += `, ${pincelRestauradas} pincelada(s)`;
+        if (cuboRestauradas)   msg += `, ${cuboRestauradas} pieza(s) con cubo`;
+        if (fallidas) msg += ` (⚠ ${fallidas} fallidas)`;
+        mostrarToast(msg, 4000);
     }
 
     document.getElementById('bb-sesion').addEventListener('click', () => {
@@ -4168,7 +4681,7 @@ canvas { display: block; z-index: 0; }
             try {
                 const datos = JSON.parse(ev.target.result);
                 cargarSesionJSON(datos);
-            } catch(err) { mostrarToast('⚠ Archivo JSON inválido.'); }
+            } catch(err) { mostrarToast('⚠ Invalid JSON file.'); }
         };
         reader.readAsText(f);
         e.target.value = '';
@@ -4215,8 +4728,8 @@ canvas { display: block; z-index: 0; }
         wmCarpetaFiles = null;
         const slot = document.getElementById('wm-slot-carpeta');
         slot.classList.remove('filled');
-        slot.querySelector('.wm-slot-label').textContent = currentLang === 'en' ? 'Model folder' : 'Carpeta del modelo';
-        slot.querySelector('.wm-slot-hint').textContent  = currentLang === 'en' ? 'Select folder with .fbx/.gltf and PNG maps' : 'Selecciona la carpeta con .fbx/.gltf y mapas PNG';
+        slot.querySelector('.wm-slot-label').textContent = currentLang === 'en' ? 'Model folder' : 'Model folder';
+        slot.querySelector('.wm-slot-hint').textContent  = currentLang === 'en' ? 'Select folder with .fbx/.gltf and PNG maps' : 'Select folder with .fbx/.gltf and PNG maps';
         wmBtnAbrir.disabled = true;
     });
 
@@ -4242,8 +4755,8 @@ canvas { display: block; z-index: 0; }
             wmBtnAbrir.disabled = false;
         } else {
             slot.classList.remove('filled');
-            slot.querySelector('.wm-slot-label').textContent = 'Carpeta del modelo';
-            slot.querySelector('.wm-slot-hint').textContent = 'No se encontró ningún .fbx/.gltf en la carpeta';
+            slot.querySelector('.wm-slot-label').textContent = 'Model folder';
+            slot.querySelector('.wm-slot-hint').textContent = 'No .fbx/.gltf found in folder';
             wmBtnAbrir.disabled = true;
         }
     });
@@ -5032,16 +5545,23 @@ applyLang();
         }
     }
 
-    // ── Indicador de modo ────────────────────────────────────────────
+    // ── Indicador de modo (global — pincel, borrador, cubo, sticker) ──
     function _brushIndicador() {
-        if (!brushActive) {
-            brushModeIndicator.classList.remove('visible', 'eraser');
-            return;
+        const ind = brushModeIndicator;
+        ind.classList.remove('visible', 'eraser', 'bucket', 'sticker');
+
+        if (brushActive) {
+            const erase = brushErasing || brushEraserToggle;
+            ind.textContent = erase ? (t('indicator_eraser') || '⬜ MODO BORRADOR') : (t('indicator_brush') || '🖌️ MODO PINCEL');
+            ind.classList.toggle('eraser', erase);
+            ind.classList.add('visible');
+        } else if ((bucketMode || _ctrlHeld) && !_shiftHeld) {
+            ind.textContent = t('indicator_bucket') || '🪣 MODO CUBO';
+            ind.classList.add('bucket', 'visible');
+        } else if (_shiftHeld) {
+            ind.textContent = t('indicator_sticker') || '✨ MODO VINILO';
+            ind.classList.add('sticker', 'visible');
         }
-        const erase = brushErasing || brushEraserToggle;
-        brushModeIndicator.textContent = erase ? '⬜ MODO BORRADOR' : '🖌️ MODO PINCEL';
-        brushModeIndicator.classList.toggle('eraser', erase);
-        brushModeIndicator.classList.add('visible');
     }
 
     // ── Cursor visual ────────────────────────────────────────────────
@@ -5174,7 +5694,7 @@ applyLang();
 
     // ── Deshacer pincel ──────────────────────────────────────────────
     document.getElementById('btn-brush-undo').addEventListener('click', () => {
-        if (!brushUndoStack.length) { mostrarToast('No hay trazos para deshacer.'); return; }
+        if (!brushUndoStack.length) { mostrarToast('No strokes to undo.'); return; }
         const targetLen = brushUndoStack.pop();
         while (brushDecals.length > targetLen) {
             const d = brushDecals.pop();
@@ -5184,7 +5704,7 @@ applyLang();
         }
         // Restaurar visibilidad de decals que pudo haber ocultado el borrador
         for (const d of brushDecals) d.mesh3d.visible = true;
-        mostrarToast('↩ Pincel deshecho');
+        mostrarToast('↩ Brush undone');
     });
 
     // ── Limpiar pincel ────────────────────────────────────────────────
@@ -5197,7 +5717,7 @@ applyLang();
         }
         brushUndoStack.length = 0;
         _brushTexCache = null;
-        mostrarToast('🗑 Pincel limpiado');
+        mostrarToast('🗑 Brush cleared');
     }
     document.getElementById('btn-brush-clear').addEventListener('click', brushLimpiarTodo);
 
@@ -5223,7 +5743,13 @@ applyLang();
             brush_undo: '↩ Deshacer', brush_clear: '🗑 Limpiar pincel',
             ayuda_alt_drag: 'Alt<br>+ arrastrar', ayuda_alt_desc: 'Pincel libre sobre el modelo',
             ayuda_alt_r: 'Alt + clic<br>derecho', ayuda_alt_r_desc: 'Borrador temporal',
-            ayuda_alt_wheel: 'Alt<br>+ rueda', ayuda_alt_wdesc: 'Tamaño del pincel'
+            ayuda_alt_wheel: 'Alt<br>+ rueda', ayuda_alt_wdesc: 'Tamaño del pincel',
+            ayuda_c_key: 'C', ayuda_c_desc: 'Posiciones de cámara',
+            cam_front: 'Frontal', cam_rear: 'Trasera', cam_left: 'Izquierda',
+            cam_right: 'Derecha', cam_top: 'Techo', cam_34front: '3/4 Front',
+            cam_34rear: '3/4 Rear', cam_hint: 'C — cerrar',
+            indicator_brush: '🖌️ MODO PINCEL', indicator_eraser: '⬜ MODO BORRADOR',
+            indicator_bucket: '🪣 MODO CUBO', indicator_sticker: '✨ MODO VINILO'
         },
         en: {
             lbl_brush_color: 'Brush color', lbl_brush_color2: 'Active color',
@@ -5231,7 +5757,13 @@ applyLang();
             brush_undo: '↩ Undo', brush_clear: '🗑 Clear brush',
             ayuda_alt_drag: 'Alt<br>+ drag', ayuda_alt_desc: 'Free brush on model',
             ayuda_alt_r: 'Alt + right<br>click', ayuda_alt_r_desc: 'Temporary eraser',
-            ayuda_alt_wheel: 'Alt<br>+ wheel', ayuda_alt_wdesc: 'Brush size'
+            ayuda_alt_wheel: 'Alt<br>+ wheel', ayuda_alt_wdesc: 'Brush size',
+            ayuda_c_key: 'C', ayuda_c_desc: 'Camera positions',
+            cam_front: 'Front', cam_rear: 'Rear', cam_left: 'Left',
+            cam_right: 'Right', cam_top: 'Top', cam_34front: '3/4 Front',
+            cam_34rear: '3/4 Rear', cam_hint: 'C — close',
+            indicator_brush: '🖌️ BRUSH MODE', indicator_eraser: '⬜ ERASER MODE',
+            indicator_bucket: '🪣 BUCKET MODE', indicator_sticker: '✨ VINYL MODE'
         }
     };
     Object.keys(brushI18n).forEach(lang => { if (LANG[lang]) Object.assign(LANG[lang], brushI18n[lang]); });
@@ -5253,6 +5785,16 @@ applyLang();
         _sh('ayuda-d8', L.ayuda_alt_r_desc || 'Borrador temporal');
         _sh('ayuda-k9', L.ayuda_alt_wheel  || 'Alt<br>+ rueda');
         _sh('ayuda-d9', L.ayuda_alt_wdesc  || 'Tamaño del pincel');
+        _sh('ayuda-k10', L.ayuda_c_key     || 'C');
+        _sh('ayuda-d10', L.ayuda_c_desc    || 'Posiciones de cámara');
+        // Camera presets
+        const camLabels = { front: L.cam_front||'Frontal', rear: L.cam_rear||'Trasera', left: L.cam_left||'Izquierda', right: L.cam_right||'Derecha', top: L.cam_top||'Techo', '34front': L.cam_34front||'3/4 Front', '34rear': L.cam_34rear||'3/4 Rear' };
+        document.querySelectorAll('.cam-preset-btn').forEach(btn => {
+            const lbl = btn.querySelector('.cam-label');
+            if (lbl && camLabels[btn.dataset.cam]) lbl.textContent = camLabels[btn.dataset.cam];
+        });
+        const camHint = document.getElementById('cam-hint');
+        if (camHint) camHint.textContent = L.cam_hint || 'C — cerrar';
     }
     applyBrushLang();
     document.querySelectorAll('.lang-option, #wm-lang-dropdown .lang-option').forEach(el => {
@@ -5283,13 +5825,15 @@ applyLang();
     });
 
     // Modificar los otros botones para desactivar el cubo
-    brushBtnPaint.addEventListener('click', () => { bucketMode = false; brushBtnBucket.classList.remove('active-bucket'); });
-    brushBtnErase.addEventListener('click', () => { bucketMode = false; brushBtnBucket.classList.remove('active-bucket'); });
+    brushBtnPaint.addEventListener('click', () => { bucketMode = false; brushBtnBucket.classList.remove('active-bucket'); _brushIndicador(); });
+    brushBtnErase.addEventListener('click', () => { bucketMode = false; brushBtnBucket.classList.remove('active-bucket'); _brushIndicador(); });
 
     // ── Ctrl + clic para cubo de pintura ────────────────────────────
     renderer.domElement.addEventListener('pointerdown', (e) => {
         // Ctrl + clic izquierdo cuando cubo activo O siempre con Ctrl+clic
         if (!e.ctrlKey || e.button !== 0) return;
+        if (e.shiftKey || _shiftHeld) return; // Shift+Ctrl es para rotar vinilo, no cubo
+        if (brushActive) return; // Alt+Ctrl no debe activar el cubo
         if (e.clientX < getPanelWidth()) return;
         if (selectMode) return; // el modo selección de partes ya usa Ctrl+clic
 
@@ -5323,7 +5867,7 @@ applyLang();
         // Guardar en userData para exportación
         mesh.userData._bucketColor = colorHex;
 
-        mostrarToast(`🪣 Pieza "${mesh.name || 'mesh'}" pintada`);
+        mostrarToast(`🪣 Part "${mesh.name || 'mesh'}" painted`);
     }, { capture: true });
 
     // ── Deshacer cubo (se añade al btn-brush-undo existente) ─────────
@@ -5356,6 +5900,25 @@ applyLang();
     // En su lugar, el cubo de pintura rellena directamente en el canvas de export
     // todos los píxeles que corresponden a los triángulos de ese mesh en espacio UV.
     // Esto se hace ANTES de renderizar los stickers/pincel.
+
+    // ── Exportar liveries PNG aplicadas por mesh ───────────────────
+    // Para cada mesh que tenga _liveryBitmap, dibuja la imagen completa
+    // como textura base en el canvas de export (ocupa todo el espacio UV).
+    function _liveryFillExportCanvas(exportMaps, w, h) {
+        for (const mesh of objetosPintables) {
+            const bmp = mesh.userData._liveryBitmap;
+            if (!bmp) continue;
+
+            const ddsName = mesh.userData?._ddsName || null;
+            const mapEntry = ddsName
+                ? exportMaps.find(e => e.ddsName === ddsName)
+                : exportMaps.find(e => !e.ddsName) || exportMaps[0];
+            if (!mapEntry) continue;
+
+            // Dibujar la livery escalada al canvas de export completo
+            mapEntry.ctx.drawImage(bmp, 0, 0, w, h);
+        }
+    }
 
     // Función global que se llama desde exportSingleMap/exportAllMaps
     function _bucketFillExportCanvas(exportMaps, w, h) {
@@ -5409,6 +5972,86 @@ applyLang();
             ctx.restore();
         }
     }
+
+    // ══════════════════════════════════════════════════════════════════
+    // ── CAMERA PRESETS (GT7 style) ────────────────────────────────
+    // Pulsar C abre/cierra el menú. Cada botón mueve la cámara con
+    // animación suave a una posición predefinida relativa al modelo.
+    // ══════════════════════════════════════════════════════════════════
+
+    const _camPresetsEl = document.getElementById('camera-presets');
+    let _camPresetsOpen = false;
+
+    // Toggle con tecla C
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'c' || e.key === 'C') {
+            const tag = document.activeElement.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable) return;
+            _camPresetsOpen = !_camPresetsOpen;
+            _camPresetsEl.classList.toggle('open', _camPresetsOpen);
+        }
+    });
+
+    // Calcular posiciones de cámara relativas al modelo
+    function _camGetModelCenter() {
+        if (!coche) return new THREE.Vector3(0, 1, 0);
+        const box = new THREE.Box3().setFromObject(coche);
+        return box.getCenter(new THREE.Vector3());
+    }
+    function _camGetDist() {
+        if (!window._modeloSize) return 5;
+        return Math.max(window._modeloSize.x, window._modeloSize.y, window._modeloSize.z) * 1.4;
+    }
+
+    const _camPresets = {
+        front:   () => ({ pos: [0, 1.2, _camGetDist()],        target: _camGetModelCenter() }),
+        rear:    () => ({ pos: [0, 1.2, -_camGetDist()],       target: _camGetModelCenter() }),
+        left:    () => ({ pos: [_camGetDist(), 1.2, 0],        target: _camGetModelCenter() }),
+        right:   () => ({ pos: [-_camGetDist(), 1.2, 0],       target: _camGetModelCenter() }),
+        top:     () => ({ pos: [0, _camGetDist() * 1.1, 0.01], target: _camGetModelCenter() }),
+        '34front': () => {
+            const d = _camGetDist() * 0.85;
+            return { pos: [d, 1.5, d], target: _camGetModelCenter() };
+        },
+        '34rear': () => {
+            const d = _camGetDist() * 0.85;
+            return { pos: [-d, 1.5, -d], target: _camGetModelCenter() };
+        }
+    };
+
+    // Animación suave de cámara
+    function _camAnimateTo(targetPos, targetLookAt, duration = 600) {
+        const startPos = camera.position.clone();
+        const startTarget = controls.target.clone();
+        const endPos = new THREE.Vector3(...targetPos);
+        const endTarget = targetLookAt.clone();
+        const startTime = performance.now();
+
+        function _tick() {
+            const elapsed = performance.now() - startTime;
+            const t = Math.min(1, elapsed / duration);
+            // Ease out cubic
+            const ease = 1 - Math.pow(1 - t, 3);
+
+            camera.position.lerpVectors(startPos, endPos, ease);
+            controls.target.lerpVectors(startTarget, endTarget, ease);
+            controls.update();
+
+            if (t < 1) requestAnimationFrame(_tick);
+        }
+        _tick();
+    }
+
+    // Click en los botones del menú
+    document.querySelectorAll('.cam-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const presetId = btn.dataset.cam;
+            const preset = _camPresets[presetId];
+            if (!preset) return;
+            const { pos, target } = preset();
+            _camAnimateTo(pos, target);
+        });
+    });
 
     // ══════════════════════════════════════════════════════════════════
     // ── FIN SISTEMA DE PINCEL ─────────────────────────────────────

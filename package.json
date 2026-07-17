@@ -19,8 +19,13 @@
     "files": [
       "index.html",
       "main.js",
+      "preload.js",
       "package.json",
-      "node_modules/three/**"
+      "logo.png",
+      "logosinfondo.png",
+      "derelict_airfield_02_1k.hdr",
+      "node_modules/three/**",
+      "node_modules/dxt-js/**"
     ],
     "win": {
       "target": "nsis",
@@ -28,6 +33,7 @@
     }
   },
   "dependencies": {
+    "dxt-js": "^0.0.3",
     "three": "^0.160.0"
   }
 }

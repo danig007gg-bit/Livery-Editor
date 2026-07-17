@@ -8,8 +8,10 @@
     "build:win": "electron-builder --win"
   },
   "devDependencies": {
-    "electron": "^33.2.0",
-    "electron-builder": "^26.15.3"
+    "acorn": "^8.17.0",
+    "electron": "^33.4.11",
+    "electron-builder": "^26.15.3",
+    "electron-packager": "^17.1.2"
   },
   "build": {
     "appId": "com.editorliveries.assetto",

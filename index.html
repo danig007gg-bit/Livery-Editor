@@ -1,10 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Livery Editor — Assetto Corsa</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Impact&family=Orbitron:wght@700&family=Graduate&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./logo.png">
     <style>
 /* ── GT7 Design Tokens ─────────────────────────────────────── */
 :root {
@@ -127,20 +128,22 @@ input[type="file"] { display: none; }
 /* ── Panel lateral GT7 ──────────────────────────────────────── */
 #gt-panel {
   position: fixed;
-  top: 0; left: 0; bottom: 90px;
+  top: 10px; left: 10px; bottom: 100px;
   width: 300px;
-  background: rgba(10,12,20,.92);
-  border-right: 1px solid var(--border);
+  background: rgba(13,15,24,.92);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
   backdrop-filter: blur(12px);
   z-index: 900;
   display: flex; flex-direction: column;
-  transform: translateX(-100%);
+  transform: translateX(calc(-100% - 14px));
   transition: transform .22s cubic-bezier(.4,0,.2,1);
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
 }
 #gt-panel.open { transform: translateX(0); }
 #gt-panel-header {
-  padding: 16px 16px 12px;
+  padding: 14px 16px 12px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   display: flex; align-items: center; gap: 10px;
@@ -273,6 +276,8 @@ input[type="range"]:hover::-webkit-slider-thumb { background: var(--gold2); }
 
 input[type="color"] {
   border: none; width: 32px; height: 32px;
+  min-width: 32px; min-height: 32px;
+  flex-shrink: 0;
   border-radius: var(--radius); cursor: pointer;
   background: none; padding: 0;
   outline: 2px solid var(--border);
@@ -448,7 +453,7 @@ input[type="checkbox"] {
 
 /* ── Mesh / Map list inside sections ────────────────────────── */
 .mini-list {
-  max-height: 110px; overflow-y: auto;
+  max-height: 130px; overflow-y: auto;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -465,7 +470,7 @@ input[type="checkbox"] {
 .mini-list-actions { display: flex; gap: 3px; flex-shrink: 0; }
 
 /* ── Mapping columns ─────────────────────────────────────────── */
-.map-cols { display: flex; gap: 6px; margin-top: 6px; }
+.map-cols { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
 .map-col { flex: 1; min-width: 0; }
 .map-col-label {
   font-size: 9px; color: var(--txt3); text-transform: uppercase;
@@ -578,6 +583,45 @@ input[type="checkbox"] {
   display: none;
 }
 
+/* ── Brush mode ──────────────────────────────────────────────── */
+#brush-mode-indicator {
+  position: fixed; top: 14px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(61,111,255,.18);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius2);
+  padding: 5px 18px;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--accent2);
+  z-index: 1200; pointer-events: none;
+  opacity: 0; transition: opacity .18s;
+}
+#brush-mode-indicator.visible { opacity: 1; }
+#brush-mode-indicator.eraser {
+  background: rgba(255,68,85,.15);
+  border-color: var(--red); color: var(--red);
+}
+.brush-tool-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4px; margin-top: 8px;
+}
+.brush-tool-btn {
+  padding: 8px 6px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 10px; font-weight: 600;
+  color: var(--txt2); text-align: center;
+  cursor: pointer; transition: all .15s;
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: .5px; text-transform: uppercase; line-height: 1.3;
+}
+.brush-tool-btn:hover { border-color: var(--border2); color: var(--txt); }
+.brush-tool-btn.active-paint { border-color: var(--accent2); color: var(--accent2); background: rgba(90,132,255,.12); }
+.brush-tool-btn.active-erase { border-color: var(--red); color: var(--red); background: rgba(255,68,85,.1); }
+.brush-tool-btn.active-bucket { border-color: var(--gold); color: var(--gold); background: rgba(200,168,75,.12); }
+
 /* ── Section accent lines ────────────────────────────────────── */
 .section[data-accent="gold"] .section-title { color: var(--gold); }
 .section[data-accent="green"] .section-title { color: var(--green); }
@@ -600,6 +644,10 @@ canvas { display: block; z-index: 0; }
 
 /* ── Vinilos rework ──────────────────────────────────────────── */
 #vinilos-home, #vinilos-add { display: flex; flex-direction: column; gap: 0; }
+#panel-vinilos { display: flex; flex-direction: column; height: 100%; }
+#vinilos-home { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+#vinilos-capas-list { flex: 1; overflow-y: auto; }
+#vinilos-footer { padding: 10px 0 0; border-top: 1px solid var(--border); flex-shrink: 0; margin-top: 8px; }
 #vinilos-add { display: none; }
 
 #btn-add-vinilo {
@@ -796,6 +844,65 @@ canvas { display: block; z-index: 0; }
 .lang-option:hover { background: rgba(255,255,255,.04); color: var(--txt); }
 .lang-option.active { color: var(--gold); }
 
+/* ── Panel de ayuda del ratón ──────────────────────────────── */
+#btn-ayuda-mouse {
+  position: fixed; bottom: 14px; right: 14px;
+  width: 42px; height: 42px;
+  background: rgba(13,15,24,.88);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 1100;
+  font-size: 18px; color: var(--txt3);
+  backdrop-filter: blur(8px);
+  transition: all .18s;
+  pointer-events: all;
+}
+#btn-ayuda-mouse:hover { border-color: rgba(200,168,75,.5); color: var(--txt); background: rgba(200,168,75,.08); }
+#btn-ayuda-mouse.active { border-color: var(--gold); color: var(--gold); background: rgba(200,168,75,.14); }
+
+#panel-ayuda-mouse {
+  position: fixed;
+  bottom: 66px; right: 10px;
+  width: 240px;
+  background: rgba(13,15,24,.95);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.55);
+  z-index: 1050;
+  padding: 14px;
+  transform: translateY(8px) scale(.97);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s, transform .18s;
+}
+#panel-ayuda-mouse.open {
+  opacity: 1; transform: none; pointer-events: all;
+}
+.ayuda-title {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 10px;
+}
+.ayuda-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.ayuda-row:last-child { border-bottom: none; }
+.ayuda-key {
+  flex-shrink: 0;
+  background: var(--panel2); border: 1px solid var(--border2);
+  border-radius: 5px; padding: 3px 7px;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  font-size: 10px; letter-spacing: .5px; text-transform: uppercase;
+  color: var(--txt2); white-space: nowrap; line-height: 1.4;
+}
+.ayuda-desc {
+  font-size: 11px; color: var(--txt3); line-height: 1.4;
+}
+
 /* ── Topbar Export btn ──────────────────────────────────────── */
 #topbar-export-btn {
   padding: 7px 18px;
@@ -819,6 +926,27 @@ canvas { display: block; z-index: 0; }
   width: auto; padding: 5px 24px 5px 8px; font-size: 11px;
 }
 
+
+/* â”€â”€ Social buttons (bottom-left) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.social-btn {
+  position: fixed;
+  width: 42px; height: 42px;
+  background: rgba(13,15,24,.88);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 1100;
+  color: var(--txt3);
+  backdrop-filter: blur(8px);
+  transition: all .18s;
+  pointer-events: all;
+  text-decoration: none;
+}
+.social-btn:hover { border-color: rgba(200,168,75,.5); color: var(--txt); background: rgba(200,168,75,.08); }
+.social-btn img { width: 22px; height: 22px; object-fit: contain; filter: brightness(0) invert(.55); transition: filter .18s; }
+.social-btn:hover img { filter: brightness(0) invert(.85); }
+#btn-discord  { bottom: 14px; left: 66px; }
+#btn-patreon  { bottom: 14px; left: 14px; }
     </style>
     <script type="importmap">
         {
@@ -828,12 +956,13 @@ canvas { display: block; z-index: 0; }
             }
         }
     </script>
+<script>window.onerror=function(msg,src,line,col,err){document.body.style.background="#111";document.body.innerHTML=`<div style="color:#ff4;font-family:monospace;padding:20px;font-size:14px;white-space:pre-wrap"><b>JS ERROR:</b>\n${msg}\n\nFile: ${src}\nLine: ${line}, Col: ${col}\n\n${err&&err.stack||""}</div>`;return true;};</script>
 </head>
 <body>
 
 <!-- ═══ HUD SUPERIOR DERECHO ═════════════════════════════════ -->
 <div id="hud-top-right">
-  <div id="hud-design-label">Nuevo diseño</div>
+  <div id="hud-design-label">Livery Editor</div>
   <div id="hud-design-box">
     <span class="design-icon">🖌️</span>
     <span id="hud-design-name">Mi Livery</span>
@@ -850,7 +979,7 @@ canvas { display: block; z-index: 0; }
 
     <!-- PANEL: MODELO -->
     <div id="panel-modelo" class="gt-subpanel" style="display:none">
-      <label class="btn-upload">📁 Cargar carpeta del modelo
+      <label class="btn-upload" id="lbl-cargar-carpeta">📁 Cargar carpeta del modelo
         <input type="file" id="input-carpeta" webkitdirectory directory multiple>
       </label>
       <div id="texto-mapa-body" style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;">Carga una carpeta con .fbx/.gltf y mapas PNG.</div>
@@ -866,43 +995,32 @@ canvas { display: block; z-index: 0; }
         <option value="estudio">Estudio Fotográfico</option>
         <option value="neon">Taller Mecánico</option>
       </select>
-      <div class="toggle-row" style="margin-top:10px;" onclick="this.querySelector('input').click()">
-        <label for="toggle-grid">Cuadrícula del suelo</label>
+      <label class="toggle-row" style="margin-top:10px;" for="toggle-grid">
+        <span>Cuadr&#237;cula del suelo</span>
         <input type="checkbox" id="toggle-grid">
-      </div>
+      </label>
     </div>
 
     <!-- PANEL: PINTURA -->
     <div id="panel-pintura" class="gt-subpanel" style="display:none">
       <div class="field">
         <div class="field-label">Color de carrocería</div>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:8px;">
-          <input type="color" id="selector-color" value="#ff0000" style="width:48px;height:48px;">
-          <div style="flex:1;">
-            <div style="font-size:12px;color:var(--txt2);margin-bottom:6px;">Selecciona el color</div>
-            <div class="btn-row">
-              <button class="btn btn-accent btn-full" id="btn-rellenar-carroceria">🪣 Aplicar</button>
-              <button class="btn btn-ghost btn-full" id="btn-quitar-pintura">✕ Quitar</button>
-            </div>
-          </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+          <input type="color" id="selector-color" value="#ff0000" style="width:48px;height:48px;min-width:48px;min-height:48px;flex-shrink:0;">
+          <span id="lbl-pick-color" style="font-size:12px;color:var(--txt2);">Selecciona el color</span>
         </div>
-      </div>
-      <div class="field" style="margin-top:10px;">
-        <div class="field-label">Acabado <span style="font-size:9px;color:var(--txt3);">(solo previsualización)</span></div>
-        <div class="paint-grid" style="margin-top:6px;">
-          <div class="paint-opt" id="acabado-brillante">✨<br>Brillante</div>
-          <div class="paint-opt active" id="acabado-metalizado">🔩<br>Metalizado</div>
-          <div class="paint-opt" id="acabado-cromado">💿<br>Cromado</div>
-          <div class="paint-opt" id="acabado-mate">◼<br>Mate</div>
+        <div class="btn-row" style="margin-top:8px;">
+          <button class="btn btn-accent btn-full" id="btn-rellenar-carroceria">&#x1F9A3; Aplicar</button>
+          <button class="btn btn-ghost btn-full" id="btn-quitar-pintura">&#x2715; Quitar</button>
         </div>
       </div>
       <div class="divider"></div>
-      <label class="btn-upload">🎨 Textura base (.png/.jpg)
+      <label class="btn-upload" id="lbl-upload-base-tex-btn">🎨 Textura base (.png/.jpg)
         <input type="file" id="input-textura-base" accept="image/png, image/jpeg">
       </label>
       <div id="texto-textura-base" style="font-size:10px;color:var(--txt3);margin-top:4px;line-height:1.5;">Aplica una textura a toda la carrocería.</div>
       <div class="divider"></div>
-      <div class="field-label">Colores rápidos</div>
+      <div class="field-label" id="lbl-quick-colors-paint">Colores rápidos</div>
       <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:8px;">
         <div style="width:100%;aspect-ratio:1;background:#ffffff;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#ffffff'"></div>
         <div style="width:100%;aspect-ratio:1;background:#111111;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#111111'"></div>
@@ -910,6 +1028,41 @@ canvas { display: block; z-index: 0; }
         <div style="width:100%;aspect-ratio:1;background:#2980b9;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#2980b9'"></div>
         <div style="width:100%;aspect-ratio:1;background:#27ae60;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#27ae60'"></div>
         <div style="width:100%;aspect-ratio:1;background:#f39c12;border-radius:3px;border:1px solid var(--border2);cursor:pointer;" onclick="document.getElementById('selector-color').value='#f39c12'"></div>
+      </div>
+
+      <button class="btn btn-secondary btn-full" id="btn-restaurar-texturas" style="margin-top:10px;">&#x1F504; Texturas Originales del Modelo</button>
+
+      <div class="divider"></div>
+
+      <!-- ── PINCEL LIBRE ──────────────────────────────── -->
+      <div class="field-label" style="margin-bottom:6px;">🖌️ Herramientas de pincel <span style="font-size:9px;color:var(--txt3);">(Alt + arrastrar / Ctrl + clic)</span></div>
+      <div class="brush-tool-grid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="brush-tool-btn active-paint" id="brush-btn-paint">🖌️<br>Pincel</div>
+        <div class="brush-tool-btn" id="brush-btn-bucket">🪣<br>Cubo</div>
+        <div class="brush-tool-btn" id="brush-btn-erase">⬜<br>Borrar</div>
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <div class="field-label" id="lbl-brush-color">Color del pincel</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:6px;">
+          <input type="color" id="brush-color" value="#ff0000" style="width:40px;height:40px;min-width:40px;flex-shrink:0;">
+          <span style="font-size:11px;color:var(--txt2);" id="lbl-brush-color2">Color activo</span>
+        </div>
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <div class="field-label" id="lbl-brush-size">Tamaño <span class="val" id="txt-brush-size">32</span></div>
+        <input type="range" id="brush-size" min="4" max="128" step="2" value="32">
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <div class="field-label" id="lbl-brush-opacity">Opacidad <span class="val" id="txt-brush-opacity">80%</span></div>
+        <input type="range" id="brush-opacity" min="5" max="100" step="5" value="80">
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <div class="field-label" id="lbl-brush-hardness">Dureza <span class="val" id="txt-brush-hardness">60%</span></div>
+        <input type="range" id="brush-hardness" min="0" max="100" step="5" value="60">
+      </div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn btn-ghost btn-full btn-sm" id="btn-brush-undo">↩ Deshacer</button>
+        <button class="btn btn-danger btn-full btn-sm" id="btn-brush-clear">🗑 Limpiar pincel</button>
       </div>
     </div>
 
@@ -931,19 +1084,21 @@ canvas { display: block; z-index: 0; }
             <input type="range" id="edit-slider-rotacion" min="0" max="360" step="1">
           </div>
           <div class="field" style="margin-top:8px;">
-            <div class="field-label">Mover X <span class="val" id="txt-edit-ox">0</span></div>
+            <div class="field-label" id="lbl-edit-ox">Mover X <span class="val" id="txt-edit-ox">0</span></div>
             <input type="range" id="edit-slider-ox" min="-1" max="1" step="0.01" value="0">
           </div>
           <div class="field" style="margin-top:8px;">
-            <div class="field-label">Mover Y <span class="val" id="txt-edit-oy">0</span></div>
+            <div class="field-label" id="lbl-edit-oy">Mover Y <span class="val" id="txt-edit-oy">0</span></div>
             <input type="range" id="edit-slider-oy" min="-1" max="1" step="0.01" value="0">
           </div>
           <button class="btn btn-secondary btn-full" id="btn-cerrar-editor" style="margin-top:10px;">Aceptar Cambios</button>
         </div>
-        <div class="btn-row" style="margin-top:10px;">
-          <button class="btn btn-ghost btn-full" id="btn-deshacer">↩ Deshacer</button>
-          <button class="btn btn-danger btn-full" id="btn-limpiar">🗑 Reset</button>
+      <div id="vinilos-footer">
+        <div class="btn-row">
+          <button class="btn btn-ghost btn-full" id="btn-deshacer">&#x21A9; Deshacer</button>
+          <button class="btn btn-danger btn-full" id="btn-limpiar">&#x1F5D1; Reset</button>
         </div>
+      </div>
       </div>
 
       <!-- VISTA AÑADIR: formulario de nuevo vinilo -->
@@ -951,10 +1106,11 @@ canvas { display: block; z-index: 0; }
         <button class="vadd-back" id="btn-vinilos-back">← Volver</button>
 
         <!-- Tabs: Imagen / Texto / Biblioteca -->
-        <div class="vadd-tabs">
+        <div class="vadd-tabs" style="grid-template-columns:1fr 1fr 1fr 1fr;">
           <div class="vadd-tab active" data-vtab="imagen">🖼<br>Imagen</div>
           <div class="vadd-tab" data-vtab="texto">🅰<br>Texto</div>
           <div class="vadd-tab" data-vtab="biblioteca">🗂<br>Biblioteca</div>
+          <div class="vadd-tab" data-vtab="formas">■<br>Formas</div>
         </div>
 
         <!-- Sección: Imagen -->
@@ -971,11 +1127,11 @@ canvas { display: block; z-index: 0; }
         <!-- Sección: Texto -->
         <div class="vadd-section" id="vtab-texto">
           <div class="field">
-            <div class="field-label">Texto</div>
+            <div class="field-label" id="lbl-vtxt-text">Texto</div>
             <input type="text" id="input-texto" placeholder="Escribe aquí..." style="margin-top:6px;">
           </div>
           <div class="field" style="margin-top:8px;">
-            <div class="field-label">Fuente</div>
+            <div class="field-label" id="lbl-vtxt-font">Fuente</div>
             <select id="selector-fuente" style="margin-top:6px;">
               <option value="italic 900 90px Impact, sans-serif">Racing (Impact)</option>
               <option value="900 70px 'Orbitron', sans-serif">Tech / Futurista</option>
@@ -983,10 +1139,10 @@ canvas { display: block; z-index: 0; }
             </select>
           </div>
           <div class="field" style="margin-top:8px;">
-            <div class="field-label">Color</div>
+            <div class="field-label" id="lbl-paint-color">Color</div>
             <div class="color-row" style="margin-top:6px;">
               <input type="color" id="color-texto" value="#ff3e3e">
-              <span style="font-size:11px;color:var(--txt2);">Color del texto</span>
+              <span style="font-size:11px;color:var(--txt2);" id="lbl-vtxt-color2">Color del texto</span>
             </div>
           </div>
         </div>
@@ -1003,10 +1159,30 @@ canvas { display: block; z-index: 0; }
           </div>
         </div>
 
+        <!-- Sección: Formas predeterminadas -->
+        <div class="vadd-section" id="vtab-formas">
+          <div class="field" style="margin-bottom:8px;">
+            <div class="field-label" id="lbl-shape-color">Color de la forma</div>
+            <div class="color-row" style="margin-top:6px;">
+              <input type="color" id="color-forma" value="#ffffff">
+              <span style="font-size:11px;color:var(--txt2);" id="lbl-shape-color2">Color del vinilo</span>
+            </div>
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label" id="lbl-shape-width">Ancho <span class="val" id="txt-forma-ancho">1.0</span></div>
+            <input type="range" id="sl-forma-ancho" min="0.2" max="3.0" step="0.05" value="1.0">
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label" id="lbl-shape-height">Alto <span class="val" id="txt-forma-alto">1.0</span></div>
+            <input type="range" id="sl-forma-alto" min="0.2" max="3.0" step="0.05" value="1.0">
+          </div>
+          <div id="formas-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;max-height:260px;overflow-y:auto;margin-top:8px;"></div>
+        </div>
+
         <!-- Opciones comunes -->
         <div class="divider" style="margin-top:14px;"></div>
         <div class="field">
-          <div class="field-label">Acabado</div>
+          <div class="field-label" id="lbl-vinyl-acabado">Acabado</div>
           <select id="selector-material-vinilo" style="margin-top:6px;">
             <option value="brillante">✨ Estándar / Brillante</option>
             <option value="mate">◼ Vinilo Mate</option>
@@ -1014,7 +1190,7 @@ canvas { display: block; z-index: 0; }
           </select>
         </div>
         <div class="field" style="margin-top:8px;">
-          <div class="field-label">Modo Espejo</div>
+          <div class="field-label" id="lbl-mirror-mode">Modo Espejo</div>
           <select id="check-espejo" style="margin-top:6px;">
             <option value="ninguno">Sin espejo</option>
             <option value="simetrico">Simétrico (voltea ambos)</option>
@@ -1044,14 +1220,14 @@ canvas { display: block; z-index: 0; }
         <div class="field-label">Color del número</div>
         <div class="color-row" style="margin-top:6px;">
           <input type="color" id="color-numero" value="#111111">
-          <span style="font-size:11px;color:var(--txt2);">Color del texto</span>
+          <span style="font-size:11px;color:var(--txt2);" id="lbl-vtxt-color2">Color del texto</span>
         </div>
       </div>
       <div class="field" style="margin-top:10px;">
-        <div class="field-label">Color del fondo</div>
+        <div class="field-label" id="lbl-race-bg-color">Color del fondo</div>
         <div class="color-row" style="margin-top:6px;">
           <input type="color" id="color-fondo-numero" value="#ffffff">
-          <span style="font-size:11px;color:var(--txt2);">Color del dorsal</span>
+          <span style="font-size:11px;color:var(--txt2);" id="lbl-race-bg-color2">Color del dorsal</span>
         </div>
       </div>
       <div id="preview-dorsal" style="margin-top:12px;display:flex;align-items:center;justify-content:center;">
@@ -1061,18 +1237,18 @@ canvas { display: block; z-index: 0; }
       <div style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;">Se generará como vinilo en ambos lados. Usa Shift+Clic para reposicionarlo.</div>
       <div class="divider"></div>
       <div class="field">
-        <div class="field-label">Nombre del piloto</div>
+        <div class="field-label" id="lbl-race-driver">Nombre del piloto</div>
         <input type="text" id="input-nombre-piloto" placeholder="DRIVER" style="margin-top:6px;font-family:'Impact',sans-serif;letter-spacing:2px;">
       </div>
       <div class="field" style="margin-top:10px;">
-        <div class="field-label">Color del texto</div>
+        <div class="field-label" id="lbl-race-driver-color">Color del texto</div>
         <div class="color-row" style="margin-top:6px;">
           <input type="color" id="color-piloto-texto" value="#ffffff">
-          <span style="font-size:11px;color:var(--txt2);">Color del nombre</span>
+          <span style="font-size:11px;color:var(--txt2);" id="lbl-race-driver-color2">Color del nombre</span>
         </div>
       </div>
       <button class="btn btn-accent btn-full" id="btn-aplicar-piloto" style="margin-top:12px;">&#x2714; Aplicar nombre en el techo</button>
-      <div style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;">Se coloca en ambos lados del techo. Usa el editor de capas para ajustarlo.</div>
+      <div style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;" id="lbl-race-driver-hint">Se coloca en ambos lados del techo. Usa el editor de capas para ajustarlo.</div>
     </div>
 
     <!-- PANEL: OPCIONES DEL EDITOR -->
@@ -1084,30 +1260,30 @@ canvas { display: block; z-index: 0; }
         <input type="range" id="sl-exposure" min="0.1" max="3" step="0.05" value="1.0">
       </div>
       <div class="field" style="margin-top:8px;">
-        <div class="field-label">Luz ambiental <span class="val" id="txt-luz-amb">0.4</span></div>
+        <div class="field-label" id="lbl-editor-amb">Luz ambiental <span class="val" id="txt-luz-amb">0.4</span></div>
         <input type="range" id="sl-luz-amb" min="0" max="2" step="0.05" value="0.4">
       </div>
       <div class="field" style="margin-top:8px;">
-        <div class="field-label">Luz principal <span class="val" id="txt-luz-prin">1.2</span></div>
+        <div class="field-label" id="lbl-editor-main">Luz principal <span class="val" id="txt-luz-prin">1.2</span></div>
         <input type="range" id="sl-luz-prin" min="0" max="4" step="0.1" value="1.2">
       </div>
       <div class="field" style="margin-top:8px;">
-        <div class="field-label">Luz lateral <span class="val" id="txt-luz-lat">0.5</span></div>
+        <div class="field-label" id="lbl-editor-side">Luz lateral <span class="val" id="txt-luz-lat">0.5</span></div>
         <input type="range" id="sl-luz-lat" min="0" max="3" step="0.1" value="0.5">
       </div>
       <div class="field" style="margin-top:8px;">
-        <div class="field-label">Entorno (env) <span class="val" id="txt-env-int">1.0</span></div>
+        <div class="field-label" id="lbl-editor-env">Entorno (env) <span class="val" id="txt-env-int">1.0</span></div>
         <input type="range" id="sl-env-int" min="0" max="3" step="0.05" value="1.0">
       </div>
       <div class="field" style="margin-top:8px;">
-        <div class="field-label">Niebla <span class="val" id="txt-fog">0.05</span></div>
+        <div class="field-label" id="lbl-editor-fog">Niebla <span class="val" id="txt-fog">0.05</span></div>
         <input type="range" id="sl-fog" min="0" max="0.3" step="0.005" value="0.05">
       </div>
       <button class="btn btn-ghost btn-full btn-sm" id="btn-reset-luz" style="margin-top:10px;">↺ Restablecer luces</button>
 
       <div class="divider"></div>
 
-      <div class="field-label">Mapeo de partes <span style="font-size:9px;color:var(--txt3);">/DEV/</span></div>
+      <div class="field-label" id="lbl-editor-mapping">Mapeo de partes <span style="font-size:9px;color:var(--txt3);">/DEV/</span></div>
       <div style="font-size:10px;color:var(--txt3);margin:6px 0 8px;line-height:1.5;">Selecciona una parte y asígnale un mapa PNG.</div>
       <div class="map-cols">
         <div class="map-col">
@@ -1115,7 +1291,7 @@ canvas { display: block; z-index: 0; }
           <div id="mesh-list-ui" class="mini-list"></div>
         </div>
         <div class="map-col">
-          <div class="map-col-label">Mapas</div>
+          <div class="map-col-label" id="lbl-maps">Mapas</div>
           <div id="maps-list-ui" class="mini-list"></div>
         </div>
       </div>
@@ -1123,12 +1299,12 @@ canvas { display: block; z-index: 0; }
         <button id="btn-assign-map" class="btn btn-ghost btn-sm btn-full">Asignar</button>
         <button id="btn-apply-mapping" class="btn btn-accent btn-sm btn-full">Aplicar</button>
       </div>
-      <label class="btn-upload" style="margin-top:6px;font-size:11px;">➕ Subir mapa PNG/JPG
+      <label class="btn-upload" id="lbl-upload-map-btn" style="margin-top:6px;font-size:11px;">➕ Subir mapa PNG/JPG
         <input type="file" id="input-maps" accept="image/png, image/jpeg" multiple>
       </label>
       <button id="btn-show-all-meshes" class="btn btn-ghost btn-sm btn-full" style="margin-top:6px;">Mostrar todo</button>
       <div class="toggle-row" style="margin-top:8px;">
-        <label for="toggle-select">Selección (Ctrl+Click)</label>
+        <label for="toggle-select" id="lbl-select-mode">Selección (Ctrl+Click)</label>
         <input type="checkbox" id="toggle-select">
       </div>
     </div>
@@ -1178,11 +1354,11 @@ canvas { display: block; z-index: 0; }
     <div class="section open" data-accent="gold">
       <div class="section-header">
         <div class="section-icon">🚗</div>
-        <div class="section-title">Cargar Modelo</div>
+        <div class="section-title" id="st-load-model">Cargar Modelo</div>
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
-        <label class="btn-upload">🎨 Subir Textura Base (.png/.jpg)
+        <label class="btn-upload" id="lbl-upload-base-tex-btn">🎨 Subir Textura Base (.png/.jpg)
           <input type="file" id="input-textura-base" accept="image/png, image/jpeg">
         </label>
         <div id="texto-textura-base" style="font-size:10px; color:var(--txt3); margin-top:4px; line-height:1.5;">Aplica una textura a toda la carrocería (carbono, fibra, etc.)</div>
@@ -1197,31 +1373,31 @@ canvas { display: block; z-index: 0; }
     <div class="section" data-accent="blue">
       <div class="section-header">
         <div class="section-icon">🗺️</div>
-        <div class="section-title">Mapeo de Partes /DEV TOOL/</div>
+        <div class="section-title" id="st-mapping">Mapeo de Partes /DEV TOOL/</div>
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
         <div style="font-size:10px; color:var(--txt3); margin-bottom:8px; line-height:1.5;">Selecciona una parte y asígnale un mapa PNG.</div>
         <div class="map-cols">
           <div class="map-col">
-            <div class="map-col-label">Partes (meshes)</div>
+            <div class="map-col-label" id="lbl-meshes">Partes (meshes)</div>
             <div id="mesh-list-ui" class="mini-list"></div>
           </div>
           <div class="map-col">
-            <div class="map-col-label">Mapas</div>
+            <div class="map-col-label" id="lbl-maps">Mapas</div>
             <div id="maps-list-ui" class="mini-list"></div>
           </div>
         </div>
         <div class="btn-row">
-          <button id="btn-assign-map" class="btn btn-ghost btn-sm btn-full">Asignar mapa</button>
+          <button id="btn-assign-map" class="btn btn-ghost btn-sm btn-full" id="btn-assign-map">Asignar mapa</button>
           <button id="btn-apply-mapping" class="btn btn-accent btn-sm btn-full">Aplicar</button>
         </div>
-        <label class="btn-upload" style="margin-top:6px; font-size:11px;">➕ Subir mapa PNG/JPG
+        <label class="btn-upload" id="lbl-upload-map-btn" style="margin-top:6px; font-size:11px;">➕ Subir mapa PNG/JPG
           <input type="file" id="input-maps" accept="image/png, image/jpeg" multiple>
         </label>
         <button id="btn-show-all-meshes" class="btn btn-ghost btn-sm btn-full" style="margin-top:6px;">Mostrar todo</button>
         <div class="toggle-row" style="margin-top:8px;">
-          <label for="toggle-select">Selección de Partes (Ctrl+Click)</label>
+          <label for="toggle-select" id="lbl-select-mode">Selección de Partes (Ctrl+Click)</label>
           <input type="checkbox" id="toggle-select">
         </div>
       </div>
@@ -1231,7 +1407,7 @@ canvas { display: block; z-index: 0; }
     <div class="section open">
       <div class="section-header">
         <div class="section-icon">🌐</div>
-        <div class="section-title">Entorno</div>
+        <div class="section-title" id="st-env">Entorno</div>
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
@@ -1253,15 +1429,15 @@ canvas { display: block; z-index: 0; }
     <div class="section open" data-accent="gold">
       <div class="section-header">
         <div class="section-icon">🎨</div>
-        <div class="section-title">Pintura de Carrocería</div>
+        <div class="section-title" id="st-paint">Pintura de Carrocería</div>
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
         <div class="field">
-          <div class="field-label">Color</div>
+          <div class="field-label" id="lbl-paint-color">Color</div>
           <div class="color-row">
             <input type="color" id="selector-color" value="#ff0000">
-            <span style="font-size:11px; color:var(--txt2);">Color de pintura</span>
+            <span style="font-size:11px; color:var(--txt2);" id="lbl-paint-color2">Color de pintura</span>
           </div>
         </div>
         <div class="btn-row" style="margin-top:10px;">
@@ -1275,16 +1451,16 @@ canvas { display: block; z-index: 0; }
     <div class="section" data-accent="blue">
       <div class="section-header">
         <div class="section-icon">🅰️</div>
-        <div class="section-title">Diseñador de Texto</div>
+        <div class="section-title" id="st-text">Diseñador de Texto</div>
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
         <div class="field">
-          <div class="field-label">Texto / Dorsal</div>
+          <div class="field-label" id="lbl-text-dorsal">Texto / Dorsal</div>
           <input type="text" id="input-texto" placeholder="Escribe aquí...">
         </div>
         <div class="field" style="margin-top:8px;">
-          <div class="field-label">Estilo de Fuente</div>
+          <div class="field-label" id="lbl-font-style">Estilo de Fuente</div>
           <select id="selector-fuente">
             <option value="italic 900 90px Impact, sans-serif">Racing (Impact)</option>
             <option value="900 70px 'Orbitron', sans-serif">Tech / Futurista</option>
@@ -1292,10 +1468,10 @@ canvas { display: block; z-index: 0; }
           </select>
         </div>
         <div class="field" style="margin-top:8px;">
-          <div class="field-label">Color del Texto</div>
+          <div class="field-label" id="lbl-text-color">Color del Texto</div>
           <div class="color-row">
             <input type="color" id="color-texto" value="#ff3e3e">
-            <span style="font-size:11px; color:var(--txt2);">Color del vinilo de texto</span>
+            <span style="font-size:11px; color:var(--txt2);" id="lbl-text-color2">Color del vinilo de texto</span>
           </div>
         </div>
       </div>
@@ -1305,7 +1481,7 @@ canvas { display: block; z-index: 0; }
     <div class="section open" data-accent="gold">
       <div class="section-header">
         <div class="section-icon">✨</div>
-        <div class="section-title">Vinilo / Sticker</div>
+        <div class="section-title" id="st-vinyl">Vinilo / Sticker</div>
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
@@ -1314,10 +1490,10 @@ canvas { display: block; z-index: 0; }
         </label>
         <div class="preview-row">
           <div id="vista-previa"><span style="color:var(--txt3); font-size:9px;">Vacío</span></div>
-          <div class="preview-hint">Vista previa del<br>vinilo activo</div>
+          <div class="preview-hint" id="lbl-preview-hint">Vista previa del<br>vinilo activo</div>
         </div>
         <div class="field" style="margin-top:10px;">
-          <div class="field-label">Acabado del Vinilo</div>
+          <div class="field-label" id="lbl-vinyl-finish">Acabado del Vinilo</div>
           <select id="selector-material-vinilo">
             <option value="brillante">✨ Estándar / Brillante</option>
             <option value="mate">◼ Vinilo Mate Extremo</option>
@@ -1325,7 +1501,7 @@ canvas { display: block; z-index: 0; }
           </select>
         </div>
         <div class="field" style="margin-top:6px;">
-          <div class="field-label">Modo Espejo</div>
+          <div class="field-label" id="lbl-mirror-mode">Modo Espejo</div>
           <select id="check-espejo">
             <option value="ninguno">Sin espejo</option>
             <option value="simetrico">Simétrico (voltea ambos)</option>
@@ -1351,7 +1527,7 @@ canvas { display: block; z-index: 0; }
     <div class="section open" data-accent="green">
       <div class="section-header">
         <div class="section-icon">📚</div>
-        <div class="section-title">Capas de Vinilos</div>
+        <div class="section-title" id="st-layers">Capas de Vinilos</div>
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
@@ -1367,11 +1543,11 @@ canvas { display: block; z-index: 0; }
             <input type="range" id="edit-slider-rotacion" min="0" max="360" step="1">
           </div>
           <div class="field" style="margin-top:8px;">
-            <div class="field-label">Mover X (horizontal) <span class="val" id="txt-edit-ox">0</span></div>
+            <div class="field-label" id="lbl-move-x">Mover X (horizontal) <span class="val" id="txt-edit-ox">0</span></div>
             <input type="range" id="edit-slider-ox" min="-1" max="1" step="0.01" value="0">
           </div>
           <div class="field" style="margin-top:8px;">
-            <div class="field-label">Mover Y (vertical) <span class="val" id="txt-edit-oy">0</span></div>
+            <div class="field-label" id="lbl-move-y">Mover Y (vertical) <span class="val" id="txt-edit-oy">0</span></div>
             <input type="range" id="edit-slider-oy" min="-1" max="1" step="0.01" value="0">
           </div>
           <button class="btn btn-secondary btn-full" id="btn-cerrar-editor" style="margin-top:10px;">Aceptar Cambios</button>
@@ -1383,11 +1559,11 @@ canvas { display: block; z-index: 0; }
     <div class="section open" data-accent="gold">
       <div class="section-header">
         <div class="section-icon">🗂️</div>
-        <div class="section-title">Biblioteca de Stickers</div>
+        <div class="section-title" id="st-library">Biblioteca de Stickers</div>
         <div class="section-chevron">▼</div>
       </div>
       <div class="section-body">
-        <div style="font-size:10px; color:var(--txt3); margin-bottom:8px; line-height:1.5;">Selecciona una carpeta de stickers. Se guardan para la próxima sesión.</div>
+        <div style="font-size:10px; color:var(--txt3); margin-bottom:8px; line-height:1.5;" id="lbl-library-hint">Selecciona una carpeta de stickers. Se guardan para la próxima sesión.</div>
         <label class="btn-upload">📁 Seleccionar carpeta de stickers
           <input type="file" id="input-biblioteca" webkitdirectory directory multiple>
         </label>
@@ -1416,15 +1592,16 @@ canvas { display: block; z-index: 0; }
         <button class="wm-lang-btn" id="wm-lang-btn">🌐 ES ▾</button>
         <div class="wm-lang-dropdown" id="wm-lang-dropdown">
           <div class="lang-option active" data-lang="es">🇪🇸 Español</div>
+          <div class="lang-option" data-lang="en">&#127468;&#127463; English</div>
         </div>
       </div>
     </div>
     <div class="wm-body">
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);font-weight:600;">Nombre del proyecto</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);font-weight:600;" id="lbl-wm-projname">Nombre del proyecto</div>
         <input type="text" id="wm-nombre-proyecto" placeholder="Mi Livery" style="background:var(--panel2);border:1px solid var(--border2);border-radius:var(--radius);color:var(--txt);padding:9px 12px;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;outline:none;width:100%;">
       </div>
-      <label class="wm-slot" id="wm-slot-carpeta" for="wm-input-carpeta">
+      <label class="wm-slot" id="wm-slot-carpeta" for="wm-input-carpeta"><span id="lbl-wm-folder-icon" style="display:none;"></span>
         <div class="wm-slot-icon">📁</div>
         <div class="wm-slot-info">
           <div class="wm-slot-label">Carpeta del modelo</div>
@@ -1465,36 +1642,35 @@ canvas { display: block; z-index: 0; }
 <div id="export-modal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,.8); backdrop-filter:blur(6px); z-index:20000;">
   <div style="width:380px; background:var(--panel); border:1px solid var(--border2); border-radius:var(--radius2); box-shadow:0 24px 80px rgba(0,0,0,.8); overflow:hidden;">
     <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); background:var(--panel2);">
-      <div style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:1px; text-transform:uppercase; color:var(--txt);">&#11015; Exportar Livery</div>
+      <div id="exp-modal-title" style="font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; letter-spacing:1px; text-transform:uppercase; color:var(--txt);">&#11015; Exportar Livery</div>
       <button id="export-modal-close" class="btn btn-ghost btn-sm">✕</button>
     </div>
     <div style="padding:16px; display:flex; flex-direction:column; gap:12px;">
-      <div class="field">
-        <div class="field-label">Nombre del archivo</div>
-        <input type="text" id="export-filename" value="livery-map" placeholder="livery-map">
+    <div style="padding:16px; display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; gap:8px;">
+        <div class="field" style="flex:1;">
+          <div class="field-label" id="lbl-exp-res">Resolucion</div>
+          <select id="export-res-select">
+            <option value="4096">4096 x 4096</option>
+            <option value="2048">2048 x 2048</option>
+            <option value="1024" selected>1024 x 1024</option>
+            <option value="512">512 x 512</option>
+          </select>
+        </div>
+        <div class="field" style="flex:1;">
+          <div class="field-label" id="lbl-exp-quality">Calidad</div>
+          <select id="export-quality-select">
+            <option value="1">Alta</option>
+            <option value="2" selected>Media</option>
+            <option value="4">Baja</option>
+          </select>
+        </div>
       </div>
       <div class="field">
-        <div class="field-label">Resolución</div>
-        <select id="export-res-select">
-          <option value="4096">4096 × 4096</option>
-          <option value="2048">2048 × 2048</option>
-          <option value="1024" selected>1024 × 1024</option>
-          <option value="512">512 × 512</option>
-        </select>
+        <div class="field-label" id="lbl-exp-maps">Mapas detectados</div>
+        <div id="export-maps-list" style="display:flex; flex-direction:column; gap:6px; margin-top:6px;"></div>
       </div>
-      <div class="field">
-        <div class="field-label">Calidad</div>
-        <select id="export-quality-select">
-          <option value="1">Alta</option>
-          <option value="2" selected>Media</option>
-          <option value="4">Baja</option>
-        </select>
-      </div>
-      <div class="field" id="export-maps-field" style="display:none;">
-        <div class="field-label">Mapas a exportar</div>
-        <div id="export-maps-list" style="display:flex; flex-direction:column; gap:6px; margin-top:4px;"></div>
-      </div>
-      <button id="export-modal-confirm" class="btn btn-primary btn-full" style="margin-top:4px; padding:11px; font-size:13px; letter-spacing:1.5px;">⬇ Exportar PNG</button>
+    </div>
     </div>
   </div>
 </div>
@@ -1503,29 +1679,80 @@ canvas { display: block; z-index: 0; }
 <div id="sesion-modal" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);z-index:25000;">
   <div style="width:400px;max-width:96vw;background:var(--panel);border:1px solid var(--border2);border-radius:var(--radius2);box-shadow:0 24px 80px rgba(0,0,0,.9);overflow:hidden;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);background:var(--panel2);">
-      <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);">💾 Guardar / Cargar Sesión</div>
+      <div id="sesion-modal-title" style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);">💾 Guardar / Cargar Sesión</div>
       <button id="sesion-modal-close" class="btn btn-ghost btn-sm">✕</button>
     </div>
     <div style="padding:18px;display:flex;flex-direction:column;gap:14px;">
-      <div style="font-size:11px;color:var(--txt3);line-height:1.6;">Guarda todas las capas de vinilos, posiciones, colores y nombre del proyecto en un archivo <strong style="color:var(--txt2);">.json</strong>. Cárgalo después para continuar donde lo dejaste.</div>
+      <div id="sesion-modal-desc" style="font-size:11px;color:var(--txt3);line-height:1.6;">Guarda todas las capas de vinilos, posiciones, colores y nombre del proyecto en un archivo <strong style="color:var(--txt2);">.json</strong>. Cárgalo después para continuar donde lo dejaste.</div>
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;">
-        <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);margin-bottom:6px;">Nombre del archivo</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);margin-bottom:6px;" id="lbl-sesion-filename">Nombre del archivo</div>
         <input type="text" id="sesion-filename" placeholder="mi-livery-sesion" style="font-size:12px;">
       </div>
       <button id="btn-guardar-sesion" style="width:100%;padding:12px;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#07080d;border:none;border-radius:var(--radius);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">⬇ Guardar sesión como JSON</button>
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="flex:1;height:1px;background:var(--border);"></div>
-        <span style="font-size:10px;color:var(--txt3);font-family:'Rajdhani',sans-serif;letter-spacing:1px;text-transform:uppercase;">o cargar</span>
+        <span style="font-size:10px;color:var(--txt3);font-family:'Rajdhani',sans-serif;letter-spacing:1px;text-transform:uppercase;" id="lbl-sesion-or">o cargar</span>
         <div style="flex:1;height:1px;background:var(--border);"></div>
       </div>
-      <label style="width:100%;padding:11px;background:var(--panel2);border:1px dashed var(--border2);border-radius:var(--radius);color:var(--txt2);font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;text-align:center;display:block;transition:all .15s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--txt)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--txt2)'">📂 Cargar sesión (.json)
-        <input type="file" id="input-cargar-sesion" accept=".json">
+      <label id="lbl-cargar-sesion" style="width:100%;padding:11px;background:var(--panel2);border:1px dashed var(--border2);border-radius:var(--radius);color:var(--txt2);font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;text-align:center;display:block;transition:all .15s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--txt)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--txt2)'">📂 Cargar sesión (.json)
+        <input type="file" id="input-cargar-sesion" accept=".json" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;">
       </label>
       <div id="sesion-info" style="font-size:11px;color:var(--txt3);text-align:center;min-height:16px;"></div>
     </div>
   </div>
 </div>
 
+<!-- ═══ BOTÓN AYUDA RATÓN ══════════════════════════════════ -->
+<a id="btn-discord" class="social-btn" href="https://discord.gg/9W9Ea3XdYS" target="_blank" title="Discord">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 256 293" fill="currentColor"><path d="M226 0H30A30 30 0 0 0 0 30v198a30 30 0 0 0 30 30h166l-8-27 19 17 18 17 31 26V30A30 30 0 0 0 226 0zm-57 191s-5-6-10-12c19-5 26-17 26-17a84 84 0 0 1-17 9 96 96 0 0 1-21 6 102 102 0 0 1-38 0 123 123 0 0 1-21-6 86 86 0 0 1-11-5l-1-1-1-1-4-2s7 12 26 17c-4 6-10 12-10 12-32-1-45-22-45-22 0-47 21-85 21-85 21-16 41-16 41-16l1 2C81 77 69 89 69 89s3-2 9-4c16-7 28-9 33-9l2-1a124 124 0 0 1 30 0 119 119 0 0 1 44 14S175 79 150 71l2-2s20 0 41 15c0 0 21 38 21 85 0 0-12 21-45 22zm-68-68c-8 0-15 7-15 16s7 17 15 17 15-7 15-17-7-16-15-16zm53 0c-8 0-15 7-15 16s7 17 15 17 15-7 15-17-7-16-15-16z"/></svg>
+</a>
+<a id="btn-patreon" class="social-btn" href="https://www.patreon.com/cw/DanG007" target="_blank" title="Patreon">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M14.82 2a7.18 7.18 0 1 1 0 14.36A7.18 7.18 0 0 1 14.82 2zM2 22h3.5V2H2v20z"/></svg>
+</a>
+<button id="btn-ayuda-mouse" title="Controles del ratón"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22ZM12 17.75C12.4142 17.75 12.75 17.4142 12.75 17V11C12.75 10.5858 12.4142 10.25 12 10.25C11.5858 10.25 11.25 10.5858 11.25 11V17C11.25 17.4142 11.5858 17.75 12 17.75ZM12 7C12.5523 7 13 7.44772 13 8C13 8.55228 12.5523 9 12 9C11.4477 9 11 8.55228 11 8C11 7.44772 11.4477 7 12 7Z" fill="currentColor"></path></svg></button>
+
+<!-- ═══ PANEL AYUDA RATÓN ═══════════════════════════════════ -->
+<div id="panel-ayuda-mouse">
+  <div class="ayuda-title">🖱️ Controles del ratón</div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k1">Clic izq.<br>arrastrar</span>
+    <span class="ayuda-desc" id="ayuda-d1">Rotar la cámara alrededor del modelo</span>
+  </div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k2">Clic der.<br>arrastrar</span>
+    <span class="ayuda-desc" id="ayuda-d2">Desplazar la cámara (pan)</span>
+  </div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k3">Rueda</span>
+    <span class="ayuda-desc" id="ayuda-d3">Zoom acercar / alejar</span>
+  </div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k4">Shift<br>+ clic</span>
+    <span class="ayuda-desc" id="ayuda-d4">Colocar vinilo sobre el modelo</span>
+  </div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k5">Shift<br>+ rueda</span>
+    <span class="ayuda-desc" id="ayuda-d5">Cambiar tamaño del vinilo</span>
+  </div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k6">Shift + Ctrl<br>+ rueda</span>
+    <span class="ayuda-desc" id="ayuda-d6">Rotar el vinilo (pasos de 5°)</span>
+  </div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k7">Alt<br>+ arrastrar</span>
+    <span class="ayuda-desc" id="ayuda-d7">Pincel libre sobre el modelo</span>
+  </div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k8">Alt + clic<br>derecho</span>
+    <span class="ayuda-desc" id="ayuda-d8">Borrador temporal</span>
+  </div>
+  <div class="ayuda-row">
+    <span class="ayuda-key" id="ayuda-k9">Alt<br>+ rueda</span>
+    <span class="ayuda-desc" id="ayuda-d9">Tamaño del pincel</span>
+  </div>
+</div>
+
+<div id="brush-mode-indicator">🖌️ MODO PINCEL</div>
 <div id="brush-cursor" class="brush-cursor-indicator"></div>
 <canvas id="canvas-texto-oculto" width="512" height="512" style="display:none;"></canvas>
 
@@ -1540,6 +1767,26 @@ canvas { display: block; z-index: 0; }
     import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
     // ── Texture loader patches ──────────────────────────────
+        function mkDecal(mesh, pos, rot, size) {
+        const g = new DecalGeometry(mesh, pos, rot, size);
+        const nrmAttr = g.attributes.normal;
+        if (!nrmAttr) return g;
+        const decalNorm = new THREE.Vector3(0, 0, 1).applyEuler(rot);
+        const idxArr = g.index ? Array.from(g.index.array) : [...Array(nrmAttr.count).keys()];
+        const keep = [];
+        for (let i = 0; i < idxArr.length; i += 3) {
+            const ia = idxArr[i], ib = idxArr[i+1], ic = idxArr[i+2];
+            const n = new THREE.Vector3()
+                .fromBufferAttribute(nrmAttr, ia)
+                .add(new THREE.Vector3().fromBufferAttribute(nrmAttr, ib))
+                .add(new THREE.Vector3().fromBufferAttribute(nrmAttr, ic))
+                .normalize();
+            if (n.dot(decalNorm) >= 0.0) keep.push(ia, ib, ic);
+        }
+        g.setIndex(keep);
+        return g;
+    }
+
     const originalTextureLoaderLoad = THREE.TextureLoader.prototype.load;
     THREE.TextureLoader.prototype.load = function (url, onLoad, onProgress, onError) {
         return originalTextureLoaderLoad.call(this, url, (t) => onLoad(t), onProgress, (error) => {
@@ -1675,12 +1922,18 @@ canvas { display: block; z-index: 0; }
     let coche = null, capasStickers = [], contadorStickers = 0, indexCapaSeleccionada = null;
     let bodyMaskCanvas = null, bodyMaskCtx = null, bodyMaskImageData = null, bodyMaskTexture = null;
     let paintOverlays = [];
+    const brushDecals = [];     // pincel: array de decals { mesh3d, pos, norm, worldSize, targetMesh, rotEuler, texDataUrl }
+    const brushUndoStack = [];  // pincel: historial de longitudes para deshacer
+    const bucketHistory = [];   // cubo: historial { mesh, prevColor, prevMap } para deshacer
     let partsMapCanvas = null, partsMapCtx = null, partsMapImageData = null;
     let modelIniData = null, selectMode = false, selectedOverlays = {};
     let uploadedMaps = [];
     let tamañoActual = 0.3, rotacionActual = 0;
+    let formaAnchoActual = 1.0, formaAltoActual = 1.0;
+    let _formaActivaId = null; // id de la forma seleccionada actualmente
     let stickerFantasma = null, stickerFantasmaEspejo = null;
     let texturaActual = null, urlMiniaturaActual = '';
+    let _texturaAspectRatio = 1; // height/width de la imagen cargada (para no deformar)
 
     const checkEspejo = document.getElementById('check-espejo');
     const modoEspejo = () => checkEspejo.value;
@@ -1709,6 +1962,8 @@ canvas { display: block; z-index: 0; }
 
     function actualizarTexturaPorTexto() {
         const texto = inputTexto.value.trim(); if (!texto) return false;
+        _formaActivaId = null;
+        _texturaAspectRatio = 1; // texto es siempre cuadrado (canvas 512x512)
         ctxTexto.clearRect(0, 0, canvasTexto.width, canvasTexto.height);
         // Parse font string and scale size down until text fits
         let fontStr = selectorFuente.value;
@@ -1723,7 +1978,7 @@ canvas { display: block; z-index: 0; }
         ctxTexto.fillStyle = colorTexto.value;
         ctxTexto.textAlign = 'center'; ctxTexto.textBaseline = 'middle';
         ctxTexto.fillText(texto, canvasTexto.width / 2, canvasTexto.height / 2);
-        texturaActual = new THREE.CanvasTexture(canvasTexto);
+        texturaActual = new THREE.CanvasTexture(canvasTexto); texturaActual.premultiplyAlpha = false;
         materialFantasma.map = texturaActual; materialFantasma.needsUpdate = true;
         urlMiniaturaActual = canvasTexto.toDataURL();
         vistaPrevia.innerHTML = `<img src="${urlMiniaturaActual}">`;
@@ -1849,7 +2104,15 @@ canvas { display: block; z-index: 0; }
 
     function computeTriangleLabelsForModel() {
         if (!coche) return;
-        if (!partsMapImageData && !modelIniData) return;
+        if (!partsMapImageData && !modelIniData) {
+            // Sin restricciones: marcar todos los triangulos como pintables
+            coche.traverse((child) => {
+                if (!child.isMesh) return;
+                const triCount = child.geometry.index ? (child.geometry.index.count/3) : (child.geometry.attributes.position.count/3);
+                child.userData.triangleLabels = new Uint8Array(triCount).fill(1);
+            });
+            return;
+        }
         coche.traverse((child) => {
             if (!child.isMesh) return;
             const geom = child.geometry;
@@ -1898,6 +2161,10 @@ canvas { display: block; z-index: 0; }
                     const r=partsMapImageData.data[didx],g=partsMapImageData.data[didx+1],bc=partsMapImageData.data[didx+2],ac=partsMapImageData.data[didx+3];
                     labels[i]=(ac>50&&g>r+20&&g>bc+20)?1:0;
                 }
+            }
+            // Si no hubo ningun match (ni ini ni partsMap), permitir toda la mesh
+            if (!markedByIni && !partsMapImageData) {
+                labels.fill(1);
             }
             child.userData.triangleLabels = labels;
         });
@@ -1956,6 +2223,20 @@ canvas { display: block; z-index: 0; }
             mesh.material = mat;
         });
     });
+    document.getElementById('btn-restaurar-texturas').addEventListener('click', () => {
+        currentBaseColor = '#ffffff'; baseColorApplied = false; window._baseTexturaBitmap = null;
+        objetosPintables.forEach(mesh => {
+            if (!mesh.userData._matOriginal) return;
+            const mat = mesh.userData._matOriginal;
+            mat.map = mesh.userData._originalMap || null;
+            mat.color.set(0xffffff);
+            mat.roughness = 0.45; mat.metalness = 0.0;
+            if (mat.clearcoat !== undefined) { mat.clearcoat = 1.0; mat.clearcoatRoughness = 0.1; }
+            mat.needsUpdate = true;
+            mesh.material = mat;
+        });
+        mostrarToast('Texturas originales restauradas');
+    });
 
     function actualizarEstiloPinturaCoche() {}
     function limpiarOverlays() {}
@@ -1989,7 +2270,7 @@ canvas { display: block; z-index: 0; }
         .forEach(([id,tx,v]) => { document.getElementById(id).value=v; document.getElementById(tx).textContent=v.toFixed(2); });
     });
 
-    function getPanelWidth() { const p = document.getElementById('gt-panel'); return (p && p.classList.contains('open')) ? 300 : 0; }
+    function getPanelWidth() { const p = document.getElementById('gt-panel'); return (p && p.classList.contains('open')) ? 314 : 0; }
 
     // ── Input / orbit coordination ───────────────────────────
     let _shiftHeld = false;
@@ -2001,7 +2282,7 @@ canvas { display: block; z-index: 0; }
             _shiftHeld = true; controls.enabled = false;
         }
     });
-    window.addEventListener('keyup', (e) => { if (e.key === 'Shift') { _shiftHeld = false; controls.enabled = true; eliminarFantasma(); } });
+    window.addEventListener('keyup', (e) => { if (e.key === 'Shift') { _shiftHeld = false; controls.enabled = !brushActive; eliminarFantasma(); } });
     window.addEventListener('blur', () => { _shiftHeld = false; controls.enabled = true; eliminarFantasma(); });
     // Si el usuario hace clic en cualquier input/textarea, asegurarse de salir del modo shift
     document.addEventListener('focusin', (e) => {
@@ -2012,23 +2293,38 @@ canvas { display: block; z-index: 0; }
     });
 
     renderer.domElement.addEventListener('wheel', (e) => {
+        if (brushActive) return; // pincel tiene su propio wheel
         if (!_shiftHeld) return;
         e.preventDefault(); e.stopPropagation();
-        const delta = e.deltaY > 0 ? -0.02 : 0.02;
-        tamañoActual = Math.min(1.5, Math.max(0.05, tamañoActual + delta));
-        tamañoActual = Math.round(tamañoActual * 100) / 100;
-        const slider = document.getElementById('slider-tamaño');
-        if (slider) slider.value = tamañoActual;
-        document.getElementById('txt-tamaño').innerText = tamañoActual;
+        if (e.ctrlKey) {
+            // Shift + Ctrl + rueda → rotar vinilo
+            const delta = e.deltaY > 0 ? -5 : 5;
+            let grados = Math.round(THREE.MathUtils.radToDeg(rotacionActual) + delta);
+            grados = ((grados % 360) + 360) % 360;
+            rotacionActual = THREE.MathUtils.degToRad(grados);
+            const sliderRot = document.getElementById('slider-rotacion');
+            if (sliderRot) sliderRot.value = grados;
+            document.getElementById('txt-rotacion').innerText = grados + '°';
+        } else {
+            // Shift + rueda → cambiar tamaño
+            const delta = e.deltaY > 0 ? -0.02 : 0.02;
+            tamañoActual = Math.min(1.5, Math.max(0.05, tamañoActual + delta));
+            tamañoActual = Math.round(tamañoActual * 100) / 100;
+            const slider = document.getElementById('slider-tamaño');
+            if (slider) slider.value = tamañoActual;
+            document.getElementById('txt-tamaño').innerText = tamañoActual;
+        }
         actualizarFantasmaAlMover();
     }, { passive: false });
 
     renderer.domElement.addEventListener('pointerdown', (e) => {
+        if (brushActive) return; // pincel tiene prioridad
         if (e.clientX < getPanelWidth() || e.button !== 0) return;
         if ((e.shiftKey || _shiftHeld) && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { _shiftHeld = true; e.stopPropagation(); proyeccionViniloDefinitiva(e); }
     });
     renderer.domElement.addEventListener('pointerleave', () => { eliminarFantasma(); });
     window.addEventListener('pointermove', (e) => {
+        if (brushActive) return; // el pincel maneja su propio pointermove
         if (e.shiftKey) {
             const tag = document.activeElement.tagName;
             if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !document.activeElement.isContentEditable) _shiftHeld = true;
@@ -2046,7 +2342,14 @@ canvas { display: block; z-index: 0; }
         const archivo = e.target.files[0]; if (!archivo) return;
         inputTexto.value = ''; urlMiniaturaActual = URL.createObjectURL(archivo);
         vistaPrevia.innerHTML = `<img src="${urlMiniaturaActual}">`;
-        textureLoader.load(urlMiniaturaActual, (tex) => { texturaActual = tex; materialFantasma.map = tex; materialFantasma.needsUpdate = true; actualizarFantasmaAlMover(); });
+        _formaActivaId = null;
+        textureLoader.load(urlMiniaturaActual, (tex) => {
+            tex.premultiplyAlpha = false; tex.needsUpdate = true;
+            texturaActual = tex; materialFantasma.map = tex; materialFantasma.needsUpdate = true;
+            // Capturar aspect ratio real de la imagen
+            if (tex.image) _texturaAspectRatio = tex.image.height / tex.image.width;
+            actualizarFantasmaAlMover();
+        });
         // Auto-guardar en biblioteca
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -2065,7 +2368,7 @@ canvas { display: block; z-index: 0; }
         refreshMapsListUI();
     });
 
-    selectorCarpeta.addEventListener('change', async (e) => {
+    if (selectorCarpeta) selectorCarpeta.addEventListener('change', async (e) => {
         const archivos = Array.from(e.target.files || []); if (!archivos.length) return;
         const modeloArchivo = archivos.find(f => /\.(fbx|gltf|glb)$/i.test(f.name));
         const maskExtRegex = /\.(png|jpg|jpeg|dds|tga)$/i;
@@ -2086,6 +2389,11 @@ canvas { display: block; z-index: 0; }
         const aoNameRegex = /ao|ambient.?occlusion/i;
         const aoArchivo = archivos.find(f => /\.(png|jpg|jpeg|dds)$/i.test(f.name) && aoNameRegex.test(f.name) && f !== mascaraArchivo && f !== partsArchivo);
         const iniArchivo = archivos.find(f => /\.ini$/i.test(f.name));
+        window.loadedDdsFiles = {};
+        archivos.filter(f => /\.(dds|png|jpg|jpeg)$/i.test(f.name)).forEach(f => {
+            const key = f.name.replace(/\.[^.]+$/, '').toLowerCase();
+            window.loadedDdsFiles[key] = f;
+        });
         if (iniArchivo) { try { await parseModelIni(iniArchivo); } catch(e){} }
         if (mascaraArchivo && /\.(png|jpg|jpeg)$/i.test(mascaraArchivo.name)) uploadedMaps.push({ name: mascaraArchivo.name, file: mascaraArchivo, url: URL.createObjectURL(mascaraArchivo) });
         if (partsArchivo) uploadedMaps.push({ name: partsArchivo.name, file: partsArchivo, url: URL.createObjectURL(partsArchivo) });
@@ -2191,7 +2499,7 @@ canvas { display: block; z-index: 0; }
         dummy.rotation.z += nuevaRotZ;
 
         capa.objetoMesh.geometry.dispose();
-        capa.objetoMesh.geometry = new DecalGeometry(capa.datosOrigen.targetMesh, newPos, dummy.rotation, new THREE.Vector3(nuevoTam, nuevoTam * (capa.datosOrigen.ratioY || 1), capa.datosOrigen.ratioZ || 0.5));
+        capa.objetoMesh.geometry = mkDecal(capa.datosOrigen.targetMesh, newPos, dummy.rotation, new THREE.Vector3(nuevoTam, nuevoTam * (capa.datosOrigen.ratioY || 1), capa.datosOrigen.ratioZ || 0.5));
 
         txtEditTam.innerText = nuevoTam;
         txtEditRot.innerText = parseInt(editSliderRot.value) + "°";
@@ -2209,7 +2517,7 @@ canvas { display: block; z-index: 0; }
                     .addScaledVector(tangY, offsetY);
                 par.datosOrigen.pos = mirrorPos;
                 par.objetoMesh.geometry.dispose();
-                par.objetoMesh.geometry = new DecalGeometry(capa.datosOrigen.targetMesh, mirrorPos, obtenerOrientacionEspejoPrecisa(norm, nuevaRotZ), new THREE.Vector3(nuevoTam, nuevoTam * (capa.datosOrigen.ratioY || 1), capa.datosOrigen.ratioZ || 0.5));
+                par.objetoMesh.geometry = mkDecal(capa.datosOrigen.targetMesh, mirrorPos, obtenerOrientacionEspejoPrecisa(norm, nuevaRotZ, capa.datosOrigen.rotEuler), new THREE.Vector3(nuevoTam, nuevoTam * (capa.datosOrigen.ratioY || 1), capa.datosOrigen.ratioZ || 0.5));
             }
         }
     }
@@ -2229,7 +2537,7 @@ canvas { display: block; z-index: 0; }
 
     function actualizarInterfazCapas() {
         const listaUI = document.getElementById('vinilos-capas-list'); listaUI.innerHTML = '';
-        if (capasStickers.length === 0) { listaUI.innerHTML = '<div class="empty-state">Ningún vinilo aplicado</div>'; return; }
+        if (capasStickers.length === 0) { listaUI.innerHTML = ('<div class="empty-state">' + t('vinyl_none') + '</div>'); return; }
         capasStickers.slice().reverse().forEach((capa, ri, arr) => {
             const indiceReal = (arr.length - 1) - ri;
             const item = document.createElement('div');
@@ -2473,27 +2781,39 @@ canvas { display: block; z-index: 0; }
     function resolveExportMapForSticker(capa, exportMaps) {
         if (!exportMaps?.length) return null;
         const mesh = capa?.datosOrigen?.targetMesh;
-        if (mesh) {
-            const assigned = mesh.userData?.assignedMap;
-            if (assigned) {
-                const found = exportMaps.find(e => e.map === assigned) || exportMaps.find(e => (e.map?.name||'').toLowerCase() === (assigned.name||'').toLowerCase());
-                if (found) return found;
-            }
+        const ddsName = mesh?.userData?._ddsName;
+        if (ddsName) {
+            const found = exportMaps.find(e => e.ddsName === ddsName);
+            return found || null;
         }
-        if (mesh?.material?.map) {
-            const n = (mesh.material.map.name||'').toLowerCase();
-            if (n) { const found = exportMaps.find(e => (e.map?.name||'').toLowerCase().includes(n) || n.includes((e.map?.name||'').toLowerCase())); if (found) return found; }
-        }
-        if (modelIniData?.bodyTextures?.length) {
-            for (const tok of modelIniData.bodyTextures) { if (!tok) continue; const found = exportMaps.find(e => (e.map?.name||'').toLowerCase().includes(tok)); if (found) return found; }
-        }
-        return exportMaps[0];
+        if (exportMaps.length === 1 && !exportMaps[0].ddsName) return exportMaps[0];
+        return null;
     }
 
     async function prepareExportMapCanvases(w, h) {
-        const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        return [{ map: null, canvas, ctx, fileName: 'livery-map' }];
+        const ddsNames = new Set();
+        for (const capa of capasStickers) {
+            const dds = capa?.datosOrigen?.targetMesh?.userData?._ddsName;
+            if (dds) ddsNames.add(dds);
+        }
+        // También considerar meshes pintados con cubo
+        for (const mesh of objetosPintables) {
+            if (mesh.userData._bucketColor && mesh.userData._ddsName) {
+                ddsNames.add(mesh.userData._ddsName);
+            }
+        }
+        // Y meshes con brushDecals
+        for (const d of brushDecals) {
+            if (d.targetMesh?.userData?._ddsName) ddsNames.add(d.targetMesh.userData._ddsName);
+        }
+        if (!ddsNames.size) {
+            const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+            return [{ ddsName: null, canvas, ctx: canvas.getContext('2d'), fileName: 'livery-map' }];
+        }
+        return Array.from(ddsNames).map(ddsName => {
+            const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+            return { ddsName, canvas, ctx: canvas.getContext('2d'), fileName: ddsName };
+        });
     }
 
     // ── UV-space rasterizer ──────────────────────────────────
@@ -2523,8 +2843,12 @@ canvas { display: block; z-index: 0; }
 
         const dummyObj = new THREE.Object3D();
         dummyObj.position.copy(decalPos);
-        dummyObj.lookAt(decalPos.clone().add(decalNorm));
-        dummyObj.rotation.z += decalRotZ;
+        if (capa.datosOrigen.rotEuler) {
+            dummyObj.rotation.copy(capa.datosOrigen.rotEuler);
+        } else {
+            dummyObj.lookAt(decalPos.clone().add(decalNorm));
+            dummyObj.rotation.z += decalRotZ;
+        }
         dummyObj.updateMatrixWorld(true);
         const decalInv = dummyObj.matrixWorld.clone().invert();
 
@@ -2547,6 +2871,7 @@ canvas { display: block; z-index: 0; }
 
         const posAttr  = geom.attributes.position;
         const uvAttr   = geom.attributes.uv;
+        const nrmAttr  = geom.attributes.normal || null;
         const idxBuf   = geom.index;
         const triCount = idxBuf ? (idxBuf.count / 3) : (posAttr.count / 3);
 
@@ -2578,6 +2903,12 @@ canvas { display: block; z-index: 0; }
             // Fast AABB rejection: skip triangle if its world bbox doesn't overlap the decal bbox
             triBB.setFromPoints([vA, vB, vC]);
             if (!triBB.intersectsBox(decalAABB)) { processedTris++; continue; }
+            if (nrmAttr) {
+                const nA = new THREE.Vector3().fromBufferAttribute(nrmAttr, ia).applyMatrix4(meshMW).normalize();
+                const nB = new THREE.Vector3().fromBufferAttribute(nrmAttr, ib).applyMatrix4(meshMW).normalize();
+                const nC = new THREE.Vector3().fromBufferAttribute(nrmAttr, ic).applyMatrix4(meshMW).normalize();
+                if (nA.add(nB).add(nC).normalize().dot(decalNorm) < 0.0) { processedTris++; continue; }
+            }
 
             uvA.fromBufferAttribute(uvAttr, ia);
             uvB.fromBufferAttribute(uvAttr, ib);
@@ -2610,7 +2941,7 @@ canvas { display: block; z-index: 0; }
                     pLocal.copy(pWorld).applyMatrix4(decalInv);
 
                     if (Math.abs(pLocal.x) > halfSize || Math.abs(pLocal.y) > halfSize) continue;
-                    if (Math.abs(pLocal.z) > decalSize * 0.15) continue;
+                    if (Math.abs(pLocal.z) > decalSize * 0.6) continue;
 
                     const stu = (pLocal.x / decalSize) + 0.5;
                     const stv = (pLocal.y / decalSize) + 0.5;
@@ -2671,34 +3002,6 @@ canvas { display: block; z-index: 0; }
     }
 
     // ── Export handler ───────────────────────────────────────
-    function populateExportMapsUI() {
-        const usedMaps = new Map();
-        for (const capa of capasStickers) {
-            const mesh = capa?.datosOrigen?.targetMesh;
-            const map = mesh?.userData?.assignedMap;
-            if (map?.name) {
-                if (!usedMaps.has(map.name)) usedMaps.set(map.name, map);
-            }
-        }
-        const field = document.getElementById('export-maps-field');
-        const list = document.getElementById('export-maps-list');
-        list.innerHTML = '';
-        // Always add main map entry
-        const mainLabel = uploadedMaps.filter(isValidExportMapUpload)[0]?.name || 'livery-map (principal)';
-        const mainRow = document.createElement('label');
-        mainRow.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt2);cursor:pointer;';
-        mainRow.innerHTML = "<input type='checkbox' checked data-map='__main__' style='accent-color:#c8a84b;'> " + mainLabel;
-        list.appendChild(mainRow);
-        for (const [name, map] of usedMaps) {
-            if (name === mainLabel) continue;
-            const row = document.createElement('label');
-            row.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt2);cursor:pointer;';
-        row.innerHTML = "<input type='checkbox' checked data-map='" + name + "' style='accent-color:#c8a84b;'> " + name;
-            list.appendChild(row);
-        }
-        field.style.display = usedMaps.size > 0 ? 'block' : 'none';
-    }
-
     document.getElementById('export-modal-close').addEventListener('click', () => {
         document.getElementById('export-modal').style.display = 'none';
     });
@@ -2706,25 +3009,88 @@ canvas { display: block; z-index: 0; }
         if (e.target === document.getElementById('export-modal')) document.getElementById('export-modal').style.display = 'none';
     });
 
-    document.getElementById('export-modal-confirm').addEventListener('click', async () => {
-        document.getElementById('export-modal').style.display = 'none';
-        try {
-            eliminarFantasma();;
-            let requested = parseInt(document.getElementById('export-res-select')?.value || '1024');
-            if (isNaN(requested)||requested<=0) requested=1024;
-            const w = requested, h = requested;
-            const exportMaps = await prepareExportMapCanvases(w, h);
-            // Filter by checked maps in UI
-            const checkedMaps = Array.from(document.querySelectorAll('#export-maps-list input[type=checkbox]:checked')).map(cb => cb.dataset.map);
-            if (checkedMaps.length > 0 && !checkedMaps.includes('__main__') || checkedMaps.length > 0) {
-                const filtered = exportMaps.filter((e,idx) => {
-                    if (idx === 0) return checkedMaps.includes('__main__') || checkedMaps.length === 0;
-                    return checkedMaps.includes(e.map?.name||'');
-                });
-                if (filtered.length > 0) exportMaps.length = 0, filtered.forEach(e => exportMaps.push(e));
-            }
+    // ── Combina stickers + brushDecals en un array compatible con processStickerChunked ──
+    function _buildExportCapas() {
+        const capas = [...capasStickers]; // stickers primero
+        // Añadir brushDecals visibles como capas fake
+        for (const d of brushDecals) {
+            if (!d.mesh3d.visible) continue; // borrados/ocultos
+            capas.push({
+                nombre: 'Brush',
+                miniaturaUrl: d.texDataUrl,
+                datosOrigen: {
+                    targetMesh: d.targetMesh,
+                    pos:    d.pos,
+                    norm:   d.norm,
+                    size:   d.worldSize,
+                    rotZ:   0,
+                    rotEuler: d.rotEuler,
+                    offsetX: 0,
+                    offsetY: 0,
+                    ratioY: 1,
+                    ratioZ: d.worldSize * 2
+                }
+            });
+        }
+        return capas;
+    }
 
-            // Bake base color or texture onto export map
+    function exportSingleMap(ddsName, fileName) {
+        const w = parseInt(document.getElementById('export-res-select')?.value || '1024');
+        const qf = parseInt(document.getElementById('export-quality-select')?.value || '2');
+        const h = w;
+        document.getElementById('export-modal').style.display = 'none';
+        eliminarFantasma();
+        (async () => {
+            try {
+                const exportMaps = await prepareExportMapCanvases(w, h);
+                const entry = ddsName === null
+                    ? exportMaps.find(e => !e.ddsName) || exportMaps[0]
+                    : exportMaps.find(e => e.ddsName === ddsName);
+                if (!entry) { alert('No hay vinilos en este mapa o el mapa no fue detectado.'); return; }
+                const single = [entry];
+                if (window._baseTexturaBitmap) {
+                    entry.ctx.drawImage(window._baseTexturaBitmap, 0, 0, w, h);
+                } else if (baseColorApplied) {
+                    entry.ctx.fillStyle = currentBaseColor;
+                    entry.ctx.fillRect(0, 0, w, h);
+                }
+                let partsData = null;
+                if (partsMapCanvas) { const tp=document.createElement('canvas');tp.width=w;tp.height=h; const pc=tp.getContext('2d');pc.drawImage(partsMapCanvas,0,0,w,h); partsData=pc.getImageData(0,0,w,h).data; }
+                // Rellenar piezas pintadas con cubo
+                _bucketFillExportCanvas(single, w, h);
+                // Combinar capasStickers + brushDecals visibles
+                const allExportCapas = _buildExportCapas();
+                const total = allExportCapas.length;
+                const prog = showExportProgressModal();
+                try {
+                    for (let i=0; i<total; i++) {
+                        if (prog.canceled?.()) throw new Error('cancelled');
+                        await processStickerChunked(allExportCapas[i], single, w, h, partsData, prog, i, total, qf);
+                    }
+                } catch(procErr) {
+                    if (procErr?.message==='cancelled') { prog.update(0,'Cancelado'); return; } else console.warn(procErr);
+                } finally { try { prog.close(); } catch(e){} }
+                const dataUrl = entry.canvas.toDataURL('image/png');
+                const fn = (fileName || 'livery-map').replace(/\.png$/i,'') + '.png';
+                if (window.electronAPI?.saveFile) {
+                    await window.electronAPI.saveFile(fn, dataUrl);
+                } else {
+                    const a = document.createElement('a'); a.style.display='none'; a.download=fn; a.href=dataUrl;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                }
+            } catch(err) { console.error(err); alert('Error exportando: '+(err?.message||err)); }
+        })();
+    }
+
+    async function exportAllMaps() {
+        const w = parseInt(document.getElementById('export-res-select')?.value || '1024');
+        const qf = parseInt(document.getElementById('export-quality-select')?.value || '2');
+        const h = w;
+        document.getElementById('export-modal').style.display = 'none';
+        eliminarFantasma();
+        try {
+            const exportMaps = await prepareExportMapCanvases(w, h);
             for (const entry of exportMaps) {
                 if (window._baseTexturaBitmap) {
                     entry.ctx.drawImage(window._baseTexturaBitmap, 0, 0, w, h);
@@ -2733,34 +3099,102 @@ canvas { display: block; z-index: 0; }
                     entry.ctx.fillRect(0, 0, w, h);
                 }
             }
-
             let partsData = null;
             if (partsMapCanvas) { const tp=document.createElement('canvas');tp.width=w;tp.height=h; const pc=tp.getContext('2d');pc.drawImage(partsMapCanvas,0,0,w,h); partsData=pc.getImageData(0,0,w,h).data; }
+            // Rellenar piezas pintadas con cubo
+            _bucketFillExportCanvas(exportMaps, w, h);
             const prog = showExportProgressModal();
             try {
-                for (let i=0; i<capasStickers.length; i++) {
+                const allExportCapas = _buildExportCapas();
+                const total = allExportCapas.length;
+                for (let i=0; i<total; i++) {
                     if (prog.canceled?.()) throw new Error('cancelled');
-                    await processStickerChunked(capasStickers[i], exportMaps, w, h, partsData, prog, i, capasStickers.length);
+                    await processStickerChunked(allExportCapas[i], exportMaps, w, h, partsData, prog, i, total, qf);
                 }
             } catch(procErr) {
-                if (procErr?.message==='cancelled') { prog.update(0,'Cancelado'); } else console.warn(procErr);
+                if (procErr?.message==='cancelled') { prog.update(0,'Cancelado'); return; } else console.warn(procErr);
             } finally { try { prog.close(); } catch(e){} }
-            const customName = document.getElementById('export-filename').value.trim() || 'livery-map';
+            // Obtener nombres de los inputs del modal
+            const inputs = document.querySelectorAll('#export-maps-list input[type=text]');
             let count = 0;
             for (const entry of exportMaps) {
+                const inp = inputs[count];
+                const fn = ((inp?.value.trim()) || entry.fileName || 'livery-map').replace(/\.png$/i,'') + '.png';
                 const dataUrl = entry.canvas.toDataURL('image/png');
-                const fileName = exportMaps.length > 1 ? `${customName}_${count+1}.png` : `${customName}.png`;
                 if (window.electronAPI?.saveFile) {
-                    const res = await window.electronAPI.saveFile(fileName, dataUrl);
-                    if (!res?.canceled) count++;
+                    await window.electronAPI.saveFile(fn, dataUrl);
                 } else {
-                    const a = document.createElement('a'); a.style.display='none'; a.download=fileName; a.href=dataUrl;
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a); count++;
+                    const a = document.createElement('a'); a.style.display='none'; a.download=fn; a.href=dataUrl;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 }
+                count++;
             }
-            if (count > 0) alert(`Exportación completada: ${count} mapa(s) guardado(s)`);
         } catch(err) { console.error(err); alert('Error exportando: '+(err?.message||err)); }
-    });
+    }
+
+    function populateExportMapsUI() {
+        const list = document.getElementById('export-maps-list');
+        list.innerHTML = '';
+        const ddsNames = new Set();
+        for (const capa of capasStickers) {
+            const dds = capa?.datosOrigen?.targetMesh?.userData?._ddsName;
+            if (dds) ddsNames.add(dds);
+        }
+        // También considerar meshes pintados con cubo y brushDecals
+        for (const mesh of objetosPintables) {
+            if (mesh.userData._bucketColor && mesh.userData._ddsName) ddsNames.add(mesh.userData._ddsName);
+        }
+        for (const d of brushDecals) {
+            if (d.targetMesh?.userData?._ddsName) ddsNames.add(d.targetMesh.userData._ddsName);
+        }
+        // Debug: mostrar info de meshes en consola
+        console.log('[Export] loadedDdsFiles:', Object.keys(window.loadedDdsFiles||{}));
+        capasStickers.forEach((c,i) => {
+            const m = c?.datosOrigen?.targetMesh;
+            console.log('[Export] sticker', i, 'mesh:', m?.name, '_ddsName:', m?.userData?._ddsName);
+        });
+        console.log('[Export] ddsNames detectados:', Array.from(ddsNames));
+        const entries = ddsNames.size > 0 ? Array.from(ddsNames) : [null];
+        entries.forEach(ddsName => {
+            const defaultName = ddsName || 'livery-map';
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; align-items:center; gap:6px; margin-bottom:4px;';
+            const lbl = document.createElement('span');
+            lbl.textContent = ddsName ? (ddsName + '.dds') : '(principal)';
+            lbl.style.cssText = 'font-size:10px; color:var(--txt3); white-space:nowrap; max-width:90px; overflow:hidden; text-overflow:ellipsis; flex-shrink:0;';
+            lbl.title = defaultName;
+            const inp = document.createElement('input');
+            inp.type = 'text'; inp.value = defaultName;
+            inp.style.cssText = 'flex:1; padding:6px 8px; font-size:11px; background:var(--panel2); border:1px solid var(--border); border-radius:var(--radius); color:var(--txt); outline:none;';
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-primary btn-sm';
+            btn.textContent = t('exp_export_btn');
+            btn.onclick = () => exportSingleMap(ddsName, inp.value.trim() || defaultName);
+            row.appendChild(lbl);
+            row.appendChild(inp);
+            row.appendChild(btn);
+            list.appendChild(row);
+        });
+        if (!ddsNames.size && !capasStickers.length && !brushDecals.length && !objetosPintables.some(m => m.userData._bucketColor)) {
+            const hint = document.createElement('div');
+            hint.style.cssText = 'font-size:10px; color:var(--txt3); margin-top:4px;';
+            hint.textContent = t('exp_hint_empty');
+            list.appendChild(hint);
+        }
+        // Boton exportar todo (solo si hay mas de un mapa)
+        const oldAllBtn = document.getElementById('btn-export-all');
+        if (oldAllBtn) oldAllBtn.remove();
+        if (ddsNames.size > 1) {
+            const allBtn = document.createElement('button');
+            allBtn.id = 'btn-export-all';
+            allBtn.className = 'btn btn-primary btn-full';
+            allBtn.style.cssText = 'margin-top:10px; padding:11px; font-size:13px; letter-spacing:1.5px;';
+            allBtn.textContent = t('exp_export_all');
+            allBtn.onclick = () => exportAllMaps();
+            list.parentElement.appendChild(allBtn);
+        }
+    }
+
 
     // ── Loaders ──────────────────────────────────────────────
     const loadingManager = new THREE.LoadingManager();
@@ -2771,6 +3205,22 @@ canvas { display: block; z-index: 0; }
     const loaderGLTF = new GLTFLoader(loadingManager);
     const loaderFBX = new FBXLoader(loadingManager);
     const loaderDDS = new DDSLoader();
+
+    // Patch FBXLoader.parse() to catch 'Unknown property type' (sync error inside BinaryParser)
+    (() => {
+        const proto = Object.getPrototypeOf(loaderFBX);
+        const origParse = proto.parse;
+        if (!origParse) return;
+        proto.parse = function(buffer) {
+            try { return origParse.call(this, buffer); }
+            catch(e) {
+                if (/unknown property type/i.test(e?.message || '')) {
+                    mostrarToast('\u26a0 FBX incompatible: re-exporta desde Blender como FBX 7.4 Binario o convierte a GLTF/GLB.', 9000);
+                }
+                throw e;
+            }
+        };
+    })();
 
     function normalizarMaterialFBX(material) {
         if (Array.isArray(material)) return material.map(normalizarMaterialFBX);
@@ -2808,6 +3258,10 @@ canvas { display: block; z-index: 0; }
             coche = modelo; objetosPintables.length=0; piezasCarroceria.length=0;
             coche.traverse((child) => {
                 if (child.isMesh) {
+                    // Capturar nombre del material y textura ANTES de normalizar
+                    const origMat = Array.isArray(child.material) ? child.material[0] : child.material;
+                    const origMatName = (origMat?.name || '').toLowerCase().replace(/\.[^.]+$/, '');
+                    const origTexName = (origMat?.map?.name || origMat?.map?.image?.src || '').split('/').pop().split('\\').pop().toLowerCase().replace(/\.[^.]+$/, '');
                     child.material = normalizarMaterialFBX(child.material);
                     // Copy uv to uv2 if missing (required for aoMap in Three.js)
                     if (!child.geometry.attributes.uv2 && child.geometry.attributes.uv) {
@@ -2833,6 +3287,27 @@ canvas { display: block; z-index: 0; }
                     } else {
                         child.userData._originalMap = child.material.map || null;
                     }
+                    // Resolver _ddsName: buscar en loadedDdsFiles por textura o material
+                    if (window.loadedDdsFiles) {
+                        const ddsKeys = Object.keys(window.loadedDdsFiles);
+                        const candidates = [origTexName, origMatName, child.name.toLowerCase().replace(/\.[^.]+$/, '')];
+                        // Tambien buscar en modelIniData si el material esta listado
+                        if (modelIniData?.rawByName) {
+                            for (const [iniMatName, iniMatData] of Object.entries(modelIniData.rawByName)) {
+                                const iniKey = iniMatName.toLowerCase();
+                                if (iniKey === origMatName || origMatName.includes(iniKey) || iniKey.includes(origMatName)) {
+                                    for (const tex of (iniMatData.textures || [])) {
+                                        candidates.push(tex.toLowerCase().replace(/\.[^.]+$/, ''));
+                                    }
+                                }
+                            }
+                        }
+                        for (const cand of candidates) {
+                            if (!cand) continue;
+                            const match = ddsKeys.find(k => k === cand || cand.includes(k) || k.includes(cand));
+                            if (match) { child.userData._ddsName = match; break; }
+                        }
+                    }
                     objetosPintables.push(child); piezasCarroceria.push(child);
                 }
             });
@@ -2854,7 +3329,15 @@ canvas { display: block; z-index: 0; }
                 });
             }
             if (partsMapImageData || modelIniData) computeTriangleLabelsForModel();
-        }, undefined, (err) => console.error('Error modelo:', err));
+        }, undefined, (err) => {
+            console.error('Error modelo:', err);
+            const msg = err?.message || String(err);
+            if (/unknown property type/i.test(msg)) {
+                mostrarToast('⚠ Error FBX: tipo de propiedad desconocido. Re-exporta el modelo desde Blender como FBX 7.4 (Binario) o conviértelo a GLTF/GLB.', 8000);
+            } else {
+                mostrarToast('⚠ Error al cargar el modelo: ' + msg.slice(0, 80), 6000);
+            }
+        });
     }
 
     // ── Ghost / sticker placement ────────────────────────────
@@ -2910,13 +3393,41 @@ canvas { display: block; z-index: 0; }
         return { mesh: meshOriginal, pos: new THREE.Vector3(-posOriginal.x, posOriginal.y, posOriginal.z) };
     }
 
-    function obtenerOrientacionEspejoPrecisa(normalOriginal, rotacionZ) {
+    function obtenerOrientacionEspejoPrecisa(normalOriginal, rotacionZ, rotEulerOriginal) {
+        if (rotEulerOriginal) {
+            const e = rotEulerOriginal.clone();
+            e.y = -e.y;
+            e.z = -e.z;
+            return e;
+        }
         const normalEspejo = normalOriginal.clone(); normalEspejo.x = -normalEspejo.x;
         const posEspejo = new THREE.Vector3(0, 0, 0);
         const dummy = new THREE.Object3D();
         dummy.position.copy(posEspejo);
         dummy.lookAt(posEspejo.clone().add(normalEspejo));
         dummy.rotation.z += -rotacionZ;
+        return dummy.rotation.clone();
+    }
+
+    // Calcula la rotación del decal alineando el eje "arriba" con la cámara
+    // en lugar del Y global, para que el vinilo quede orientado hacia la cámara.
+    function calcularRotacionDecal(pos, norm, rotExtra) {
+        const dummy = new THREE.Object3D();
+        dummy.position.copy(pos);
+        dummy.lookAt(pos.clone().add(norm));
+        // Eje "arriba" de la cámara proyectado sobre el plano tangente de la normal
+        const camUp = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+        const upProj = camUp.clone().addScaledVector(norm, -camUp.dot(norm)).normalize();
+        if (upProj.lengthSq() > 0.001) {
+            // Calcular el ángulo entre el eje Y local del dummy y upProj
+            const localY = new THREE.Vector3(0, 1, 0).applyQuaternion(dummy.quaternion);
+            let angle = Math.atan2(
+                localY.clone().cross(upProj).dot(norm),
+                localY.dot(upProj)
+            );
+            dummy.rotation.z += angle;
+        }
+        dummy.rotation.z += rotExtra || 0;
         return dummy.rotation.clone();
     }
 
@@ -2935,18 +3446,27 @@ canvas { display: block; z-index: 0; }
         if (intersect) {
             eliminarFantasma();
             const pos = intersect.point, norm = intersect.face.normal.clone().transformDirection(intersect.object.matrixWorld);
-            const dummy = new THREE.Object3D(); dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm)); dummy.rotation.z += rotacionActual;
-            stickerFantasma = new THREE.Mesh(new DecalGeometry(intersect.object, pos, dummy.rotation, new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), materialFantasma);
+            const rotF = calcularRotacionDecal(pos, norm, rotacionActual);
+            stickerFantasma = new THREE.Mesh(mkDecal(intersect.object, pos, rotF, new THREE.Vector3(tamañoActual, tamañoActual * (_formaActivaId ? formaAltoActual / formaAnchoActual : _texturaAspectRatio), 0.5)), materialFantasma);
             stickerFantasma.renderOrder = 9999; scene.add(stickerFantasma);
             if (modoEspejo() !== 'ninguno') {
                 const espejo = encontrarMeshEspejo(intersect.object, pos);
                 const posE = espejo.pos;
+                const normE = norm.clone(); normE.x = -normE.x;
+                let texFantasmaE, rotFE;
+                if (modoEspejo() === 'asimetrico') {
+                    texFantasmaE = texturaActual;
+                    rotFE = calcularRotacionDecal(posE, normE, -rotacionActual);
+                } else {
+                    texFantasmaE = crearTexturaEspejo(texturaActual);
+                    rotFE = obtenerOrientacionEspejoPrecisa(norm, rotacionActual, rotF);
+                }
                 const matEspejoFantasma = new THREE.MeshBasicMaterial({
-                    map: crearTexturaEspejo(texturaActual),
+                    map: texFantasmaE,
                     transparent: true, opacity: 0.5,
                     depthWrite: false, depthTest: false, side: THREE.DoubleSide
                 });
-                stickerFantasmaEspejo = new THREE.Mesh(new DecalGeometry(espejo.mesh, posE, modoEspejo()==='asimetrico' ? (() => { const d=new THREE.Object3D(); d.position.copy(posE); d.lookAt(posE.clone().add(norm)); d.rotation.z+=rotacionActual; return d.rotation; })() : obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual, tamañoActual, 0.5)), matEspejoFantasma);
+                stickerFantasmaEspejo = new THREE.Mesh(mkDecal(espejo.mesh, posE, rotFE, new THREE.Vector3(tamañoActual, tamañoActual * (_formaActivaId ? formaAltoActual / formaAnchoActual : _texturaAspectRatio), 0.5)), matEspejoFantasma);
                 stickerFantasmaEspejo.renderOrder = 9999; scene.add(stickerFantasmaEspejo);
             }
         } else { eliminarFantasma(); }
@@ -2984,20 +3504,33 @@ canvas { display: block; z-index: 0; }
             const esTexto = inputTexto.value.trim() !== '';
             const baseNombre = esTexto ? `Texto: "${inputTexto.value.trim()}"` : `Vinilo #${contadorStickers+1}`;
             const cfg = obtenerConfiguracionMaterial();
-            const dummy = new THREE.Object3D(); dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm)); dummy.rotation.z += rotacionActual;
+            const rotD = calcularRotacionDecal(pos, norm, rotacionActual);
             const _texOrig = texturaActual;
-            const mat = new THREE.MeshStandardMaterial({ map:_texOrig, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-4, side:THREE.DoubleSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
-            const sticker = new THREE.Mesh(new DecalGeometry(intersect.object, pos, dummy.rotation, new THREE.Vector3(tamañoActual,tamañoActual,0.5)), mat);
+            const mat = new THREE.MeshStandardMaterial({ map:_texOrig, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-8, polygonOffsetUnits:-2, blending:THREE.NormalBlending, side:THREE.FrontSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
+            const _decalRatioY = _formaActivaId ? formaAltoActual / formaAnchoActual : _texturaAspectRatio;
+            const sticker = new THREE.Mesh(mkDecal(intersect.object, pos, rotD, new THREE.Vector3(tamañoActual, tamañoActual * _decalRatioY, 0.5)), mat);
             scene.add(sticker); contadorStickers++;
-            capasStickers.push({ nombre: baseNombre+(modoEspejo() !== 'ninguno'?" (Izq)":""), objetoMesh:sticker, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:modoEspejo() !== 'ninguno', datosOrigen:{targetMesh:intersect.object, pos:pos.clone(), posBase:pos.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:intersect.uv?.clone()||null} });
+            capasStickers.push({ nombre: baseNombre+(modoEspejo() !== 'ninguno'?" (Izq)":""), objetoMesh:sticker, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:modoEspejo() !== 'ninguno', datosOrigen:{targetMesh:intersect.object, pos:pos.clone(), posBase:pos.clone(), norm:norm.clone(), size:tamañoActual, ratioY:_decalRatioY, rotZ:rotacionActual, rotEuler:rotD.clone(), offsetX:0, offsetY:0, uv:intersect.uv?.clone()||null} });
             if (modoEspejo() !== 'ninguno') {
                 const espejo = encontrarMeshEspejo(intersect.object, pos);
                 const posE = espejo.pos;
-                const texFlipped = crearTexturaEspejo(texturaActual);
-                const matEspejo = new THREE.MeshStandardMaterial({ map:texFlipped, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-4, side:THREE.DoubleSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
-                const stickerE = new THREE.Mesh(new DecalGeometry(espejo.mesh, posE, modoEspejo()==='asimetrico' ? (() => { const d=new THREE.Object3D(); d.position.copy(posE); d.lookAt(posE.clone().add(norm)); d.rotation.z+=rotacionActual; return d.rotation; })() : obtenerOrientacionEspejoPrecisa(norm, rotacionActual), new THREE.Vector3(tamañoActual,tamañoActual,0.5)), matEspejo);
+                // Normal del lado espejo: invertir X de la normal original
+                const normE = norm.clone(); normE.x = -normE.x;
+                let texEspejo, rotDE;
+                if (modoEspejo() === 'asimetrico') {
+                    // Asimétrico: texto legible en ambos lados → NO voltear textura,
+                    // usar la orientación hacia fuera del lado espejo con rotación invertida
+                    texEspejo = texturaActual;
+                    rotDE = calcularRotacionDecal(posE, normE, -rotacionActual);
+                } else {
+                    // Simétrico: voltear textura horizontalmente
+                    texEspejo = crearTexturaEspejo(texturaActual);
+                    rotDE = obtenerOrientacionEspejoPrecisa(norm, rotacionActual, rotD);
+                }
+                const matEspejo = new THREE.MeshStandardMaterial({ map:texEspejo, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-8, polygonOffsetUnits:-2, blending:THREE.NormalBlending, side:THREE.FrontSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
+                const stickerE = new THREE.Mesh(mkDecal(espejo.mesh, posE, rotDE, new THREE.Vector3(tamañoActual, tamañoActual * _decalRatioY, 0.5)), matEspejo);
                 scene.add(stickerE); contadorStickers++;
-                capasStickers.push({nombre:baseNombre+" (Der)", objetoMesh:stickerE, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:false, datosOrigen:{targetMesh:espejo.mesh, pos:posE.clone(), posBase:posE.clone(), norm:norm.clone(), size:tamañoActual, rotZ:rotacionActual, offsetX:0, offsetY:0, uv:null}});
+                capasStickers.push({nombre:baseNombre+" (Der)", objetoMesh:stickerE, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:false, datosOrigen:{targetMesh:espejo.mesh, pos:posE.clone(), posBase:posE.clone(), norm:normE.clone(), size:tamañoActual, rotZ:rotacionActual, rotEuler:rotDE.clone(), offsetX:0, offsetY:0, uv:null}});
             }
             actualizarProfundidades3D(); actualizarInterfazCapas();
         }
@@ -3007,7 +3540,7 @@ canvas { display: block; z-index: 0; }
     function mostrarVistaVinilos(vista) {
         document.getElementById('vinilos-home').style.display = vista === 'home' ? 'flex' : 'none';
         document.getElementById('vinilos-add').style.display  = vista === 'add'  ? 'flex' : 'none';
-        document.getElementById('gt-panel-title').textContent = vista === 'add' ? 'Añadir Vinilo' : 'Vinilos';
+        document.getElementById('gt-panel-title').textContent = vista === 'add' ? t('panel_add_vinyl') : t('panel_vinyl_title');
     }
     document.getElementById('btn-add-vinilo').addEventListener('click', () => mostrarVistaVinilos('add'));
     document.getElementById('btn-vinilos-back').addEventListener('click', () => mostrarVistaVinilos('home'));
@@ -3043,6 +3576,21 @@ canvas { display: block; z-index: 0; }
         });
     });
 
+    // ── Panel ayuda ratón ────────────────────────────────────────
+    const btnAyuda = document.getElementById('btn-ayuda-mouse');
+    const panelAyuda = document.getElementById('panel-ayuda-mouse');
+    btnAyuda.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = panelAyuda.classList.toggle('open');
+        btnAyuda.classList.toggle('active', open);
+    });
+    document.addEventListener('click', (e) => {
+        if (!panelAyuda.contains(e.target) && e.target !== btnAyuda) {
+            panelAyuda.classList.remove('open');
+            btnAyuda.classList.remove('active');
+        }
+    });
+
     // ── Render loop ──────────────────────────────────────────
     renderer.sortObjects = true;
     function animate() {
@@ -3061,6 +3609,118 @@ canvas { display: block; z-index: 0; }
         const cw = window.innerWidth, ch = window.innerHeight;
         renderer.setSize(cw, ch, false);
         camera.aspect = cw / ch; camera.updateProjectionMatrix();
+    });
+
+    // ── Formas predeterminadas ───────────────────────────────────────────
+    const FORMAS = [
+        // Formas básicas
+        { id:'cuadrado',    label:'Cuadrado',    fn:(c,x)=>{ c.fillRect(x*.1,x*.1,x*.8,x*.8); } },
+        { id:'circulo',     label:'Círculo',     fn:(c,x)=>{ c.beginPath(); c.arc(x/2,x/2,x*.42,0,Math.PI*2); c.fill(); } },
+        { id:'triangulo',   label:'Triángulo',   fn:(c,x)=>{ c.beginPath(); c.moveTo(x/2,x*.08); c.lineTo(x*.92,x*.92); c.lineTo(x*.08,x*.92); c.closePath(); c.fill(); } },
+        { id:'rombo',       label:'Rombo',       fn:(c,x)=>{ c.beginPath(); c.moveTo(x/2,x*.06); c.lineTo(x*.94,x/2); c.lineTo(x/2,x*.94); c.lineTo(x*.06,x/2); c.closePath(); c.fill(); } },
+        { id:'estrella',    label:'Estrella',    fn:(c,x)=>{ const s=5,r1=x*.44,r2=x*.18,cx=x/2,cy=x/2; c.beginPath(); for(let i=0;i<s*2;i++){const a=Math.PI/s*i-Math.PI/2,r=i%2?r2:r1; c.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);} c.closePath(); c.fill(); } },
+        { id:'hexagono',    label:'Hexágono',    fn:(c,x)=>{ c.beginPath(); for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/6; c.lineTo(x/2+x*.44*Math.cos(a),x/2+x*.44*Math.sin(a));} c.closePath(); c.fill(); } },
+        { id:'flecha',      label:'Flecha',      fn:(c,x)=>{ c.beginPath(); c.moveTo(x*.08,x*.32); c.lineTo(x*.55,x*.32); c.lineTo(x*.55,x*.12); c.lineTo(x*.92,x*.5); c.lineTo(x*.55,x*.88); c.lineTo(x*.55,x*.68); c.lineTo(x*.08,x*.68); c.closePath(); c.fill(); } },
+        { id:'media-luna',  label:'Luna',        fn:(c,x)=>{ c.beginPath(); c.arc(x/2,x/2,x*.42,0,Math.PI*2); c.fill(); c.globalCompositeOperation='destination-out'; c.beginPath(); c.arc(x*.62,x/2,x*.34,0,Math.PI*2); c.fill(); c.globalCompositeOperation='source-over'; } },
+        // Franjas
+        { id:'franja1',     label:'Franja',      fn:(c,x)=>{ c.fillRect(0,x*.35,x,x*.3); } },
+        { id:'franjas2',    label:'2 Franjas',   fn:(c,x)=>{ c.fillRect(0,x*.2,x,x*.18); c.fillRect(0,x*.62,x,x*.18); } },
+        { id:'franja-diag', label:'Diagonal',    fn:(c,x)=>{ c.save(); c.translate(x/2,x/2); c.rotate(Math.PI/6); c.fillRect(-x*.6,-x*.18,x*1.2,x*.36); c.restore(); } },
+        { id:'franja-v',    label:'Franja V',    fn:(c,x)=>{ c.beginPath(); c.moveTo(0,0); c.lineTo(x*.5,x*.6); c.lineTo(x,0); c.lineTo(x,x*.3); c.lineTo(x*.5,x*.9); c.lineTo(0,x*.3); c.closePath(); c.fill(); } },
+        // Ajedrez y patrones
+        { id:'ajedrez',     label:'Ajedrez',     fn:(c,x)=>{ const n=6,s=x/n; for(let r=0;r<n;r++) for(let col=0;col<n;col++) if((r+col)%2===0) c.fillRect(col*s,r*s,s,s); } },
+        { id:'puntos',      label:'Puntos',      fn:(c,x)=>{ const n=5,s=x/n; for(let r=0;r<n;r++) for(let col=0;col<n;col++){c.beginPath();c.arc(col*s+s/2,r*s+s/2,s*.32,0,Math.PI*2);c.fill();} } },
+        { id:'rejilla',     label:'Rejilla',     fn:(c,x)=>{ const n=6,s=x/n,t=x*.04; for(let i=0;i<=n;i++){c.fillRect(i*s-t/2,0,t,x); c.fillRect(0,i*s-t/2,x,t);} } },
+        { id:'puntos-peq',  label:'Puntos S',    fn:(c,x)=>{ const n=8,s=x/n; for(let r=0;r<n;r++) for(let col=0;col<n;col++){c.beginPath();c.arc(col*s+s/2,r*s+s/2,s*.22,0,Math.PI*2);c.fill();} } },
+        // Curvas aerodinámicas
+        { id:'curva1',      label:'Curva 1',     fn:(c,x)=>{ c.beginPath(); c.moveTo(0,x*.7); c.bezierCurveTo(x*.2,x*.7,x*.4,x*.1,x,x*.1); c.lineTo(x,x*.3); c.bezierCurveTo(x*.4,x*.3,x*.25,x*.85,0,x*.85); c.closePath(); c.fill(); } },
+        { id:'curva2',      label:'Curva 2',     fn:(c,x)=>{ c.beginPath(); c.moveTo(0,x*.5); c.bezierCurveTo(x*.3,x*.5,x*.5,x*.1,x,x*.15); c.lineTo(x,x*.28); c.bezierCurveTo(x*.5,x*.22,x*.3,x*.62,0,x*.62); c.closePath(); c.fill(); } },
+        { id:'curva3',      label:'Curva 3',     fn:(c,x)=>{ c.beginPath(); c.moveTo(x*.1,x*.8); c.bezierCurveTo(x*.1,x*.2,x*.9,x*.2,x*.9,x*.8); c.lineTo(x*.75,x*.8); c.bezierCurveTo(x*.75,x*.35,x*.25,x*.35,x*.25,x*.8); c.closePath(); c.fill(); } },
+        { id:'ola',         label:'Ola',         fn:(c,x)=>{ c.beginPath(); c.moveTo(0,x*.4); c.bezierCurveTo(x*.25,x*.1,x*.25,x*.7,x*.5,x*.4); c.bezierCurveTo(x*.75,x*.1,x*.75,x*.7,x,x*.4); c.lineTo(x,x*.6); c.bezierCurveTo(x*.75,x*.9,x*.75,x*.3,x*.5,x*.6); c.bezierCurveTo(x*.25,x*.9,x*.25,x*.3,0,x*.6); c.closePath(); c.fill(); } },
+        // Diseños racing
+        { id:'rayo',        label:'Rayo',        fn:(c,x)=>{ c.beginPath(); c.moveTo(x*.55,x*.05); c.lineTo(x*.25,x*.52); c.lineTo(x*.48,x*.52); c.lineTo(x*.42,x*.95); c.lineTo(x*.75,x*.45); c.lineTo(x*.52,x*.45); c.closePath(); c.fill(); } },
+        { id:'rayo2',       label:'Rayo 2',      fn:(c,x)=>{ c.beginPath(); c.moveTo(x*.6,x*.05); c.lineTo(x*.28,x*.5); c.lineTo(x*.5,x*.5); c.lineTo(x*.18,x*.95); c.lineTo(x*.72,x*.5); c.lineTo(x*.5,x*.5); c.lineTo(x*.82,x*.05); c.closePath(); c.fill(); } },
+        { id:'llama',       label:'Llama',       fn:(c,x)=>{ c.beginPath(); c.moveTo(x*.5,x*.05); c.bezierCurveTo(x*.9,x*.2,x*.95,x*.6,x*.7,x*.75); c.bezierCurveTo(x*.85,x*.55,x*.75,x*.4,x*.6,x*.5); c.bezierCurveTo(x*.8,x*.7,x*.65,x*.9,x*.5,x*.95); c.bezierCurveTo(x*.35,x*.9,x*.2,x*.7,x*.4,x*.5); c.bezierCurveTo(x*.25,x*.4,x*.15,x*.55,x*.3,x*.75); c.bezierCurveTo(x*.05,x*.6,x*.1,x*.2,x*.5,x*.05); c.closePath(); c.fill(); } },
+        { id:'alas',        label:'Alas',        fn:(c,x)=>{ c.beginPath(); c.moveTo(x/2,x*.45); c.bezierCurveTo(x*.35,x*.3,x*.05,x*.35,x*.02,x*.55); c.bezierCurveTo(x*.05,x*.7,x*.2,x*.72,x*.35,x*.65); c.bezierCurveTo(x*.42,x*.62,x*.47,x*.58,x/2,x*.55); c.bezierCurveTo(x*.53,x*.58,x*.58,x*.62,x*.65,x*.65); c.bezierCurveTo(x*.8,x*.72,x*.95,x*.7,x*.98,x*.55); c.bezierCurveTo(x*.95,x*.35,x*.65,x*.3,x/2,x*.45); c.fill(); } },
+        { id:'escudo',      label:'Escudo',      fn:(c,x)=>{ c.beginPath(); c.moveTo(x/2,x*.92); c.bezierCurveTo(x*.1,x*.75,x*.06,x*.45,x*.06,x*.22); c.lineTo(x/2,x*.08); c.lineTo(x*.94,x*.22); c.bezierCurveTo(x*.94,x*.45,x*.9,x*.75,x/2,x*.92); c.closePath(); c.fill(); } },
+        { id:'banda-r',     label:'Banda R',     fn:(c,x)=>{ c.beginPath(); c.moveTo(0,x*.25); c.lineTo(x*.6,x*.25); c.bezierCurveTo(x*.85,x*.25,x*.95,x*.38,x*.95,x*.5); c.bezierCurveTo(x*.95,x*.62,x*.85,x*.75,x*.6,x*.75); c.lineTo(0,x*.75); c.closePath(); c.fill(); } },
+        { id:'chevron',     label:'Chevron',     fn:(c,x)=>{ c.beginPath(); c.moveTo(x*.05,x*.2); c.lineTo(x*.5,x*.5); c.lineTo(x*.95,x*.2); c.lineTo(x*.95,x*.42); c.lineTo(x*.5,x*.72); c.lineTo(x*.05,x*.42); c.closePath(); c.fill(); } },
+        { id:'cruz',        label:'Cruz',        fn:(c,x)=>{ c.fillRect(x*.38,x*.08,x*.24,x*.84); c.fillRect(x*.08,x*.38,x*.84,x*.24); } },
+        { id:'aspa',        label:'Aspa',        fn:(c,x)=>{ c.save(); c.translate(x/2,x/2); c.rotate(Math.PI/4); c.fillRect(-x*.12,-x*.46,x*.24,x*.92); c.fillRect(-x*.46,-x*.12,x*.92,x*.24); c.restore(); } },
+    ];
+
+    function generarFormaCanvas(forma, color, size=128) {
+        const c = document.createElement('canvas'); c.width = size; c.height = size;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = color;
+        forma.fn(ctx, size);
+        return c;
+    }
+
+    function renderizarFormasGrid() {
+        const grid = document.getElementById('formas-grid'); if (!grid) return;
+        const color = document.getElementById('color-forma').value;
+        grid.innerHTML = '';
+        FORMAS.forEach(forma => {
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'position:relative;aspect-ratio:1;background:var(--panel2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;overflow:hidden;transition:border-color .15s;';
+            const canvas = generarFormaCanvas(forma, color, 128);
+            canvas.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;';
+            const label = document.createElement('div');
+            label.style.cssText = 'position:absolute;bottom:0;left:0;right:0;font-size:8px;text-align:center;color:var(--txt3);font-family:Rajdhani,sans-serif;letter-spacing:.5px;text-transform:uppercase;padding:2px;background:rgba(0,0,0,.5);';
+            label.textContent = forma.label;
+            wrapper.appendChild(canvas);
+            wrapper.appendChild(label);
+            wrapper.addEventListener('mouseenter', () => wrapper.style.borderColor = 'var(--gold)');
+            wrapper.addEventListener('mouseleave', () => wrapper.style.borderColor = 'var(--border)');
+            wrapper.addEventListener('click', () => {
+                const col = document.getElementById('color-forma').value;
+                const aw = formaAnchoActual, ah = formaAltoActual;
+                const maxDim = Math.max(aw, ah);
+                const srcW = Math.round(512 * aw / maxDim);
+                const srcH = Math.round(512 * ah / maxDim);
+                const src = generarFormaCanvas(forma, col, Math.max(srcW, srcH));
+                // Redimensionar al ratio correcto
+                const srcFinal = document.createElement('canvas');
+                srcFinal.width = srcW; srcFinal.height = srcH;
+                srcFinal.getContext('2d').drawImage(src, 0, 0, srcW, srcH);
+                const miniSrc = document.createElement('canvas');
+                miniSrc.width = 128; miniSrc.height = Math.round(128 * ah / aw);
+                miniSrc.getContext('2d').drawImage(srcFinal, 0, 0, miniSrc.width, miniSrc.height);
+                urlMiniaturaActual = miniSrc.toDataURL();
+                vistaPrevia.innerHTML = `<img src="${urlMiniaturaActual}">`;
+                texturaActual = new THREE.CanvasTexture(srcFinal); texturaActual.premultiplyAlpha = false;
+                materialFantasma.map = texturaActual; materialFantasma.needsUpdate = true;
+                inputTexto.value = '';
+                _formaActivaId = forma.id;
+                // Marcar seleccionada
+                grid.querySelectorAll('div').forEach(d => d.style.borderColor = 'var(--border)');
+                wrapper.style.borderColor = 'var(--gold)';
+                mostrarToast(`✔ Forma "${forma.label}" lista — Shift+Clic para colocar`);
+                actualizarFantasmaAlMover();
+            });
+            grid.appendChild(wrapper);
+        });
+    }
+
+    document.getElementById('color-forma').addEventListener('input', renderizarFormasGrid);
+
+    document.getElementById('sl-forma-ancho').addEventListener('input', (e) => {
+        formaAnchoActual = parseFloat(e.target.value);
+        document.getElementById('txt-forma-ancho').textContent = formaAnchoActual.toFixed(2);
+        actualizarFantasmaAlMover();
+    });
+    document.getElementById('sl-forma-alto').addEventListener('input', (e) => {
+        formaAltoActual = parseFloat(e.target.value);
+        document.getElementById('txt-forma-alto').textContent = formaAltoActual.toFixed(2);
+        actualizarFantasmaAlMover();
+    });
+
+    // Renderizar cuando se abre la tab de formas
+    document.querySelectorAll('.vadd-tab').forEach(tab => {
+        if (tab.dataset.vtab === 'formas') {
+            tab.addEventListener('click', () => { setTimeout(renderizarFormasGrid, 0); });
+        }
     });
 
     // ── Biblioteca de stickers (localStorage) ──────────────────
@@ -3087,7 +3747,12 @@ canvas { display: block; z-index: 0; }
             img.addEventListener('click', () => {
                 inputTexto.value = ''; urlMiniaturaActual = item.data;
                 vistaPrevia.innerHTML = `<img src="${item.data}">`;
-                textureLoader.load(item.data, (tex) => { texturaActual = tex; materialFantasma.map = tex; materialFantasma.needsUpdate = true; actualizarFantasmaAlMover(); });
+                textureLoader.load(item.data, (tex) => {
+                    tex.premultiplyAlpha = false; tex.needsUpdate = true;
+                    texturaActual = tex; materialFantasma.map = tex; materialFantasma.needsUpdate = true;
+                    if (tex.image) _texturaAspectRatio = tex.image.height / tex.image.width;
+                    actualizarFantasmaAlMover();
+                });
                 _bibliotecaSeleccionado = item.name;
                 grid.querySelectorAll('img').forEach(i => i.style.borderColor = 'var(--border)');
                 img.style.borderColor = 'var(--gold)';
@@ -3123,7 +3788,7 @@ canvas { display: block; z-index: 0; }
     bibliotecaRenderizar();
 
     selectorEntorno.dispatchEvent(new Event('change'));
-    actualizarInterfazCapas();
+
 
     function mostrarToast(msg, duracion = 2500) {
         let t = document.getElementById('_toast');
@@ -3231,7 +3896,7 @@ canvas { display: block; z-index: 0; }
             const dummy = new THREE.Object3D();
             dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm));
             const mat = new THREE.MeshStandardMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: true, polygonOffset: true, polygonOffsetFactor: -4, side: THREE.DoubleSide, roughness: cfg.roughness, metalness: cfg.metalness, envMap: scene.environment });
-            const sticker = new THREE.Mesh(new DecalGeometry(mesh, pos, dummy.rotation, new THREE.Vector3(tam, tam * 0.75, 0.5)), mat);
+            const sticker = new THREE.Mesh(mkDecal(mesh, pos, dummy.rotation, new THREE.Vector3(tam, tam * 0.75, 0.5)), mat);
             scene.add(sticker); contadorStickers++;
             capasStickers.push({ nombre, objetoMesh: sticker, miniaturaUrl: miniUrl, vinculoEspejo: false, datosOrigen: { targetMesh: mesh, pos: pos.clone(), posBase: pos.clone(), norm: norm.clone(), size: tam, rotZ: 0, offsetX: 0, offsetY: 0, uv: null } });
         }
@@ -3303,7 +3968,7 @@ canvas { display: block; z-index: 0; }
             dummy.position.copy(pos); dummy.lookAt(pos.clone().add(norm));
             const mat = new THREE.MeshStandardMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: true, polygonOffset: true, polygonOffsetFactor: -4, side: THREE.DoubleSide, roughness: cfg.roughness, metalness: cfg.metalness, envMap: scene.environment });
             // Ratio 4:1 para texto horizontal
-            const sticker = new THREE.Mesh(new DecalGeometry(hit.object, pos, dummy.rotation, new THREE.Vector3(tam, tam * 0.25, 0.3)), mat);
+            const sticker = new THREE.Mesh(mkDecal(hit.object, pos, dummy.rotation, new THREE.Vector3(tam, tam * 0.25, 0.3)), mat);
             scene.add(sticker); contadorStickers++;
             capasStickers.push({ nombre, objetoMesh: sticker, miniaturaUrl: miniUrl, vinculoEspejo: false, datosOrigen: { targetMesh: hit.object, pos: pos.clone(), posBase: pos.clone(), norm: norm.clone(), size: tam, ratioY: 0.25, ratioZ: 0.3, rotZ: 0, offsetX: 0, offsetY: 0, uv: null } });
         }
@@ -3316,14 +3981,14 @@ canvas { display: block; z-index: 0; }
     //──────────────────────
     const gtPanel = document.getElementById('gt-panel');
     const gtPanelTitle = document.getElementById('gt-panel-title');
-    const panelTitles = { modelo:'Vista Previa', pintura:'Pintura', vinilos:'Vinilos', carrera:'Opciones de Carrera', editor:'Opciones del Editor' };
+    const panelTitles = { modelo:'panel_model_title', pintura:'panel_paint_title', vinilos:'panel_vinyl_title', carrera:'panel_race_title', editor:'panel_editor_title' };
     let panelActivo = null;
 
     function abrirPanel(nombre) {
         document.querySelectorAll('.gt-subpanel').forEach(p => p.style.display = 'none');
         const p = document.getElementById('panel-' + nombre);
         if (p) p.style.display = 'block';
-        gtPanelTitle.textContent = panelTitles[nombre] || nombre;
+        gtPanelTitle.textContent = t(panelTitles[nombre] || nombre);
         gtPanel.classList.add('open');
         panelActivo = nombre;
         document.querySelectorAll('.bb-btn').forEach(b => b.classList.remove('active'));
@@ -3441,7 +4106,7 @@ canvas { display: block; z-index: 0; }
                     polygonOffset: true, polygonOffsetFactor: -4, side: THREE.DoubleSide,
                     roughness: cfg.roughness, metalness: cfg.metalness, envMap: scene.environment
                 });
-                const geom = new DecalGeometry(mesh, pos, dummy.rotation,
+                const geom = mkDecal(mesh, pos, dummy.rotation,
                     new THREE.Vector3(d.size, d.size * ratioY, ratioZ));
                 const sticker = new THREE.Mesh(geom, mat);
                 sticker.visible = capaData.visible !== false;
@@ -3471,7 +4136,7 @@ canvas { display: block; z-index: 0; }
         const nombre = document.getElementById('hud-design-name').textContent || 'Mi Livery';
         document.getElementById('sesion-filename').value = nombre.toLowerCase().replace(/\s+/g, '-');
         document.getElementById('sesion-info').textContent =
-            capasStickers.length ? `${capasStickers.length} capa(s) listas para guardar` : 'Sin capas aún';
+            capasStickers.length ? (capasStickers.length + ' ' + t('sesion_layers')) : t('sesion_empty');
         document.getElementById('sesion-modal').style.display = 'flex';
     });
     document.getElementById('sesion-modal-close').addEventListener('click', () => {
@@ -3482,7 +4147,21 @@ canvas { display: block; z-index: 0; }
             document.getElementById('sesion-modal').style.display = 'none';
     });
     document.getElementById('btn-guardar-sesion').addEventListener('click', guardarSesionJSON);
-    document.getElementById('input-cargar-sesion').addEventListener('change', (e) => {
+
+    // Fix: en Electron el label con input[type=file] anidado dentro de un modal
+    // no siempre abre el diálogo. Forzamos el click programáticamente.
+    const _lblCargarSesion = document.getElementById('lbl-cargar-sesion');
+    const _inputCargarSesion = _lblCargarSesion ? _lblCargarSesion.querySelector('input[type="file"]') : null;
+    if (_lblCargarSesion && _inputCargarSesion) {
+        _lblCargarSesion.addEventListener('click', (e) => {
+            if (e.target !== _inputCargarSesion) {
+                e.preventDefault();
+                _inputCargarSesion.click();
+            }
+        });
+    }
+
+    (_inputCargarSesion || document.getElementById('input-cargar-sesion')).addEventListener('change', (e) => {
         const f = e.target.files[0]; if (!f) return;
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -3495,22 +4174,53 @@ canvas { display: block; z-index: 0; }
         e.target.value = '';
     });
 
+    // ── Welcome modal — declaraciones (deben ir antes de bb-cerrar) ──
+    const wmModal    = document.getElementById('welcome-modal');
+    const wmBtnAbrir = document.getElementById('btn-welcome-abrir');
+    let wmCarpetaFiles = null;
+
     document.getElementById('bb-cerrar').addEventListener('click', () => {
-        if (!confirm('¿Volver al menú? Los cambios no guardados se perderán.')) return;
+        if (!confirm(t('confirm_back'))) return;
+
+        // Limpiar toda la escena al volver al menú ─────────────────
+        while (capasStickers.length) {
+            const c = capasStickers.pop();
+            scene.remove(c.objetoMesh);
+            c.objetoMesh.geometry.dispose();
+            c.objetoMesh.material.dispose();
+        }
+        while (brushDecals.length) {
+            const d = brushDecals.pop();
+            scene.remove(d.mesh3d);
+            d.mesh3d.geometry.dispose();
+            d.mesh3d.material.dispose();
+        }
+        brushUndoStack.length = 0;
+        bucketHistory.length = 0;
+        if (coche) { scene.remove(coche); coche = null; }
+        objetosPintables.length = 0;
+        piezasCarroceria.length = 0;
+        uploadedMaps.length = 0;
+        currentBaseColor = '#ffffff';
+        baseColorApplied = false;
+        window._baseTexturaBitmap = null;
+        window.tempModeloFile = null;
+        window.tempTexturaFile = null;
+        indexCapaSeleccionada = null;
+        subpanelEditor.style.display = 'none';
+        actualizarInterfazCapas();
+        // ──────────────────────────────────────────────────────────
+
         wmModal.style.display = 'flex';
         wmCarpetaFiles = null;
         const slot = document.getElementById('wm-slot-carpeta');
         slot.classList.remove('filled');
-        slot.querySelector('.wm-slot-label').textContent = 'Carpeta del modelo';
-        slot.querySelector('.wm-slot-hint').textContent = 'Selecciona la carpeta con .fbx/.gltf y mapas PNG';
+        slot.querySelector('.wm-slot-label').textContent = currentLang === 'en' ? 'Model folder' : 'Carpeta del modelo';
+        slot.querySelector('.wm-slot-hint').textContent  = currentLang === 'en' ? 'Select folder with .fbx/.gltf and PNG maps' : 'Selecciona la carpeta con .fbx/.gltf y mapas PNG';
         wmBtnAbrir.disabled = true;
     });
 
-
-    // ── Welcome modal ────────────────────────────────────────────
-    const wmModal = document.getElementById('welcome-modal');
-    const wmBtnAbrir = document.getElementById('btn-welcome-abrir');
-    let wmCarpetaFiles = null;
+    // ── Welcome modal — lógica ───────────────────────────────────
 
     // Language dropdown inside welcome modal
     const wmLangBtn = document.getElementById('wm-lang-btn');
@@ -3559,6 +4269,11 @@ canvas { display: block; z-index: 0; }
         const aoNameRegex = /ao|ambient.?occlusion/i;
         const aoArchivo = archivos.find(f => /\.(png|jpg|jpeg|dds)$/i.test(f.name) && aoNameRegex.test(f.name) && f !== mascaraArchivo && f !== partsArchivo);
         const iniArchivo = archivos.find(f => /\.ini$/i.test(f.name));
+        window.loadedDdsFiles = {};
+        archivos.filter(f => /\.(dds|png|jpg|jpeg)$/i.test(f.name)).forEach(f => {
+            const key = f.name.replace(/\.[^.]+$/, '').toLowerCase();
+            window.loadedDdsFiles[key] = f;
+        });
         if (iniArchivo) { try { await parseModelIni(iniArchivo); } catch(e){} }
         if (mascaraArchivo && /\.(png|jpg|jpeg)$/i.test(mascaraArchivo.name)) uploadedMaps.push({ name: mascaraArchivo.name, file: mascaraArchivo, url: URL.createObjectURL(mascaraArchivo) });
         if (partsArchivo) uploadedMaps.push({ name: partsArchivo.name, file: partsArchivo, url: URL.createObjectURL(partsArchivo) });
@@ -3584,7 +4299,1122 @@ canvas { display: block; z-index: 0; }
     });
 
     animate();
+
+    // â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    const LANG = {
+        es: {
+            // Barra inferior
+            bb_preview: 'Vista previa', bb_paint: 'Pintura', bb_vinyls: 'Vinilos',
+            bb_race: 'Opciones de carrera', bb_editor: 'Opciones del editor',
+            bb_export: 'Exportar PNG', bb_close: 'Cerrar',
+            bb_session: 'Guardar/Cargar Sesi\u00f3n',
+            // Panel modelo
+            panel_model_title: 'Vista Previa',
+            env_label: 'Entorno', env_garage: 'Garaje', env_studio: 'Estudio', env_hangar: 'Hangar',
+            grid_floor: 'Cuadr\u00edcula del suelo',
+            // Panel pintura
+            panel_paint_title: 'Pintura',
+            paint_color: 'Color de carrocer\u00eda', paint_pick: 'Selecciona el color',
+            paint_finish: 'Acabado', paint_preview_only: '(solo previsualizaci\u00f3n)',
+            paint_quick: 'Colores r\u00e1pidos',
+            paint_apply: '\uD83E\uDEA3 Aplicar', paint_remove: '\u2715 Quitar',
+            paint_restore: '\uD83D\uDD04 Texturas Originales del Modelo',
+            paint_finish_shiny: '\u2728 Brillante', paint_finish_metal: '\uD83D\uDD29 Metalizado',
+            paint_finish_chrome: '\uD83D\uDCBF Cromado', paint_finish_matte: '\u25FC Mate',
+            // Panel vinilos
+            panel_vinyl_title: 'Vinilos',
+            vinyl_add: '\uFF0B A\u00f1adir vinilo', vinyl_back: '\u2190 Volver',
+            vinyl_finish: 'Acabado', vinyl_mirror: 'Modo Espejo',
+            vinyl_size: 'Tama\u00f1o', vinyl_rot: 'Rotaci\u00f3n',
+            vinyl_confirm: '\u2713 Listo \u2014 Shift+Clic para colocar',
+            vinyl_none: 'Ning\u00fan vinilo aplicado',
+            vtab_img: '\uD83D\uDDBC Imagen', vtab_txt: '\uD83C\uDD70 Texto',
+            vtab_lib: '\uD83D\uDDC2 Biblioteca', vtab_shapes: '\u25A0 Formas',
+            // Layer editor
+            layer_scale: 'Escala', layer_rot: 'Rotaci\u00f3n',
+            layer_movex: 'Mover X', layer_movey: 'Mover Y',
+            layer_accept: 'Aceptar Cambios',
+            // Botones
+            btn_undo: '\u21A9 Deshacer', btn_reset: '\uD83D\uDDD1 Reset',
+            // Panel carrera
+            panel_race_title: 'Opciones de carrera',
+            race_number: 'N\u00famero de carrera', race_num_color: 'Color del n\u00famero',
+            race_bg_color: 'Color del fondo', race_bg_hint: 'Color del dorsal',
+            race_apply_dorsal: '\u2714 Aplicar dorsal en ambos lados',
+            race_dorsal_hint: 'Se generar\u00e1 como vinilo en ambos lados. Usa Shift+Clic para reposicionarlo.',
+            race_driver: 'Nombre del piloto', race_driver_color: 'Color del texto',
+            race_driver_hint: 'Color del nombre',
+            race_apply_driver: '\u2714 Aplicar nombre en el techo',
+            race_driver_hint2: 'Se coloca en ambos lados del techo. Usa el editor de capas para ajustarlo.',
+            // Panel editor
+            panel_editor_title: 'Opciones del editor',
+            editor_light: 'Iluminaci\u00f3n', editor_exposure: 'Exposici\u00f3n',
+            editor_amb: 'Luz ambiental', editor_main: 'Luz principal',
+            editor_side: 'Luz lateral', editor_env: 'Entorno (env)',
+            editor_fog: 'Niebla', editor_reset_lights: '\u21A7 Restablecer luces',
+            editor_mapping: 'Mapeo de partes', editor_mapping_hint: 'Selecciona una parte y as\u00edgnale un mapa PNG.',
+            editor_meshes: 'Meshes', editor_maps: 'Mapas',
+            editor_assign: 'Asignar', editor_apply: 'Aplicar',
+            editor_show_all: 'Mostrar todo', editor_select: 'Selecci\u00f3n (Ctrl+Click)',
+            // Export modal
+            exp_title: '\u2B07 Exportar Livery', exp_res: 'Resoluci\u00f3n',
+            exp_quality: 'Calidad', exp_maps: 'Mapas detectados',
+            exp_quality_high: 'Alta', exp_quality_med: 'Media', exp_quality_low: 'Baja',
+            exp_export_all: '\u2193 Exportar Todo',
+            // Welcome modal
+            wm_title: 'Cargar Proyecto', wm_projname: 'Nombre del proyecto',
+            wm_folder: 'Carpeta del modelo',
+            wm_folder_hint: 'Selecciona la carpeta con .fbx/.gltf y mapas PNG',
+            wm_skip: 'Saltar', wm_open: 'Abrir Editor',
+            wm_folder_ok: '\u2714 Carpeta seleccionada',
+            // Mouse help
+            help_title: 'Controles', help_rotate: 'Rotar c\u00e1mara',
+            help_pan: 'Mover c\u00e1mara', help_zoom: 'Zoom',
+            help_place: 'Colocar vinilo', help_shift: 'Shift + Clic',
+            // Sidebar sections
+            st_load_model: 'Cargar Modelo', st_mapping: 'Mapeo de Partes /DEV TOOL/',
+            st_env: 'Entorno', st_paint: 'Pintura de Carrocer\u00eda',
+            st_text: 'Dise\u00f1ador de Texto', st_vinyl: 'Vinilo / Sticker',
+            st_layers: 'Capas de Vinilos', st_library: 'Biblioteca de Stickers',
+            panel_title: 'Panel',
+            // Hints
+            hint_base_tex: 'Aplica una textura a toda la carrocer\u00eda (carbono, fibra, etc.)',
+            hint_load_folder: 'Carga una carpeta con .fbx/.gltf y mapas PNG.',
+            // Mapping
+            lbl_meshes: 'Partes (meshes)', lbl_maps: 'Mapas',
+            btn_assign: 'Asignar mapa', btn_show_all: 'Mostrar todo',
+            lbl_select_mode: 'Selecci\u00f3n de Partes (Ctrl+Click)',
+            // Paint
+            lbl_color: 'Color', lbl_paint_color2: 'Color de pintura',
+            btn_fill: '\uD83E\uDEA3 Rellenar Todo', btn_remove_paint: '\u2715 Quitar Pintura',
+            // Text
+            lbl_text_dorsal: 'Texto / Dorsal', lbl_font_style: 'Estilo de Fuente',
+            lbl_text_color: 'Color del Texto', lbl_text_color2: 'Color del vinilo de texto',
+            // Vinyl
+            lbl_preview_hint: 'Vista previa del<br>vinilo activo',
+            lbl_vinyl_finish: 'Acabado del Vinilo', lbl_mirror_mode: 'Modo Espejo',
+            // Layer editor
+            lbl_layer_editor: '\u270F Editor de Capa Activa',
+            lbl_move_x: 'Mover X (horizontal)', lbl_move_y: 'Mover Y (vertical)',
+            // Library
+            lbl_library_hint: 'Selecciona una carpeta de stickers. Se guardan para la pr\u00f3xima sesi\u00f3n.',
+            btn_del_sticker: '\u2715 Borrar seleccionado', btn_clear_library: '\uD83D\uDDD1 Limpiar todo',
+            // Mouse help
+            help_title: '\uD83D\uDDB1 Controles del rat\u00f3n',
+            help_k1: 'Clic izq.<br>arrastrar', help_d1: 'Rotar la c\u00e1mara alrededor del modelo',
+            help_k2: 'Clic der.<br>arrastrar', help_d2: 'Desplazar la c\u00e1mara (pan)',
+            help_k3: 'Rueda', help_d3: 'Zoom acercar / alejar',
+            help_k4: 'Shift<br>+ clic', help_d4: 'Colocar vinilo sobre el modelo',
+            help_k5: 'Shift<br>+ rueda', help_d5: 'Cambiar tama\u00f1o del vinilo',
+            // Paint panel
+            lbl_paint_body: 'Color de carrocer\u00eda', lbl_pick_color: 'Selecciona el color',
+            lbl_finish_preview: 'Acabado <span style="font-size:9px;color:var(--txt3);">(solo previsualizaci\u00f3n)</span>',
+            lbl_quick_colors: 'Colores r\u00e1pidos',
+            lbl_upload_base_tex: '\uD83D\uDDBC Subir Textura Base (.png/.jpg)',
+            lbl_upload_folder: '\uD83D\uDCC1 Subir Carpeta FBX',
+            // Vinyl panel
+            lbl_vtxt_text: 'Texto', lbl_vtxt_font: 'Fuente', lbl_vtxt_color2: 'Color del texto',
+            lbl_shape_color: 'Color de la forma', lbl_shape_color2: 'Color del vinilo',
+            lbl_shape_width: 'Ancho', lbl_shape_height: 'Alto',
+            lbl_vinyl_acabado: 'Acabado', lbl_vinyl_size: 'Tama\u00f1o', lbl_vinyl_rot: 'Rotaci\u00f3n',
+            lbl_upload_vinyl_img: '\uD83D\uDDBC Subir imagen PNG/JPG',
+            lbl_upload_lib_folder: '\uD83D\uDCC1 Seleccionar carpeta',
+            lbl_upload_sticker_folder: '\uD83D\uDCC1 Seleccionar carpeta de stickers',
+            lbl_upload_map: '\u25B2 Subir mapa PNG/JPG',
+            lbl_edit_scale: 'Escala', lbl_edit_rot: 'Rotaci\u00f3n',
+            lbl_edit_ox: 'Mover X', lbl_edit_oy: 'Mover Y',
+            // Race panel
+            lbl_race_number: 'N\u00famero de carrera', lbl_race_num_color: 'Color del n\u00famero',
+            lbl_race_num_color2: 'Color del texto', lbl_race_bg_color: 'Color del fondo',
+            lbl_race_bg_color2: 'Color del dorsal',
+            lbl_race_dorsal_hint: 'Se generar\u00e1 como vinilo en ambos lados. Usa Shift+Clic para reposicionarlo.',
+            lbl_race_driver: 'Nombre del piloto', lbl_race_driver_color: 'Color del texto',
+            lbl_race_driver_color2: 'Color del nombre',
+            lbl_race_driver_hint: 'Se coloca en ambos lados del techo. Usa el editor de capas para ajustarlo.',
+            // Editor panel
+            lbl_editor_lighting: 'Iluminaci\u00f3n', lbl_editor_exposure: 'Exposici\u00f3n',
+            lbl_editor_amb: 'Luz ambiental', lbl_editor_main: 'Luz principal',
+            lbl_editor_side: 'Luz lateral', lbl_editor_env: 'Entorno (env)',
+            lbl_editor_fog: 'Niebla', lbl_editor_mapping: 'Mapeo de partes',
+            // Export modal
+            lbl_exp_res: 'Resoluci\u00f3n', lbl_exp_quality: 'Calidad', lbl_exp_maps: 'Mapas detectados',
+            // Session modal
+            lbl_sesion_filename: 'Nombre del archivo', lbl_sesion_or: 'o cargar',
+            btn_save_session: '\uD83D\uDCBE Guardar sesi\u00f3n como JSON',
+            btn_load_session: '\uD83D\uDCC2 Cargar sesi\u00f3n (.json)',
+            sesion_desc: 'Guarda todas las capas de vinilos, posiciones, colores y nombre del proyecto en un archivo <strong style="color:var(--txt2);">.json</strong>. C\u00e1rgalo despu\u00e9s para continuar donde lo dejaste.',
+            // Welcome modal
+            lbl_wm_projname: 'Nombre del proyecto',
+            help_k6: 'Shift + Ctrl<br>+ rueda', help_d6: 'Rotar el vinilo (pasos de 5\u00b0)',
+            sesion_title: '\uD83D\uDCBE Guardar / Cargar Sesi\u00f3n',
+            sesion_layers: 'capa(s) listas para guardar',
+            sesion_empty: 'Sin capas a\u00fan',
+            exp_export_btn: 'Exportar',
+            exp_hint_empty: 'A\u00f1ade vinilos al modelo para ver los mapas disponibles.',
+            confirm_back: '\u00bfVolver al men\u00fa? Los cambios no guardados se perder\u00e1n.',
+            panel_add_vinyl: 'A\u00f1adir Vinilo',
+            mirror_none: 'Sin espejo',
+            mirror_sym: 'Sim\u00e9trico (voltea ambos)',
+            mirror_asym: 'Asim\u00e9trico (legible ambos lados)'
+        },
+        en: {
+            bb_preview: 'Preview', bb_paint: 'Paint', bb_vinyls: 'Vinyls',
+            bb_race: 'Race options', bb_editor: 'Editor options',
+            bb_export: 'Export PNG', bb_close: 'Close',
+            bb_session: 'Save/Load Session',
+            panel_model_title: 'Preview',
+            env_label: 'Environment', env_garage: 'Garage', env_studio: 'Studio', env_hangar: 'Hangar',
+            grid_floor: 'Floor grid',
+            panel_paint_title: 'Paint',
+            paint_color: 'Body color', paint_pick: 'Pick a color',
+            paint_finish: 'Finish', paint_preview_only: '(preview only)',
+            paint_quick: 'Quick colors',
+            paint_apply: '\uD83E\uDEA3 Apply', paint_remove: '\u2715 Remove',
+            paint_restore: '\uD83D\uDD04 Restore Original Textures',
+            paint_finish_shiny: '\u2728 Glossy', paint_finish_metal: '\uD83D\uDD29 Metallic',
+            paint_finish_chrome: '\uD83D\uDCBF Chrome', paint_finish_matte: '\u25FC Matte',
+            panel_vinyl_title: 'Vinyls',
+            vinyl_add: '\uFF0B Add vinyl', vinyl_back: '\u2190 Back',
+            vinyl_finish: 'Finish', vinyl_mirror: 'Mirror mode',
+            vinyl_size: 'Size', vinyl_rot: 'Rotation',
+            vinyl_confirm: '\u2713 Ready \u2014 Shift+Click to place',
+            vinyl_none: 'No vinyl applied',
+            vtab_img: '\uD83D\uDDBC Image', vtab_txt: '\uD83C\uDD70 Text',
+            vtab_lib: '\uD83D\uDDC2 Library', vtab_shapes: '\u25A0 Shapes',
+            layer_scale: 'Scale', layer_rot: 'Rotation',
+            layer_movex: 'Move X', layer_movey: 'Move Y',
+            layer_accept: 'Accept Changes',
+            btn_undo: '\u21A9 Undo', btn_reset: '\uD83D\uDDD1 Reset',
+            panel_race_title: 'Race options',
+            race_number: 'Race number', race_num_color: 'Number color',
+            race_bg_color: 'Background color', race_bg_hint: 'Dorsal color',
+            race_apply_dorsal: '\u2714 Apply dorsal on both sides',
+            race_dorsal_hint: 'Generated as vinyl on both sides. Use Shift+Click to reposition.',
+            race_driver: 'Driver name', race_driver_color: 'Text color',
+            race_driver_hint: 'Name color',
+            race_apply_driver: '\u2714 Apply name on roof',
+            race_driver_hint2: 'Placed on both sides of the roof. Use the layer editor to adjust.',
+            panel_editor_title: 'Editor options',
+            editor_light: 'Lighting', editor_exposure: 'Exposure',
+            editor_amb: 'Ambient light', editor_main: 'Main light',
+            editor_side: 'Side light', editor_env: 'Environment (env)',
+            editor_fog: 'Fog', editor_reset_lights: '\u21A7 Reset lights',
+            editor_mapping: 'Parts mapping', editor_mapping_hint: 'Select a part and assign a PNG map.',
+            editor_meshes: 'Meshes', editor_maps: 'Maps',
+            editor_assign: 'Assign', editor_apply: 'Apply',
+            editor_show_all: 'Show all', editor_select: 'Select (Ctrl+Click)',
+            exp_title: '\u2B07 Export Livery', exp_res: 'Resolution',
+            exp_quality: 'Quality', exp_maps: 'Detected maps',
+            exp_quality_high: 'High', exp_quality_med: 'Medium', exp_quality_low: 'Low',
+            exp_export_all: '\u2193 Export All',
+            wm_title: 'Load Project', wm_projname: 'Project name',
+            wm_folder: 'Model folder',
+            wm_folder_hint: 'Select folder with .fbx/.gltf and PNG maps',
+            wm_skip: 'Skip', wm_open: 'Open Editor',
+            wm_folder_ok: '\u2714 Folder selected',
+            help_title: 'Controls', help_rotate: 'Rotate camera',
+            help_pan: 'Pan camera', help_zoom: 'Zoom',
+            help_place: 'Place vinyl', help_shift: 'Shift + Click',
+            st_load_model: 'Load Model', st_mapping: 'Parts Mapping /DEV TOOL/',
+            st_env: 'Environment', st_paint: 'Body Paint',
+            st_text: 'Text Designer', st_vinyl: 'Vinyl / Sticker',
+            st_layers: 'Vinyl Layers', st_library: 'Sticker Library',
+            panel_title: 'Panel',
+            hint_base_tex: 'Apply a texture to the whole body (carbon, fiber, etc.)',
+            hint_load_folder: 'Load a folder with .fbx/.gltf and PNG maps.',
+            lbl_meshes: 'Parts (meshes)', lbl_maps: 'Maps',
+            btn_assign: 'Assign map', btn_show_all: 'Show all',
+            lbl_select_mode: 'Part Selection (Ctrl+Click)',
+            lbl_color: 'Color', lbl_paint_color2: 'Paint color',
+            btn_fill: '\uD83E\uDEA3 Fill All', btn_remove_paint: '\u2715 Remove Paint',
+            lbl_text_dorsal: 'Text / Dorsal', lbl_font_style: 'Font Style',
+            lbl_text_color: 'Text Color', lbl_text_color2: 'Text vinyl color',
+            lbl_preview_hint: 'Preview of<br>active vinyl',
+            lbl_vinyl_finish: 'Vinyl Finish', lbl_mirror_mode: 'Mirror Mode',
+            lbl_layer_editor: '\u270F Active Layer Editor',
+            lbl_move_x: 'Move X (horizontal)', lbl_move_y: 'Move Y (vertical)',
+            lbl_library_hint: 'Select a sticker folder. Saved for next session.',
+            btn_del_sticker: '\u2715 Delete selected', btn_clear_library: '\uD83D\uDDD1 Clear all',
+            help_title: '\uD83D\uDDB1 Mouse controls',
+            help_k1: 'Left click<br>drag', help_d1: 'Rotate camera around model',
+            help_k2: 'Right click<br>drag', help_d2: 'Pan camera',
+            help_k3: 'Wheel', help_d3: 'Zoom in / out',
+            help_k4: 'Shift<br>+ click', help_d4: 'Place vinyl on model',
+            help_k5: 'Shift<br>+ wheel', help_d5: 'Change vinyl size',
+            // Paint panel
+            lbl_paint_body: 'Body color', lbl_pick_color: 'Pick a color',
+            lbl_finish_preview: 'Finish <span style="font-size:9px;color:var(--txt3);">(preview only)</span>',
+            lbl_quick_colors: 'Quick colors',
+            lbl_upload_base_tex: '\uD83D\uDDBC Upload Base Texture (.png/.jpg)',
+            lbl_upload_folder: '\uD83D\uDCC1 Upload FBX Folder',
+            // Vinyl panel
+            lbl_vtxt_text: 'Text', lbl_vtxt_font: 'Font', lbl_vtxt_color2: 'Text color',
+            lbl_shape_color: 'Shape color', lbl_shape_color2: 'Vinyl color',
+            lbl_shape_width: 'Width', lbl_shape_height: 'Height',
+            lbl_vinyl_acabado: 'Finish', lbl_vinyl_size: 'Size', lbl_vinyl_rot: 'Rotation',
+            lbl_upload_vinyl_img: '\uD83D\uDDBC Upload PNG/JPG image',
+            lbl_upload_lib_folder: '\uD83D\uDCC1 Select folder',
+            lbl_upload_sticker_folder: '\uD83D\uDCC1 Select sticker folder',
+            lbl_upload_map: '\u25B2 Upload PNG/JPG map',
+            lbl_edit_scale: 'Scale', lbl_edit_rot: 'Rotation',
+            lbl_edit_ox: 'Move X', lbl_edit_oy: 'Move Y',
+            // Race panel
+            lbl_race_number: 'Race number', lbl_race_num_color: 'Number color',
+            lbl_race_num_color2: 'Text color', lbl_race_bg_color: 'Background color',
+            lbl_race_bg_color2: 'Dorsal color',
+            lbl_race_dorsal_hint: 'Generated as vinyl on both sides. Use Shift+Click to reposition.',
+            lbl_race_driver: 'Driver name', lbl_race_driver_color: 'Text color',
+            lbl_race_driver_color2: 'Name color',
+            lbl_race_driver_hint: 'Placed on both sides of the roof. Use the layer editor to adjust.',
+            // Editor panel
+            lbl_editor_lighting: 'Lighting', lbl_editor_exposure: 'Exposure',
+            lbl_editor_amb: 'Ambient light', lbl_editor_main: 'Main light',
+            lbl_editor_side: 'Side light', lbl_editor_env: 'Environment (env)',
+            lbl_editor_fog: 'Fog', lbl_editor_mapping: 'Parts mapping',
+            // Export modal
+            lbl_exp_res: 'Resolution', lbl_exp_quality: 'Quality', lbl_exp_maps: 'Detected maps',
+            // Session modal
+            lbl_sesion_filename: 'File name', lbl_sesion_or: 'or load',
+            btn_save_session: '\uD83D\uDCBE Save session as JSON',
+            btn_load_session: '\uD83D\uDCC2 Load session (.json)',
+            sesion_desc: 'Save all vinyl layers, positions, colors and project name to a <strong style="color:var(--txt2);">.json</strong> file. Load it later to continue where you left off.',
+            // Welcome modal
+            lbl_wm_projname: 'Project name',
+            help_k6: 'Shift + Ctrl<br>+ wheel', help_d6: 'Rotate vinyl (5\u00b0 steps)',
+            sesion_title: '\uD83D\uDCBE Save / Load Session',
+            sesion_layers: 'layer(s) ready to save',
+            sesion_empty: 'No layers yet',
+            exp_export_btn: 'Export',
+            exp_hint_empty: 'Add vinyls to the model to see available maps.',
+            confirm_back: 'Go back to menu? Unsaved changes will be lost.',
+            panel_add_vinyl: 'Add Vinyl',
+            mirror_none: 'No mirror',
+            mirror_sym: 'Symmetric (flips both)',
+            mirror_asym: 'Asymmetric (readable both sides)'
+        }
+    };
+
+    let currentLang = localStorage.getItem('livery_lang') || 'es';
+
+    function t(key) { return (LANG[currentLang] || LANG.es)[key] || (LANG.es[key] || key); }
+
+    function applyLang() {
+        const L = LANG[currentLang] || LANG.es;
+        const set = (id, key, prop) => { const el = document.getElementById(id); if (el) el[prop||'textContent'] = L[key] || t(key); };
+        const setQ = (sel, key, prop) => { const el = document.querySelector(sel); if (el) el[prop||'textContent'] = L[key] || t(key); };
+        const setAll = (sel, key, prop) => document.querySelectorAll(sel).forEach(el => el[prop||'textContent'] = L[key] || t(key));
+
+        // Barra inferior
+        setQ('#bb-modelo .bb-label', 'bb_preview');
+        setQ('#bb-pintura .bb-label', 'bb_paint');
+        setQ('#bb-vinilos .bb-label', 'bb_vinyls');
+        setQ('#bb-carrera .bb-label', 'bb_race');
+        setQ('#bb-editor .bb-label', 'bb_editor');
+        setQ('#bb-guardar .bb-label', 'bb_export');
+        setQ('#bb-cerrar .bb-label', 'bb_close');
+        setQ('#bb-sesion .bb-label', 'bb_session');
+
+        // Panel modelo
+        setQ('[data-env="garaje"]', 'env_garage', 'innerHTML'); const _ge=document.querySelector('[data-env="garaje"]'); if(_ge) _ge.innerHTML = '\uD83C\uDFC1<br>' + t('env_garage');
+        const _es=document.querySelector('[data-env="estudio"]'); if(_es) _es.innerHTML = '\uD83D\uDCF8<br>' + t('env_studio');
+        const _ne=document.querySelector('[data-env="neon"]'); if(_ne) _ne.innerHTML = '\uD83D\uDD27<br>' + t('env_hangar');
+        setQ('label[for="toggle-grid"] span', 'grid_floor');
+
+        // Panel pintura
+        setQ('#panel-pintura .field:first-child .field-label', 'paint_color');
+        set('btn-rellenar-carroceria', 'paint_apply');
+        set('btn-quitar-pintura', 'paint_remove');
+        set('btn-restaurar-texturas', 'paint_restore');
+        set('acabado-brillante', 'paint_finish_shiny', 'innerHTML'); const _ab=document.getElementById('acabado-brillante'); if(_ab) _ab.innerHTML = '\u2728<br>' + t('paint_finish_shiny').replace('\u2728 ','');
+        const _am=document.getElementById('acabado-metalizado'); if(_am) _am.innerHTML = '\uD83D\uDD29<br>' + t('paint_finish_metal').replace('\uD83D\uDD29 ','');
+        const _ac=document.getElementById('acabado-cromado'); if(_ac) _ac.innerHTML = '\uD83D\uDCBF<br>' + t('paint_finish_chrome').replace('\uD83D\uDCBF ','');
+        const _at=document.getElementById('acabado-mate'); if(_at) _at.innerHTML = '\u25FC<br>' + t('paint_finish_matte').replace('\u25FC ','');
+
+        // Panel vinilos
+        set('btn-add-vinilo', 'vinyl_add');
+        set('btn-vinilos-back', 'vinyl_back');
+        set('btn-cerrar-editor', 'layer_accept');
+        set('btn-deshacer', 'btn_undo');
+        set('btn-limpiar', 'btn_reset');
+        set('btn-confirmar-vinilo', 'vinyl_confirm');
+        document.querySelectorAll('#btn-deshacer').forEach(el => el.textContent = t('btn_undo'));
+        document.querySelectorAll('#btn-limpiar').forEach(el => el.textContent = t('btn_reset'));
+        // Tabs
+        const _vi=document.querySelector('[data-vtab="imagen"]'); if(_vi) _vi.innerHTML = '\uD83D\uDDBC<br>' + t('vtab_img').replace(/.*\s/,'');
+        const _vt=document.querySelector('[data-vtab="texto"]'); if(_vt) _vt.innerHTML = '\uD83C\uDD70<br>' + t('vtab_txt').replace(/.*\s/,'');
+        const _vb=document.querySelector('[data-vtab="biblioteca"]'); if(_vb) _vb.innerHTML = '\uD83D\uDDC2<br>' + t('vtab_lib').replace(/.*\s/,'');
+        const _vf=document.querySelector('[data-vtab="formas"]'); if(_vf) _vf.innerHTML = '\u25A0<br>' + t('vtab_shapes').replace(/.*\s/,'');
+        // Mirror options
+        const espejo = document.getElementById('check-espejo'); if (espejo) {
+            espejo.options[0].text = t('mirror_none') || (currentLang==='en'?'No mirror':'Sin espejo');
+            espejo.options[1].text = t('mirror_sym') || (currentLang==='en'?'Symmetric (flips both)':'Sim\u00e9trico (voltea ambos)');
+            espejo.options[2].text = t('mirror_asym') || (currentLang==='en'?'Asymmetric (readable both sides)':'Asim\u00e9trico (legible ambos lados)');
+        }
+        // Finish options
+        document.querySelectorAll('#selector-material-vinilo').forEach(sel => { if(sel.options.length>=3) {
+            sel.options[0].text = currentLang==='en'?'\u2728 Standard / Glossy':'\u2728 Est\u00e1ndar / Brillante';
+            sel.options[1].text = currentLang==='en'?'\u25FC Matte Vinyl':'\u25FC Vinilo Mate';
+            sel.options[2].text = currentLang==='en'?'\uD83D\uDCBF Chrome / Metallic':'\uD83D\uDCBF Cromado / Metalizado';
+        }});
+
+        // Panel carrera
+        set('btn-aplicar-dorsal', 'race_apply_dorsal');
+        set('btn-aplicar-piloto', 'race_apply_driver');
+
+        // Panel editor
+        set('btn-reset-luz', 'editor_reset_lights');
+        set('btn-assign-map', 'editor_assign');
+        set('btn-apply-mapping', 'editor_apply');
+        set('btn-show-all-meshes', 'editor_show_all');
+        setQ('.map-col:first-child .map-col-label', 'editor_meshes');
+        setQ('.map-col:last-child .map-col-label', 'editor_maps');
+
+        // Export modal
+        setQ('#export-modal [style*="font-weight:700"]', 'exp_title');
+        const resSelect = document.getElementById('export-res-select');
+        const qualSelect = document.getElementById('export-quality-select');
+        if (qualSelect && qualSelect.options.length >= 3) {
+            qualSelect.options[0].text = t('exp_quality_high');
+            qualSelect.options[1].text = t('exp_quality_med');
+            qualSelect.options[2].text = t('exp_quality_low');
+        }
+        const allBtn = document.getElementById('btn-export-all');
+        if (allBtn) allBtn.textContent = t('exp_export_all');
+
+        // Welcome modal
+        // Welcome modal title
+        const _wmTitle = document.querySelector('.wm-title');
+        if (_wmTitle) _wmTitle.innerHTML = (currentLang==='en' ? '\uD83D\uDE97 Load Project' : '\uD83D\uDE97 Cargar Proyecto');
+        const _abrirBtn = document.getElementById('btn-welcome-abrir');
+        if (_abrirBtn) _abrirBtn.textContent = t('wm_open') + ' \u2192';
+        const _skipBtn = document.getElementById('btn-welcome-saltar');
+        if (_skipBtn) _skipBtn.textContent = t('wm_skip');
+        const _projLbl = document.getElementById('lbl-wm-projname');
+        if (_projLbl) _projLbl.textContent = t('lbl_wm_projname');
+        const _slot = document.getElementById('wm-slot-carpeta');
+        if (_slot && !_slot.classList.contains('filled')) {
+            const _lbl = _slot.querySelector('.wm-slot-label');
+            const _hint = _slot.querySelector('.wm-slot-hint');
+            if (_lbl) _lbl.textContent = currentLang==='en' ? 'Model folder' : 'Carpeta del modelo';
+            if (_hint) _hint.textContent = currentLang==='en' ? 'Select folder with .fbx/.gltf and PNG maps' : 'Selecciona la carpeta con .fbx/.gltf y mapas PNG';
+        }
+        // Lang button: show active language clearly
+        if (wmLangBtn) wmLangBtn.textContent = currentLang === 'en' ? 'EN \u25BE' : 'ES \u25BE';
+        document.querySelectorAll('#wm-lang-dropdown .lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === currentLang));
+
+        // Sidebar section titles
+        set('st-load-model', 'st_load_model');
+        set('st-mapping', 'st_mapping');
+        set('st-env', 'st_env');
+        set('st-paint', 'st_paint');
+        set('st-text', 'st_text');
+        set('st-vinyl', 'st_vinyl');
+        set('st-layers', 'st_layers');
+        set('st-library', 'st_library');
+        // Sidebar hints
+        set('texto-textura-base', 'hint_base_tex');
+        set('texto-mapa-body', 'hint_load_folder');
+        // Mapping
+        set('lbl-meshes', 'lbl_meshes');
+        set('lbl-maps', 'lbl_maps');
+        set('btn-assign-map', 'btn_assign');
+        set('btn-show-all-meshes', 'btn_show_all');
+        const lblSel = document.getElementById('lbl-select-mode'); if (lblSel) lblSel.textContent = t('lbl_select_mode');
+        // Paint
+        set('lbl-paint-color', 'lbl_color');
+        set('lbl-paint-color2', 'lbl_paint_color2');
+        set('btn-rellenar-carroceria', 'btn_fill');
+        set('btn-quitar-pintura', 'btn_remove_paint');
+        // Text designer
+        set('lbl-text-dorsal', 'lbl_text_dorsal');
+        set('lbl-font-style', 'lbl_font_style');
+        set('lbl-text-color', 'lbl_text_color');
+        set('lbl-text-color2', 'lbl_text_color2');
+        const fuenteSel = document.getElementById('selector-fuente'); if (fuenteSel && fuenteSel.options.length >= 3) { fuenteSel.options[2].text = currentLang==='en' ? 'Classic / Muscle' : 'Cl\u00e1sico / Muscle'; }
+        // Vinyl section
+        set('lbl-preview-hint', 'lbl_preview_hint', 'innerHTML');
+        set('lbl-vinyl-finish', 'lbl_vinyl_finish');
+        set('lbl-mirror-mode', 'lbl_mirror_mode');
+        // Layer editor
+        set('lbl-layer-editor', 'lbl_layer_editor');
+        const oxEl = document.getElementById('lbl-move-x'); if (oxEl) oxEl.innerHTML = t('lbl_move_x') + ' <span class="val" id="txt-edit-ox">' + (document.getElementById('txt-edit-ox')?.textContent||'0') + '</span>';
+        const oyEl = document.getElementById('lbl-move-y'); if (oyEl) oyEl.innerHTML = t('lbl_move_y') + ' <span class="val" id="txt-edit-oy">' + (document.getElementById('txt-edit-oy')?.textContent||'0') + '</span>';
+        // Library
+        set('lbl-library-hint', 'lbl_library_hint');
+        set('btn-borrar-sticker-sel', 'btn_del_sticker');
+        set('btn-limpiar-biblioteca', 'btn_clear_library');
+
+        // Paint panel
+        set('lbl-paint-body', 'lbl_paint_body');
+        set('lbl-finish-preview', 'lbl_finish_preview', 'innerHTML');
+        set('lbl-quick-colors', 'lbl_quick_colors');
+        set('lbl-upload-base-tex', 'lbl_upload_base_tex');
+        set('lbl-upload-base-tex-btn', 'lbl_upload_base_tex');
+        set('lbl-quick-colors-paint', 'lbl_quick_colors');
+        set('lbl-upload-map-btn', 'lbl_upload_map');
+        set('lbl-upload-folder', 'lbl_upload_folder');
+        // Vinyl panel
+        set('lbl-vtxt-text', 'lbl_vtxt_text');
+        set('lbl-vtxt-font', 'lbl_vtxt_font');
+        set('lbl-vtxt-color2', 'lbl_vtxt_color2');
+        set('lbl-shape-color', 'lbl_shape_color');
+        set('lbl-shape-color2', 'lbl_shape_color2');
+        const fAncho = document.getElementById('lbl-shape-width'); if(fAncho) fAncho.innerHTML = t('lbl_shape_width') + ' <span class="val" id="txt-forma-ancho">' + (document.getElementById('txt-forma-ancho')?.textContent||'1.0') + '</span>';
+        const fAlto = document.getElementById('lbl-shape-height'); if(fAlto) fAlto.innerHTML = t('lbl_shape_height') + ' <span class="val" id="txt-forma-alto">' + (document.getElementById('txt-forma-alto')?.textContent||'1.0') + '</span>';
+        set('lbl-vinyl-acabado', 'lbl_vinyl_acabado');
+        const vSize = document.getElementById('lbl-vinyl-size'); if(vSize) vSize.innerHTML = t('lbl_vinyl_size') + ' <span class="val" id="txt-tama\u00f1o">' + (document.getElementById('txt-tama\u00f1o')?.textContent||'0.3') + '</span>';
+        const vRot = document.getElementById('lbl-vinyl-rot'); if(vRot) vRot.innerHTML = t('lbl_vinyl_rot') + ' <span class="val" id="txt-rotacion">' + (document.getElementById('txt-rotacion')?.textContent||'0\u00b0') + '</span>';
+        set('lbl-upload-vinyl-img', 'lbl_upload_vinyl_img');
+        set('lbl-upload-lib-folder', 'lbl_upload_lib_folder');
+        set('lbl-upload-sticker-folder', 'lbl_upload_sticker_folder');
+        set('lbl-upload-map', 'lbl_upload_map');
+        const edScale = document.getElementById('lbl-edit-scale'); if(edScale) edScale.innerHTML = t('lbl_edit_scale') + ' <span class="val" id="txt-edit-tam">' + (document.getElementById('txt-edit-tam')?.textContent||'0.3') + '</span>';
+        const edRot = document.getElementById('lbl-edit-rot'); if(edRot) edRot.innerHTML = t('lbl_edit_rot') + ' <span class="val" id="txt-edit-rot">' + (document.getElementById('txt-edit-rot')?.textContent||'0\u00b0') + '</span>';
+        const edOx = document.getElementById('lbl-edit-ox'); if(edOx) edOx.innerHTML = t('lbl_edit_ox') + ' <span class="val" id="txt-edit-ox">' + (document.getElementById('txt-edit-ox')?.textContent||'0') + '</span>';
+        const edOy = document.getElementById('lbl-edit-oy'); if(edOy) edOy.innerHTML = t('lbl_edit_oy') + ' <span class="val" id="txt-edit-oy">' + (document.getElementById('txt-edit-oy')?.textContent||'0') + '</span>';
+        // Race panel
+        set('lbl-race-number', 'lbl_race_number');
+        set('lbl-race-num-color', 'lbl_race_num_color');
+        set('lbl-race-num-color2', 'lbl_race_num_color2');
+        set('lbl-race-bg-color', 'lbl_race_bg_color');
+        set('lbl-race-bg-color2', 'lbl_race_bg_color2');
+        set('lbl-race-dorsal-hint', 'lbl_race_dorsal_hint');
+        set('lbl-race-driver', 'lbl_race_driver');
+        set('lbl-race-driver-color', 'lbl_race_driver_color');
+        set('lbl-race-driver-color2', 'lbl_race_driver_color2');
+        set('lbl-race-driver-hint', 'lbl_race_driver_hint');
+        // Editor panel
+        set('lbl-editor-lighting', 'lbl_editor_lighting');
+        const edExp = document.getElementById('lbl-editor-exposure'); if(edExp) edExp.innerHTML = t('lbl_editor_exposure') + ' <span class="val" id="txt-exposure">' + (document.getElementById('txt-exposure')?.textContent||'1.0') + '</span>';
+        const edAmb = document.getElementById('lbl-editor-amb'); if(edAmb) edAmb.innerHTML = t('lbl_editor_amb') + ' <span class="val" id="txt-luz-amb">' + (document.getElementById('txt-luz-amb')?.textContent||'0.4') + '</span>';
+        const edMain = document.getElementById('lbl-editor-main'); if(edMain) edMain.innerHTML = t('lbl_editor_main') + ' <span class="val" id="txt-luz-prin">' + (document.getElementById('txt-luz-prin')?.textContent||'1.2') + '</span>';
+        const edSide = document.getElementById('lbl-editor-side'); if(edSide) edSide.innerHTML = t('lbl_editor_side') + ' <span class="val" id="txt-luz-lat">' + (document.getElementById('txt-luz-lat')?.textContent||'0.5') + '</span>';
+        const edEnv = document.getElementById('lbl-editor-env'); if(edEnv) edEnv.innerHTML = t('lbl_editor_env') + ' <span class="val" id="txt-env-int">' + (document.getElementById('txt-env-int')?.textContent||'1.0') + '</span>';
+        const edFog = document.getElementById('lbl-editor-fog'); if(edFog) edFog.innerHTML = t('lbl_editor_fog') + ' <span class="val" id="txt-fog">' + (document.getElementById('txt-fog')?.textContent||'0.05') + '</span>';
+        set('lbl-editor-mapping', 'lbl_editor_mapping', 'innerHTML');
+        // Export modal
+        set('lbl-exp-res', 'lbl_exp_res');
+        set('lbl-exp-quality', 'lbl_exp_quality');
+        set('lbl-exp-maps', 'lbl_exp_maps');
+        // Session modal
+        set('lbl-sesion-filename', 'lbl_sesion_filename');
+        set('lbl-sesion-or', 'lbl_sesion_or');
+        set('btn-guardar-sesion', 'btn_save_session');
+        set('sesion-modal-title', 'sesion_title', 'innerHTML');
+        set('sesion-modal-desc', 'sesion_desc', 'innerHTML');
+        set('lbl-cargar-sesion', 'btn_load_session');
+        set('exp-modal-title', 'exp_title', 'innerHTML');
+        set('lbl-pick-color', 'paint_pick');
+
+        // Welcome modal
+        set('lbl-wm-projname', 'lbl_wm_projname');
+        // Mouse help panel
+        set('ayuda-title', 'help_title');
+        set('ayuda-k1', 'help_k1', 'innerHTML');
+        set('ayuda-d1', 'help_d1');
+        set('ayuda-k2', 'help_k2', 'innerHTML');
+        set('ayuda-d2', 'help_d2');
+        set('ayuda-k3', 'help_k3');
+        set('ayuda-d3', 'help_d3');
+        set('ayuda-k4', 'help_k4', 'innerHTML');
+        set('ayuda-d4', 'help_d4');
+        set('ayuda-k5', 'help_k5', 'innerHTML');
+        set('ayuda-d5', 'help_d5');
+        set('ayuda-k6', 'help_k6', 'innerHTML');
+        set('ayuda-d6', 'help_d6');
+    }
+
+    function setLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('livery_lang', lang);
+        applyLang();
+        document.getElementById('wm-lang-dropdown').classList.remove('open');
+    }
+
+    // Conectar opciones del dropdown
+    document.querySelectorAll('.lang-option[data-lang]').forEach(el => {
+        el.addEventListener('click', () => setLang(el.dataset.lang));
+    });
+
+    // Aplicar idioma guardado al cargar
+applyLang();
+    // Las etiquetas del pincel se aplican desde el bloque del pincel al final del script
+    actualizarInterfazCapas();
+
+    // ══════════════════════════════════════════════════════════════════
+    // ── SISTEMA DE PINCEL LIBRE (DecalGeometry) ────────────────────
+    // Cada pincelada crea un DecalGeometry pequeño en el punto 3D exacto
+    // donde impacta el rayo. Pinta exactamente donde apunta el cursor,
+    // con tamaño constante en espacio 3D, sin distorsión UV y sin
+    // problemas al cruzar meshes.
+    // ══════════════════════════════════════════════════════════════════
+
+    // ── Estado global del pincel ────────────────────────────────────
+    let brushActive       = false;   // Alt está bajado
+    let brushPainting     = false;   // botón izquierdo bajado mientras Alt activo
+    let brushErasing      = false;   // borrador temporal (Alt + RClick)
+    let brushEraserToggle = false;   // borrador permanente (toggle del botón)
+    let brushLastPos      = null;    // THREE.Vector3 último punto pintado (interpolación)
+    let brushLastMesh     = null;    // mesh del último punto
+
+    // Lista de decals del pincel (separada de capasStickers para no mezclarlas)
+    // brushDecals y brushUndoStack están declarados arriba junto a las variables de estado
+    const BRUSH_MAX_UNDO = 20;
+
+    // Canvas reutilizable para generar la textura del pincel (círculo suave)
+    const _brushTexCanvas = document.createElement('canvas');
+    _brushTexCanvas.width = _brushTexCanvas.height = 128;
+    let _brushTexCache = null; // { color, hard, tex } — reusa si no cambiaron
+
+    // ── Refs UI ──────────────────────────────────────────────────────
+    const brushColorInput    = document.getElementById('brush-color');
+    const brushSizeSlider    = document.getElementById('brush-size');
+    const brushOpacitySlider = document.getElementById('brush-opacity');
+    const brushHardSlider    = document.getElementById('brush-hardness');
+    const txtBrushSize       = document.getElementById('txt-brush-size');
+    const txtBrushOpacity    = document.getElementById('txt-brush-opacity');
+    const txtBrushHardness   = document.getElementById('txt-brush-hardness');
+    const brushBtnPaint      = document.getElementById('brush-btn-paint');
+    const brushBtnErase      = document.getElementById('brush-btn-erase');
+    const brushModeIndicator = document.getElementById('brush-mode-indicator');
+    const brushCursorEl      = document.getElementById('brush-cursor');
+
+    brushSizeSlider.addEventListener('input',    () => { txtBrushSize.textContent     = brushSizeSlider.value; });
+    brushOpacitySlider.addEventListener('input', () => { txtBrushOpacity.textContent  = brushOpacitySlider.value + '%'; });
+    brushHardSlider.addEventListener('input',    () => { txtBrushHardness.textContent = brushHardSlider.value + '%'; });
+
+    brushBtnPaint.addEventListener('click', () => {
+        brushEraserToggle = false;
+        brushBtnPaint.classList.add('active-paint');
+        brushBtnErase.classList.remove('active-erase');
+        _brushIndicador();
+    });
+    brushBtnErase.addEventListener('click', () => {
+        brushEraserToggle = !brushEraserToggle;
+        brushBtnErase.classList.toggle('active-erase', brushEraserToggle);
+        brushBtnPaint.classList.toggle('active-paint', !brushEraserToggle);
+        _brushIndicador();
+    });
+
+    // ── Generar textura de círculo suave para el decal ──────────────
+    function _brushMakeTexture(colorHex, opacity, hardness, isErase) {
+        const cacheKey = colorHex + '_' + opacity + '_' + hardness + '_' + isErase;
+        if (_brushTexCache && _brushTexCache.key === cacheKey) return _brushTexCache.tex;
+
+        const S = 128;
+        const c = _brushTexCanvas;
+        const ctx = c.getContext('2d');
+        ctx.clearRect(0, 0, S, S);
+
+        if (isErase) {
+            // Círculo blanco opaco (se aplica con blending de borrador)
+            const grd = ctx.createRadialGradient(S/2, S/2, 0, S/2, S/2, S/2);
+            const edge = Math.max(0, Math.min(1, hardness));
+            grd.addColorStop(0,    `rgba(255,255,255,${opacity})`);
+            grd.addColorStop(edge, `rgba(255,255,255,${opacity})`);
+            grd.addColorStop(1,    `rgba(255,255,255,0)`);
+            ctx.fillStyle = grd;
+            ctx.beginPath(); ctx.arc(S/2, S/2, S/2, 0, Math.PI*2); ctx.fill();
+        } else {
+            const r = parseInt(colorHex.slice(1,3), 16);
+            const g = parseInt(colorHex.slice(3,5), 16);
+            const b = parseInt(colorHex.slice(5,7), 16);
+            const edge = Math.max(0, Math.min(1, hardness));
+            const grd = ctx.createRadialGradient(S/2, S/2, 0, S/2, S/2, S/2);
+            grd.addColorStop(0,    `rgba(${r},${g},${b},${opacity})`);
+            grd.addColorStop(edge, `rgba(${r},${g},${b},${opacity})`);
+            grd.addColorStop(1,    `rgba(${r},${g},${b},0)`);
+            ctx.fillStyle = grd;
+            ctx.beginPath(); ctx.arc(S/2, S/2, S/2, 0, Math.PI*2); ctx.fill();
+        }
+
+        const tmpCanvas = document.createElement('canvas');
+        tmpCanvas.width = tmpCanvas.height = S;
+        tmpCanvas.getContext('2d').drawImage(c, 0, 0);
+        const tex = new THREE.CanvasTexture(tmpCanvas);
+        tex.premultiplyAlpha = false;
+        _brushTexCache = { key: cacheKey, tex };
+        return tex;
+    }
+
+    // ── Raycast bajo el cursor → THREE.Intersection ─────────────────
+    function _brushRaycast(clientX, clientY) {
+        if (!objetosPintables.length) return null;
+        const cw = window.innerWidth, ch = window.innerHeight;
+        const rc = new THREE.Raycaster();
+        rc.setFromCamera(
+            new THREE.Vector2((clientX / cw) * 2 - 1, -(clientY / ch) * 2 + 1),
+            camera
+        );
+        scene.updateMatrixWorld();
+        // Excluir los overlay meshes del pincel (hijos con userData._isBrushDecal)
+        const targets = objetosPintables.filter(m => !m.userData._isBrushDecal);
+        const hits = rc.intersectObjects(targets, false);
+        return hits.length ? hits[0] : null;
+    }
+
+    // ── Colocar un decal del pincel en el punto de impacto ──────────
+    function _brushStamp(hit, isErase) {
+        if (!hit || !hit.face) return;
+
+        const mesh   = hit.object;
+        const pos    = hit.point.clone();
+        const norm   = hit.face.normal.clone().transformDirection(mesh.matrixWorld).normalize();
+
+        // Tamaño en unidades 3D: mapear el slider (4–128) a un rango de mundo.
+        // El tamaño base depende del modelo cargado. Usamos _modeloSize si existe.
+        const modelSpan  = window._modeloSize
+            ? Math.max(window._modeloSize.x, window._modeloSize.y, window._modeloSize.z)
+            : 4;
+        const rawSize    = parseInt(brushSizeSlider.value); // 4–128
+        const worldSize  = (rawSize / 128) * modelSpan * 0.25; // max = 25% del span del modelo
+        const opacity    = parseInt(brushOpacitySlider.value) / 100;
+        const hardness   = parseInt(brushHardSlider.value)    / 100;
+        const colorHex   = brushColorInput.value;
+
+        // Orientar el decal apuntando a la cámara (igual que vinilos)
+        const rot = calcularRotacionDecal(pos, norm, 0);
+
+        const decalSize = new THREE.Vector3(worldSize, worldSize, worldSize * 2);
+        let geom;
+        try { geom = mkDecal(mesh, pos, rot, decalSize); }
+        catch(e) { return; }
+
+        let mat;
+        if (isErase) {
+            // Para borrar usamos un decal blanco (color del fondo o negro) con blending
+            // que sobreescribe los decals de pincel debajo. La técnica más limpia:
+            // renderOrder muy alto y color que tape lo que hay debajo.
+            // Como los decals del pincel no son trasparentes en sí (tienen su propia capa),
+            // el borrador simplemente elimina los decals existentes en esa zona
+            // marcándolos como invisibles si están en el radio.
+            _brushEraseInRadius(pos, worldSize);
+            geom.dispose();
+            return;
+        }
+
+        const tex = _brushMakeTexture(colorHex, opacity, hardness, false);
+        mat = new THREE.MeshBasicMaterial({
+            map: tex,
+            transparent: true,
+            depthWrite: false,
+            depthTest: true,
+            polygonOffset: true,
+            polygonOffsetFactor: -4,
+            polygonOffsetUnits: -1,
+            blending: THREE.NormalBlending,
+            side: THREE.FrontSide,
+        });
+
+        const decalMesh = new THREE.Mesh(geom, mat);
+        decalMesh.renderOrder = 50 + brushDecals.length;
+        decalMesh.userData._isBrushDecal = true;
+        scene.add(decalMesh);
+
+        brushDecals.push({
+            mesh3d: decalMesh,
+            pos: pos.clone(),
+            norm: norm.clone(),
+            worldSize,
+            targetMesh: mesh,
+            rotEuler: rot.clone(),
+            texDataUrl: _brushTexCanvas.toDataURL()
+        });
+    }
+
+    // ── Borrar decals en un radio ────────────────────────────────────
+    function _brushEraseInRadius(center, radius) {
+        const r2 = radius * radius;
+        for (const d of brushDecals) {
+            if (d.pos.distanceToSquared(center) < r2 * 4) {
+                d.mesh3d.visible = false;
+            }
+        }
+    }
+
+    // ── Indicador de modo ────────────────────────────────────────────
+    function _brushIndicador() {
+        if (!brushActive) {
+            brushModeIndicator.classList.remove('visible', 'eraser');
+            return;
+        }
+        const erase = brushErasing || brushEraserToggle;
+        brushModeIndicator.textContent = erase ? '⬜ MODO BORRADOR' : '🖌️ MODO PINCEL';
+        brushModeIndicator.classList.toggle('eraser', erase);
+        brushModeIndicator.classList.add('visible');
+    }
+
+    // ── Cursor visual ────────────────────────────────────────────────
+    function _brushCursor(clientX, clientY) {
+        // Tamaño del cursor en pantalla: proporcional al tamaño del slider
+        const rawSize = parseInt(brushSizeSlider.value);
+        const diam    = Math.max(8, rawSize);
+        brushCursorEl.style.display     = 'block';
+        brushCursorEl.style.left        = clientX + 'px';
+        brushCursorEl.style.top         = clientY + 'px';
+        brushCursorEl.style.width       = diam + 'px';
+        brushCursorEl.style.height      = diam + 'px';
+        brushCursorEl.style.borderColor = (brushErasing || brushEraserToggle)
+            ? 'rgba(255,68,85,0.9)'
+            : brushColorInput.value + 'cc';
+    }
+    function _brushHideCursor() { brushCursorEl.style.display = 'none'; }
+
+    // ── Teclado Alt ──────────────────────────────────────────────────
+    window.addEventListener('keydown', (e) => {
+        if (e.key !== 'Alt') return;
+        const tag = document.activeElement.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement.isContentEditable) return;
+        e.preventDefault();
+        brushActive = true;
+        controls.enabled = false;
+        _brushIndicador();
+    }, { capture: true });
+
+    window.addEventListener('keyup', (e) => {
+        if (e.key !== 'Alt') return;
+        brushActive = brushPainting = brushErasing = false;
+        brushLastPos = brushLastMesh = null;
+        controls.enabled = !_shiftHeld;
+        _brushHideCursor();
+        _brushIndicador();
+    });
+
+    // ── Puntero ──────────────────────────────────────────────────────
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+        if (!brushActive) return;
+        if (e.clientX < getPanelWidth()) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        if (e.button === 2) {
+            brushErasing  = true;
+            brushPainting = false;
+        } else if (e.button === 0) {
+            brushPainting = true;
+            brushErasing  = false;
+            // Guardar punto de deshacer ANTES del primer stamp
+            brushUndoStack.push(brushDecals.length);
+            if (brushUndoStack.length > BRUSH_MAX_UNDO) brushUndoStack.shift();
+        }
+
+        const hit = _brushRaycast(e.clientX, e.clientY);
+        if (hit) {
+            _brushStamp(hit, brushErasing || brushEraserToggle);
+            brushLastPos  = hit.point.clone();
+            brushLastMesh = hit.object;
+        }
+        _brushIndicador();
+    }, { capture: false });
+
+    renderer.domElement.addEventListener('pointermove', (e) => {
+        if (!brushActive) return;
+        if (e.clientX < getPanelWidth()) { _brushHideCursor(); return; }
+        _brushCursor(e.clientX, e.clientY);
+        if (!brushPainting && !brushErasing) return;
+
+        const hit = _brushRaycast(e.clientX, e.clientY);
+        if (!hit) { brushLastPos = brushLastMesh = null; return; }
+
+        const isErase  = brushErasing || brushEraserToggle;
+        const rawSize  = parseInt(brushSizeSlider.value);
+        const modelSpan = window._modeloSize
+            ? Math.max(window._modeloSize.x, window._modeloSize.y, window._modeloSize.z)
+            : 4;
+        const worldSize = (rawSize / 128) * modelSpan * 0.25;
+
+        // Interpolar entre el último punto y el actual para trazo continuo
+        const spacing = worldSize * 0.15; // 15% del tamaño = trazo muy suave
+        if (brushLastPos && brushLastMesh) {
+            const dist = hit.point.distanceTo(brushLastPos);
+            if (dist < spacing) return; // aún no se movió lo suficiente
+            if (dist > spacing * 1.5) {
+                // Interpolar: generar stamps intermedios a lo largo de la línea 3D
+                const steps = Math.ceil(dist / spacing);
+                for (let s = 1; s <= steps; s++) {
+                    const t = s / steps;
+                    const interpPoint = brushLastPos.clone().lerp(hit.point, t);
+                    // Raycast desde la cámara hacia el punto interpolado para obtener la normal real
+                    const dir = interpPoint.clone().sub(camera.position).normalize();
+                    const rc = new THREE.Raycaster(camera.position.clone(), dir);
+                    const targets = objetosPintables.filter(m => !m.userData._isBrushDecal);
+                    const hits2 = rc.intersectObjects(targets, false);
+                    if (hits2.length && hits2[0].face) {
+                        _brushStamp(hits2[0], isErase);
+                    }
+                }
+            } else {
+                _brushStamp(hit, isErase);
+            }
+        } else {
+            _brushStamp(hit, isErase);
+        }
+
+        brushLastPos  = hit.point.clone();
+        brushLastMesh = hit.object;
+    }, { capture: false });
+
+    renderer.domElement.addEventListener('pointerup', (e) => {
+        if (!brushActive) return;
+        brushPainting = brushErasing = false;
+        brushLastPos  = brushLastMesh = null;
+        _brushIndicador();
+    });
+
+    renderer.domElement.addEventListener('pointerleave', () => {
+        if (!brushActive) return;
+        brushPainting = brushErasing = false;
+        brushLastPos  = brushLastMesh = null;
+        _brushHideCursor();
+    });
+
+    renderer.domElement.addEventListener('contextmenu', (e) => {
+        if (brushActive) e.preventDefault();
+    });
+
+    // ── Deshacer pincel ──────────────────────────────────────────────
+    document.getElementById('btn-brush-undo').addEventListener('click', () => {
+        if (!brushUndoStack.length) { mostrarToast('No hay trazos para deshacer.'); return; }
+        const targetLen = brushUndoStack.pop();
+        while (brushDecals.length > targetLen) {
+            const d = brushDecals.pop();
+            scene.remove(d.mesh3d);
+            d.mesh3d.geometry.dispose();
+            d.mesh3d.material.dispose();
+        }
+        // Restaurar visibilidad de decals que pudo haber ocultado el borrador
+        for (const d of brushDecals) d.mesh3d.visible = true;
+        mostrarToast('↩ Pincel deshecho');
+    });
+
+    // ── Limpiar pincel ────────────────────────────────────────────────
+    function brushLimpiarTodo() {
+        while (brushDecals.length) {
+            const d = brushDecals.pop();
+            scene.remove(d.mesh3d);
+            d.mesh3d.geometry.dispose();
+            d.mesh3d.material.dispose();
+        }
+        brushUndoStack.length = 0;
+        _brushTexCache = null;
+        mostrarToast('🗑 Pincel limpiado');
+    }
+    document.getElementById('btn-brush-clear').addEventListener('click', brushLimpiarTodo);
+
+    // Engancharse al Reset general
+    document.getElementById('btn-limpiar').addEventListener('click', brushLimpiarTodo, { capture: false });
+    document.getElementById('btn-restaurar-texturas').addEventListener('click', brushLimpiarTodo, { capture: false });
+
+    // ── Rueda Alt → tamaño del pincel ────────────────────────────────
+    renderer.domElement.addEventListener('wheel', (e) => {
+        if (!brushActive) return;
+        e.preventDefault(); e.stopPropagation();
+        const delta  = e.deltaY > 0 ? -2 : 2;
+        const newVal = Math.min(128, Math.max(4, parseInt(brushSizeSlider.value) + delta));
+        brushSizeSlider.value    = newVal;
+        txtBrushSize.textContent = newVal;
+    }, { passive: false, capture: false });
+
+    // ── i18n del pincel ──────────────────────────────────────────────
+    const brushI18n = {
+        es: {
+            lbl_brush_color: 'Color del pincel', lbl_brush_color2: 'Color activo',
+            lbl_brush_size: 'Tamaño', lbl_brush_opacity: 'Opacidad', lbl_brush_hardness: 'Dureza',
+            brush_undo: '↩ Deshacer', brush_clear: '🗑 Limpiar pincel',
+            ayuda_alt_drag: 'Alt<br>+ arrastrar', ayuda_alt_desc: 'Pincel libre sobre el modelo',
+            ayuda_alt_r: 'Alt + clic<br>derecho', ayuda_alt_r_desc: 'Borrador temporal',
+            ayuda_alt_wheel: 'Alt<br>+ rueda', ayuda_alt_wdesc: 'Tamaño del pincel'
+        },
+        en: {
+            lbl_brush_color: 'Brush color', lbl_brush_color2: 'Active color',
+            lbl_brush_size: 'Size', lbl_brush_opacity: 'Opacity', lbl_brush_hardness: 'Hardness',
+            brush_undo: '↩ Undo', brush_clear: '🗑 Clear brush',
+            ayuda_alt_drag: 'Alt<br>+ drag', ayuda_alt_desc: 'Free brush on model',
+            ayuda_alt_r: 'Alt + right<br>click', ayuda_alt_r_desc: 'Temporary eraser',
+            ayuda_alt_wheel: 'Alt<br>+ wheel', ayuda_alt_wdesc: 'Brush size'
+        }
+    };
+    Object.keys(brushI18n).forEach(lang => { if (LANG[lang]) Object.assign(LANG[lang], brushI18n[lang]); });
+
+    function applyBrushLang() {
+        const L = LANG[currentLang] || LANG.es;
+        const _s = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        _s('lbl-brush-color',   L.lbl_brush_color   || 'Color del pincel');
+        _s('lbl-brush-color2',  L.lbl_brush_color2  || 'Color activo');
+        _s('lbl-brush-size',    L.lbl_brush_size     || 'Tamaño');
+        _s('lbl-brush-opacity', L.lbl_brush_opacity  || 'Opacidad');
+        _s('lbl-brush-hardness',L.lbl_brush_hardness || 'Dureza');
+        const bpu = document.getElementById('btn-brush-undo');  if (bpu) bpu.textContent = L.brush_undo  || '↩ Deshacer';
+        const bpc = document.getElementById('btn-brush-clear'); if (bpc) bpc.textContent = L.brush_clear || '🗑 Limpiar pincel';
+        const _sh = (id, v) => { const el = document.getElementById(id); if (el) el.innerHTML = v; };
+        _sh('ayuda-k7', L.ayuda_alt_drag   || 'Alt<br>+ arrastrar');
+        _sh('ayuda-d7', L.ayuda_alt_desc   || 'Pincel libre sobre el modelo');
+        _sh('ayuda-k8', L.ayuda_alt_r      || 'Alt + clic<br>derecho');
+        _sh('ayuda-d8', L.ayuda_alt_r_desc || 'Borrador temporal');
+        _sh('ayuda-k9', L.ayuda_alt_wheel  || 'Alt<br>+ rueda');
+        _sh('ayuda-d9', L.ayuda_alt_wdesc  || 'Tamaño del pincel');
+    }
+    applyBrushLang();
+    document.querySelectorAll('.lang-option, #wm-lang-dropdown .lang-option').forEach(el => {
+        el.addEventListener('click', () => setTimeout(applyBrushLang, 0));
+    });
+    window._applyBrushLang = applyBrushLang;
+
+    // ══════════════════════════════════════════════════════════════════
+    // ── CUBO DE PINTURA (FLOOD FILL POR MESH) ─────────────────────
+    // Ctrl + clic sobre una pieza del modelo → pinta solo esa pieza
+    // con el color seleccionado en brush-color.
+    // ══════════════════════════════════════════════════════════════════
+
+    let bucketMode = false; // toggle del botón cubo
+    // bucketHistory está declarado arriba junto a las variables de estado
+    const BUCKET_MAX_UNDO = 20;
+
+    const brushBtnBucket = document.getElementById('brush-btn-bucket');
+
+    brushBtnBucket.addEventListener('click', () => {
+        bucketMode = !bucketMode;
+        brushEraserToggle = false;
+        // Actualizar UI de botones
+        brushBtnBucket.classList.toggle('active-bucket', bucketMode);
+        brushBtnPaint.classList.toggle('active-paint', !bucketMode && !brushEraserToggle);
+        brushBtnErase.classList.remove('active-erase');
+        _brushIndicador();
+    });
+
+    // Modificar los otros botones para desactivar el cubo
+    brushBtnPaint.addEventListener('click', () => { bucketMode = false; brushBtnBucket.classList.remove('active-bucket'); });
+    brushBtnErase.addEventListener('click', () => { bucketMode = false; brushBtnBucket.classList.remove('active-bucket'); });
+
+    // ── Ctrl + clic para cubo de pintura ────────────────────────────
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+        // Ctrl + clic izquierdo cuando cubo activo O siempre con Ctrl+clic
+        if (!e.ctrlKey || e.button !== 0) return;
+        if (e.clientX < getPanelWidth()) return;
+        if (selectMode) return; // el modo selección de partes ya usa Ctrl+clic
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        const cw = window.innerWidth, ch = window.innerHeight;
+        const rc = new THREE.Raycaster();
+        rc.setFromCamera(
+            new THREE.Vector2((e.clientX / cw) * 2 - 1, -(e.clientY / ch) * 2 + 1),
+            camera
+        );
+        scene.updateMatrixWorld();
+        const hits = rc.intersectObjects(objetosPintables, false);
+        if (!hits.length) return;
+
+        const mesh = hits[0].object;
+        const colorHex = brushColorInput.value;
+
+        // Guardar estado previo para undo
+        const prevColor = mesh.material.color ? mesh.material.color.getHexString() : 'ffffff';
+        const prevMap   = mesh.material.map || null;
+        bucketHistory.push({ mesh, prevColor: '#' + prevColor, prevMap });
+        if (bucketHistory.length > BUCKET_MAX_UNDO) bucketHistory.shift();
+
+        // Aplicar color solo a este mesh
+        mesh.material.color.set(colorHex);
+        mesh.material.map = null; // quitar textura para que el color se vea puro
+        mesh.material.needsUpdate = true;
+
+        // Guardar en userData para exportación
+        mesh.userData._bucketColor = colorHex;
+
+        mostrarToast(`🪣 Pieza "${mesh.name || 'mesh'}" pintada`);
+    }, { capture: true });
+
+    // ── Deshacer cubo (se añade al btn-brush-undo existente) ─────────
+    const _origBrushUndo = document.getElementById('btn-brush-undo');
+    _origBrushUndo.addEventListener('click', () => {
+        // Si hay historial de cubo, deshacerlo también
+        if (bucketHistory.length) {
+            const entry = bucketHistory.pop();
+            entry.mesh.material.color.set(entry.prevColor);
+            entry.mesh.material.map = entry.prevMap;
+            entry.mesh.material.needsUpdate = true;
+            delete entry.mesh.userData._bucketColor;
+        }
+    }, { capture: false });
+
+    // ── Limpiar cubo en Reset ────────────────────────────────────────
+    document.getElementById('btn-brush-clear').addEventListener('click', () => {
+        // Restaurar todos los meshes pintados con cubo
+        while (bucketHistory.length) {
+            const entry = bucketHistory.pop();
+            entry.mesh.material.color.set(entry.prevColor);
+            entry.mesh.material.map = entry.prevMap;
+            entry.mesh.material.needsUpdate = true;
+            delete entry.mesh.userData._bucketColor;
+        }
+    }, { capture: false });
+
+    // ── Exportar piezas pintadas con cubo ────────────────────────────
+    // processStickerChunked no puede manejar un flood fill (es para decals).
+    // En su lugar, el cubo de pintura rellena directamente en el canvas de export
+    // todos los píxeles que corresponden a los triángulos de ese mesh en espacio UV.
+    // Esto se hace ANTES de renderizar los stickers/pincel.
+
+    // Función global que se llama desde exportSingleMap/exportAllMaps
+    function _bucketFillExportCanvas(exportMaps, w, h) {
+        for (const mesh of objetosPintables) {
+            const col = mesh.userData._bucketColor;
+            if (!col) continue;
+
+            // Buscar a qué mapa de export pertenece este mesh
+            const ddsName = mesh.userData?._ddsName || null;
+            const mapEntry = ddsName
+                ? exportMaps.find(e => e.ddsName === ddsName)
+                : exportMaps.find(e => !e.ddsName) || exportMaps[0];
+            if (!mapEntry) continue;
+
+            const ctx = mapEntry.ctx;
+            const geom = mesh.geometry;
+            if (!geom?.attributes?.uv) continue;
+
+            const uvAttr = geom.attributes.uv;
+            const idxBuf = geom.index;
+            const triCount = idxBuf ? (idxBuf.count / 3) : (uvAttr.count / 3);
+
+            // Parsear color
+            const r = parseInt(col.slice(1,3), 16);
+            const g = parseInt(col.slice(3,5), 16);
+            const b = parseInt(col.slice(5,7), 16);
+
+            ctx.save();
+            ctx.fillStyle = `rgb(${r},${g},${b})`;
+
+            // Rellenar cada triángulo del mesh en espacio UV
+            ctx.beginPath();
+            for (let t = 0; t < triCount; t++) {
+                let ia, ib, ic;
+                if (idxBuf) { ia = idxBuf.getX(t*3); ib = idxBuf.getX(t*3+1); ic = idxBuf.getX(t*3+2); }
+                else        { ia = t*3; ib = t*3+1; ic = t*3+2; }
+
+                const ax = uvAttr.getX(ia) * w;
+                const ay = (1 - uvAttr.getY(ia)) * h;
+                const bx = uvAttr.getX(ib) * w;
+                const by = (1 - uvAttr.getY(ib)) * h;
+                const cx = uvAttr.getX(ic) * w;
+                const cy = (1 - uvAttr.getY(ic)) * h;
+
+                ctx.moveTo(ax, ay);
+                ctx.lineTo(bx, by);
+                ctx.lineTo(cx, cy);
+                ctx.closePath();
+            }
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // ── FIN SISTEMA DE PINCEL ─────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════
+
+
 </script>
 </body>
 </html>
-

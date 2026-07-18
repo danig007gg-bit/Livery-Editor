@@ -229,7 +229,8 @@ input[type="file"] { display: none; }
   font-family: 'Rajdhani', sans-serif;
   display: flex; justify-content: space-between; align-items: center;
 }
-.field-label .val { color: var(--gold); font-size: 11px; letter-spacing: 0; }
+.field-label .val { color: var(--gold); font-size: 11px; letter-spacing: 0; cursor: pointer; padding: 1px 4px; border-radius: 3px; transition: background .15s; }
+.field-label .val:hover { background: rgba(200,168,75,.15); }
 
 select, input[type="text"] {
   width: 100%;
@@ -630,6 +631,10 @@ input[type="checkbox"] {
 .brush-tool-btn.active-erase { border-color: var(--red); color: var(--red); background: rgba(255,68,85,.1); }
 .brush-tool-btn.active-bucket { border-color: var(--gold); color: var(--gold); background: rgba(200,168,75,.12); }
 
+/* ── KN5 Import Panel ─────────────────────────────────────── */
+#kn5-import-panel { display: flex; flex-direction: column; }
+#kn5-status.error { color: var(--red); }
+
 /* ── Camera preset menu (GT7 style) ─────────────────────────── */
 #camera-presets {
   position: fixed; bottom: 100px; left: 50%;
@@ -778,12 +783,13 @@ canvas { display: block; z-index: 0; }
   text-transform: uppercase; margin-top: 2px;
 }
 #welcome-modal .wm-box {
-  width: 420px; max-width: 96vw;
+  width: 96vw; max-width: 96vw; height: 85vh;
   background: var(--panel);
   border: 1px solid var(--border2);
   border-radius: var(--radius2);
   box-shadow: 0 32px 80px rgba(0,0,0,.9);
   overflow: hidden;
+  display: flex; flex-direction: column;
 }
 #welcome-modal .wm-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -823,7 +829,7 @@ canvas { display: block; z-index: 0; }
 }
 #welcome-modal .wm-lang-dropdown .lang-option:hover { background: rgba(255,255,255,.04); color: var(--txt); }
 #welcome-modal .wm-lang-dropdown .lang-option.active { color: var(--gold); }
-#welcome-modal .wm-body { padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; }
+#welcome-modal .wm-body { padding: 18px; display: flex; flex-direction: row; gap: 18px; }
 .wm-slot {
   width: 100%; padding: 14px 16px;
   background: var(--panel2);
@@ -1007,6 +1013,7 @@ canvas { display: block; z-index: 0; }
             }
         }
     </script>
+<script>document.addEventListener('DOMContentLoaded',()=>{if(window.electronAPI)document.documentElement.classList.add('electron-runtime');});</script>
 <script>window.onerror=function(msg,src,line,col,err){document.body.style.background="#111";document.body.innerHTML=`<div style="color:#ff4;font-family:monospace;padding:20px;font-size:14px;white-space:pre-wrap"><b>JS ERROR:</b>\n${msg}\n\nFile: ${src}\nLine: ${line}, Col: ${col}\n\n${err&&err.stack||""}</div>`;return true;};</script>
 </head>
 <body>
@@ -1034,6 +1041,7 @@ canvas { display: block; z-index: 0; }
         <input type="file" id="input-carpeta" webkitdirectory directory multiple>
       </label>
       <div id="texto-mapa-body" style="font-size:10px;color:var(--txt3);margin-top:6px;line-height:1.5;">Load a folder with .fbx/.gltf and PNG maps.</div>
+
       <div class="divider"></div>
       <div class="field-label" style="margin-top:8px;">Environment</div>
       <div class="env-tabs" style="margin-top:6px;">
@@ -1128,7 +1136,7 @@ canvas { display: block; z-index: 0; }
           <div class="subpanel-title">✏ Editor de Capa Activa</div>
           <div class="field">
             <div class="field-label">Escala <span class="val" id="txt-edit-tam">0.3</span></div>
-            <input type="range" id="edit-slider-tamaño" min="0.01" max="1.5" step="0.01">
+            <input type="range" id="edit-slider-tamaño" min="0.01" max="2" step="0.01">
           </div>
           <div class="field" style="margin-top:8px;">
             <div class="field-label">Rotación <span class="val" id="txt-edit-rot">0°</span></div>
@@ -1181,22 +1189,30 @@ canvas { display: block; z-index: 0; }
         <!-- Sección: Texto -->
         <div class="vadd-section" id="vtab-texto">
           <div class="field">
-            <div class="field-label" id="lbl-vtxt-text">Texto</div>
-            <input type="text" id="input-texto" placeholder="Escribe aquí..." style="margin-top:6px;">
+            <div class="field-label" id="lbl-vtxt-text">Text</div>
+            <input type="text" id="input-texto" placeholder="Type here..." style="margin-top:6px;">
           </div>
           <div class="field" style="margin-top:8px;">
-            <div class="field-label" id="lbl-vtxt-font">Fuente</div>
+            <div class="field-label" id="lbl-vtxt-font">Font</div>
             <select id="selector-fuente" style="margin-top:6px;">
               <option value="italic 900 90px Impact, sans-serif">Racing (Impact)</option>
-              <option value="900 70px 'Orbitron', sans-serif">Tech / Futurista</option>
-              <option value="bold 70px 'Graduate', serif">Clásico / Muscle</option>
+              <option value="900 70px 'Orbitron', sans-serif">Tech / Futuristic</option>
+              <option value="bold 70px 'Graduate', serif">Classic / Muscle</option>
             </select>
+            <label class="btn-upload" style="margin-top:6px;font-size:10px;" id="lbl-upload-font">📂 Add custom font (.ttf/.otf/.woff)
+              <input type="file" id="input-custom-font" accept=".ttf,.otf,.woff,.woff2">
+            </label>
+            <div id="custom-fonts-list" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;"></div>
+          </div>
+          <div class="field" style="margin-top:8px;">
+            <div class="field-label" id="lbl-vtxt-curve">Curve <span class="val" id="txt-text-curve">0</span></div>
+            <input type="range" id="slider-text-curve" min="-100" max="100" step="5" value="0">
           </div>
           <div class="field" style="margin-top:8px;">
             <div class="field-label" id="lbl-paint-color">Color</div>
             <div class="color-row" style="margin-top:6px;">
               <input type="color" id="color-texto" value="#ff3e3e">
-              <span style="font-size:11px;color:var(--txt2);" id="lbl-vtxt-color2">Color del texto</span>
+              <span style="font-size:11px;color:var(--txt2);" id="lbl-vtxt-color2">Text color</span>
             </div>
           </div>
         </div>
@@ -1253,7 +1269,7 @@ canvas { display: block; z-index: 0; }
         </div>
         <div class="field" style="margin-top:10px;">
           <div class="field-label">Tamaño <span class="val" id="txt-tamaño">0.3</span></div>
-          <input type="range" id="slider-tamaño" min="0.05" max="1.5" step="0.05" value="0.3">
+          <input type="range" id="slider-tamaño" min="0.05" max="2" step="0.05" value="0.3">
         </div>
         <div class="field" style="margin-top:10px;">
           <div class="field-label">Rotación <span class="val" id="txt-rotacion">0°</span></div>
@@ -1566,7 +1582,7 @@ canvas { display: block; z-index: 0; }
         </div>
         <div class="field" style="margin-top:10px;">
           <div class="field-label">Tamaño <span class="val" id="txt-tamaño">0.3</span></div>
-          <input type="range" id="slider-tamaño" min="0.05" max="1.5" step="0.05" value="0.3">
+          <input type="range" id="slider-tamaño" min="0.05" max="2" step="0.05" value="0.3">
         </div>
         <div class="field" style="margin-top:10px;">
           <div class="field-label">Rotación <span class="val" id="txt-rotacion">0°</span></div>
@@ -1592,7 +1608,7 @@ canvas { display: block; z-index: 0; }
           <div class="subpanel-title">✏ Editor de Capa Activa</div>
           <div class="field">
             <div class="field-label">Escala <span class="val" id="txt-edit-tam">0.3</span></div>
-            <input type="range" id="edit-slider-tamaño" min="0.01" max="1.5" step="0.01">
+            <input type="range" id="edit-slider-tamaño" min="0.01" max="2" step="0.01">
           </div>
           <div class="field" style="margin-top:8px;">
             <div class="field-label">Rotación <span class="val" id="txt-edit-rot">0°</span></div>
@@ -1652,23 +1668,53 @@ canvas { display: block; z-index: 0; }
         </div>
       </div>
     </div>
-    <div class="wm-body">
-      <div style="display:flex;flex-direction:column;gap:6px;">
-        <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);font-weight:600;" id="lbl-wm-projname">Nombre del proyecto</div>
-        <input type="text" id="wm-nombre-proyecto" placeholder="Mi Livery" maxlength="30" style="background:var(--panel2);border:1px solid var(--border2);border-radius:var(--radius);color:var(--txt);padding:9px 12px;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;outline:none;width:100%;">
-      </div>
-      <label class="wm-slot" id="wm-slot-carpeta" for="wm-input-carpeta"><span id="lbl-wm-folder-icon" style="display:none;"></span>
-        <div class="wm-slot-icon">📁</div>
-        <div class="wm-slot-info">
-          <div class="wm-slot-label">Model folder</div>
-          <div class="wm-slot-hint">Select folder with .fbx/.gltf and PNG maps</div>
+    <div class="wm-body" style="display:flex;flex-direction:row;gap:0;padding:0;flex:1;overflow:hidden;">
+      <!-- LEFT PANEL: Menu (like the app sidebar) -->
+      <div style="width:300px;flex-shrink:0;padding:18px;display:flex;flex-direction:column;gap:12px;border-right:1px solid var(--border);overflow-y:auto;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);font-weight:600;" id="lbl-wm-projname">Project name</div>
+          <input type="text" id="wm-nombre-proyecto" placeholder="Mi Livery" maxlength="30" style="background:var(--panel2);border:1px solid var(--border2);border-radius:var(--radius);color:var(--txt);padding:9px 12px;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;outline:none;width:100%;">
         </div>
-        <input type="file" id="wm-input-carpeta" webkitdirectory directory multiple>
-      </label>
-    </div>
-    <div class="wm-footer">
-      <button id="btn-welcome-saltar">Saltar</button>
-      <button id="btn-welcome-abrir" disabled>Abrir Editor →</button>
+        <label class="wm-slot" id="wm-slot-carpeta" for="wm-input-carpeta"><span id="lbl-wm-folder-icon" style="display:none;"></span>
+          <div class="wm-slot-icon">📁</div>
+          <div class="wm-slot-info">
+            <div class="wm-slot-label">Model folder</div>
+            <div class="wm-slot-hint">Select folder with .fbx/.gltf and PNG maps</div>
+          </div>
+          <input type="file" id="wm-input-carpeta" webkitdirectory directory multiple>
+        </label>
+        <button class="wm-slot" id="kn5-select-file" type="button" style="border-style:dashed;cursor:pointer;text-align:left;">
+          <div class="wm-slot-icon">🏎️</div>
+          <div class="wm-slot-info">
+            <div class="wm-slot-label">Select KN5 file</div>
+            <div class="wm-slot-hint">Open a .kn5 model directly</div>
+          </div>
+        </button>
+        <select id="kn5-model-select" disabled style="width:100%;">
+          <option value="">KN5 Model</option>
+        </select>
+        <button id="kn5-select-root" type="button" style="width:100%;padding:8px;background:transparent;border:1px solid var(--border);border-radius:var(--radius);color:var(--txt3);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;">📁 AC Folder</button>
+        <div id="kn5-status" style="font-size:10px;color:var(--txt3);line-height:1.4;min-height:14px;" aria-live="polite"></div>
+        <div id="kn5-error-box" style="display:none;margin-top:8px;padding:10px;background:rgba(255,68,85,.08);border:1px solid rgba(255,68,85,.3);border-radius:var(--radius);color:var(--red);font-size:10px;line-height:1.5;">
+          ⚠️ The selected vehicle's files may be encrypted or corrupted. Some modded cars use encryption that prevents conversion.
+        </div>
+        <div style="flex:1;"></div>
+        <div style="display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--border);">
+          <button id="kn5-import" type="button" disabled style="width:100%;padding:10px;background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;border-radius:var(--radius);color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;opacity:.35;">Import AC CAR</button>
+          <div style="display:flex;gap:8px;">
+            <button id="btn-welcome-saltar" style="padding:10px 16px;background:transparent;color:var(--txt3);border:1px solid var(--border);border-radius:var(--radius);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:12px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;">Skip</button>
+            <button id="btn-welcome-abrir" disabled style="flex:1;padding:10px;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#07080d;border:none;border-radius:var(--radius);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Open Editor →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: Car browser (fills remaining space) -->
+      <div id="kn5-import-panel" class="kn5-panel" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;padding:18px;overflow:hidden;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;">Assetto Corsa Cars</div>
+        <input type="text" id="kn5-car-search" placeholder="Search car, folder or KN5..." style="padding:9px 14px;font-size:12px;background:var(--panel2);border:1px solid var(--border2);border-radius:var(--radius);color:var(--txt);outline:none;width:100%;" autocomplete="off">
+        <div id="kn5-car-grid" style="display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:min-content;gap:8px;flex:1;overflow-y:auto;align-content:start;"></div>
+        <select id="kn5-car-select" disabled style="display:none;"><option value="">-</option></select>
+      </div>
     </div>
   </div>
 </div>
@@ -1708,8 +1754,8 @@ canvas { display: block; z-index: 0; }
           <div class="field-label" id="lbl-exp-res">Resolucion</div>
           <select id="export-res-select">
             <option value="4096">4096 x 4096</option>
-            <option value="2048">2048 x 2048</option>
-            <option value="1024" selected>1024 x 1024</option>
+            <option value="2048" selected>2048 x 2048</option>
+            <option value="1024">1024 x 1024</option>
             <option value="512">512 x 512</option>
           </select>
         </div>
@@ -1726,14 +1772,18 @@ canvas { display: block; z-index: 0; }
         <div class="field" style="flex:1;">
           <div class="field-label" id="lbl-exp-format">Formato</div>
           <select id="export-format-select">
-            <option value="png" selected>PNG</option>
-            <option value="dds">DDS (DXT5/BC3)</option>
+            <option value="png">PNG</option>
+            <option value="dds" selected>DDS (DXT5/BC3)</option>
           </select>
         </div>
       </div>
       <div class="field">
         <div class="field-label" id="lbl-exp-maps">Mapas detectados</div>
         <div id="export-maps-list" style="display:flex; flex-direction:column; gap:6px; margin-top:6px;"></div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;">
+        <button id="btn-create-skin" type="button" style="width:100%;padding:11px;background:linear-gradient(90deg,var(--green),#15c870);border:none;border-radius:var(--radius);color:#07080d;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:opacity .15s;" title="Creates a new skin folder inside the selected car and exports directly there">🏁 Create New Skin &amp; Export</button>
+        <div style="font-size:9px;color:var(--txt3);margin-top:4px;line-height:1.4;text-align:center;">Exports directly to the car's skins folder using the project name</div>
       </div>
     </div>
     </div>
@@ -1846,6 +1896,7 @@ canvas { display: block; z-index: 0; }
     import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
     import { DDSLoader } from 'three/examples/jsm/loaders/DDSLoader.js';
     import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+    import { createKn5ImportController } from './kn5-renderer-controller.mjs';
 
     // ── Texture loader patches ──────────────────────────────
         function mkDecal(mesh, pos, rot, size) {
@@ -2044,21 +2095,77 @@ canvas { display: block; z-index: 0; }
     function actualizarTexturaPorTexto() {
         const texto = inputTexto.value.trim(); if (!texto) return false;
         _formaActivaId = null;
-        _texturaAspectRatio = 1; // texto es siempre cuadrado (canvas 512x512)
-        ctxTexto.clearRect(0, 0, canvasTexto.width, canvasTexto.height);
+        _texturaAspectRatio = 1; // texto siempre usa canvas cuadrado
+
+        const W = canvasTexto.width, H = canvasTexto.height;
+        ctxTexto.clearRect(0, 0, W, H);
+
         // Parse font string and scale size down until text fits
         let fontStr = selectorFuente.value;
         ctxTexto.font = fontStr;
-        const maxW = canvasTexto.width * 0.95;
+        const maxW = W * 0.88;
         let measured = ctxTexto.measureText(texto).width;
         if (measured > maxW) {
-            // Extract numeric size from font string and scale it
             fontStr = fontStr.replace(/(\d+)px/, (_, n) => Math.floor(parseInt(n) * maxW / measured) + 'px');
             ctxTexto.font = fontStr;
+            measured = ctxTexto.measureText(texto).width;
         }
+
+        const curve = parseInt(document.getElementById('slider-text-curve')?.value || '0');
         ctxTexto.fillStyle = colorTexto.value;
-        ctxTexto.textAlign = 'center'; ctxTexto.textBaseline = 'middle';
-        ctxTexto.fillText(texto, canvasTexto.width / 2, canvasTexto.height / 2);
+        ctxTexto.textAlign = 'center';
+        ctxTexto.textBaseline = 'middle';
+
+        if (curve === 0) {
+            // Straight text
+            ctxTexto.fillText(texto, W / 2, H / 2);
+        } else {
+            // Curved text: place each character along a circular arc
+            // curve range: -100..+100. Map to radius: smaller abs(curve) = bigger radius (flatter)
+            const absCurve = Math.abs(curve);
+            const radius = W * (3.0 - absCurve / 40); // range: W*3 (flat) to W*0.5 (tight)
+            const chars = texto.split('');
+            const charWidths = chars.map(ch => ctxTexto.measureText(ch).width);
+            const totalW = charWidths.reduce((a, b) => a + b, 0);
+            const totalAngle = totalW / radius;
+
+            const centerX = W / 2;
+            // curve > 0: arc center is BELOW text (U shape / smile)
+            // curve < 0: arc center is ABOVE text (∩ shape / frown)
+            const centerY = curve > 0 ? (H / 2 + radius) : (H / 2 - radius);
+
+            let angle = -totalAngle / 2;
+
+            ctxTexto.save();
+            for (let i = 0; i < chars.length; i++) {
+                const halfChar = (charWidths[i] / 2) / radius;
+                angle += halfChar;
+
+                // Position on the arc
+                let x, y, rot;
+                if (curve > 0) {
+                    // U shape: arc opens upward, center below
+                    x = centerX + radius * Math.sin(angle);
+                    y = centerY - radius * Math.cos(angle);
+                    rot = angle;
+                } else {
+                    // ∩ shape: arc opens downward, center above
+                    x = centerX + radius * Math.sin(angle);
+                    y = centerY + radius * Math.cos(angle);
+                    rot = -angle;
+                }
+
+                ctxTexto.save();
+                ctxTexto.translate(x, y);
+                ctxTexto.rotate(rot);
+                ctxTexto.fillText(chars[i], 0, 0);
+                ctxTexto.restore();
+
+                angle += halfChar;
+            }
+            ctxTexto.restore();
+        }
+
         texturaActual = new THREE.CanvasTexture(canvasTexto); texturaActual.premultiplyAlpha = false;
         materialFantasma.map = texturaActual; materialFantasma.needsUpdate = true;
         urlMiniaturaActual = canvasTexto.toDataURL();
@@ -2068,6 +2175,109 @@ canvas { display: block; z-index: 0; }
     inputTexto.addEventListener('input', actualizarTexturaPorTexto);
     selectorFuente.addEventListener('change', actualizarTexturaPorTexto);
     colorTexto.addEventListener('input', actualizarTexturaPorTexto);
+    document.getElementById('slider-text-curve').addEventListener('input', (e) => {
+        document.getElementById('txt-text-curve').textContent = e.target.value;
+        actualizarTexturaPorTexto();
+    });
+
+    // ── Custom fonts system ──────────────────────────────────────────
+    const FONTS_STORAGE_KEY = 'livery_custom_fonts_v1';
+
+    function _loadCustomFonts() {
+        try { return JSON.parse(localStorage.getItem(FONTS_STORAGE_KEY) || '[]'); } catch { return []; }
+    }
+    function _saveCustomFonts(fonts) {
+        try { localStorage.setItem(FONTS_STORAGE_KEY, JSON.stringify(fonts)); } catch(e) { console.warn('localStorage full:', e); }
+    }
+
+    function _renderCustomFontsList() {
+        const container = document.getElementById('custom-fonts-list');
+        const fonts = _loadCustomFonts();
+        container.innerHTML = '';
+        fonts.forEach(f => {
+            const chip = document.createElement('div');
+            chip.style.cssText = 'display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:var(--panel2);border:1px solid var(--border);border-radius:var(--radius);font-size:10px;color:var(--txt2);cursor:pointer;transition:border-color .15s;';
+            chip.innerHTML = `<span style="font-family:'${f.name}',sans-serif;">${f.name}</span><span style="color:var(--txt3);font-size:8px;">✕</span>`;
+            chip.title = 'Click to use, right-click to delete';
+            chip.addEventListener('click', () => {
+                // Set font in selector as custom option
+                const sel = document.getElementById('selector-fuente');
+                const val = `900 70px '${f.name}', sans-serif`;
+                let opt = sel.querySelector(`option[value="${val}"]`);
+                if (!opt) {
+                    opt = document.createElement('option');
+                    opt.value = val; opt.textContent = f.name + ' (custom)';
+                    sel.appendChild(opt);
+                }
+                sel.value = val;
+                actualizarTexturaPorTexto();
+                chip.style.borderColor = 'var(--gold)';
+            });
+            chip.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const updated = _loadCustomFonts().filter(x => x.name !== f.name);
+                _saveCustomFonts(updated);
+                _renderCustomFontsList();
+            });
+            container.appendChild(chip);
+        });
+    }
+
+    document.getElementById('input-custom-font').addEventListener('change', (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        const name = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '');
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const dataUrl = ev.target.result;
+            // Register font with CSS @font-face
+            const fontFace = new FontFace(name, `url(${dataUrl})`);
+            fontFace.load().then((loaded) => {
+                document.fonts.add(loaded);
+                // Save to localStorage
+                const fonts = _loadCustomFonts();
+                if (!fonts.find(f => f.name === name)) {
+                    fonts.push({ name, data: dataUrl });
+                    _saveCustomFonts(fonts);
+                }
+                _renderCustomFontsList();
+                // Auto-select the new font
+                const sel = document.getElementById('selector-fuente');
+                const val = `900 70px '${name}', sans-serif`;
+                let opt = sel.querySelector(`option[value="${val}"]`);
+                if (!opt) {
+                    opt = document.createElement('option');
+                    opt.value = val; opt.textContent = name + ' (custom)';
+                    sel.appendChild(opt);
+                }
+                sel.value = val;
+                actualizarTexturaPorTexto();
+                mostrarToast(`✔ Font "${name}" loaded`);
+            }).catch(err => {
+                mostrarToast('⚠ Could not load font: ' + (err.message || err));
+            });
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    });
+
+    // Restore custom fonts from localStorage on startup
+    (function _initCustomFonts() {
+        const fonts = _loadCustomFonts();
+        const sel = document.getElementById('selector-fuente');
+        fonts.forEach(f => {
+            const fontFace = new FontFace(f.name, `url(${f.data})`);
+            fontFace.load().then(loaded => {
+                document.fonts.add(loaded);
+                const val = `900 70px '${f.name}', sans-serif`;
+                if (!sel.querySelector(`option[value="${val}"]`)) {
+                    const opt = document.createElement('option');
+                    opt.value = val; opt.textContent = f.name + ' (custom)';
+                    sel.appendChild(opt);
+                }
+            }).catch(() => {});
+        });
+        _renderCustomFontsList();
+    })();
 
     // ── Body mask / Parts map loading ────────────────────────
     function cargarBodyMask(archivo) {
@@ -2396,7 +2606,7 @@ canvas { display: block; z-index: 0; }
         } else {
             // Shift + rueda → cambiar tamaño
             const delta = e.deltaY > 0 ? -0.02 : 0.02;
-            tamañoActual = Math.min(1.5, Math.max(0.05, tamañoActual + delta));
+            tamañoActual = Math.min(2, Math.max(0.05, tamañoActual + delta));
             tamañoActual = Math.round(tamañoActual * 100) / 100;
             const slider = document.getElementById('slider-tamaño');
             if (slider) slider.value = tamañoActual;
@@ -3290,6 +3500,74 @@ canvas { display: block; z-index: 0; }
         if (e.target === document.getElementById('export-modal')) document.getElementById('export-modal').style.display = 'none';
     });
 
+    // ── Create New Skin & Export directly to car folder ──────
+    document.getElementById('btn-create-skin').addEventListener('click', async () => {
+        if (!window.electronAPI?.createSkin) { mostrarToast('⚠ Only available in the desktop app.'); return; }
+
+        // Get the car path from the KN5 import (stored when user selected a car)
+        const carPath = window._kn5SelectedCarPath;
+        if (!carPath) { mostrarToast('⚠ Import a car from Assetto Corsa first to use this feature.'); return; }
+
+        const skinName = document.getElementById('hud-design-name')?.textContent?.trim() || 'My_Livery';
+        const safeName = skinName.replace(/[^a-zA-Z0-9_\- ]/g, '_').replace(/\s+/g, '_');
+
+        const w = parseInt(document.getElementById('export-res-select')?.value || '1024');
+        const h = w;
+        const format = document.getElementById('export-format-select')?.value || 'png';
+
+        document.getElementById('export-modal').style.display = 'none';
+        eliminarFantasma();
+
+        const prog = showExportProgressModal();
+        try {
+            const exportMaps = await prepareExportMapCanvases(w, h);
+            for (const entry of exportMaps) {
+                if (window._baseTexturaBitmap) {
+                    entry.ctx.drawImage(window._baseTexturaBitmap, 0, 0, w, h);
+                } else if (baseColorApplied) {
+                    entry.ctx.fillStyle = currentBaseColor;
+                    entry.ctx.fillRect(0, 0, w, h);
+                }
+            }
+            _liveryFillExportCanvas(exportMaps, w, h);
+            _bucketFillExportCanvas(exportMaps, w, h);
+            let partsData = null;
+            if (partsMapCanvas) { const tp=document.createElement('canvas');tp.width=w;tp.height=h; const pc=tp.getContext('2d');pc.drawImage(partsMapCanvas,0,0,w,h); partsData=pc.getImageData(0,0,w,h).data; }
+
+            const allExportCapas = _buildExportCapas();
+            const total = allExportCapas.length;
+            for (let i=0; i<total; i++) {
+                if (prog.canceled?.()) throw new Error('cancelled');
+                await processStickerChunked(allExportCapas[i], exportMaps, w, h, partsData, prog, i, total, 2);
+            }
+            prog.close();
+
+            // Prepare files for IPC — both PNG and DDS go through createSkin
+            const filesToSave = [];
+            for (const entry of exportMaps) {
+                const baseFn = (entry.fileName || 'livery-map').replace(/\.(png|dds)$/i, '');
+                if (format === 'dds') {
+                    const imgData = entry.ctx.getImageData(0, 0, w, h);
+                    const rgbaBase64 = _uint8ToBase64(imgData.data);
+                    filesToSave.push({ name: baseFn + '.dds', data: rgbaBase64, dds: true, width: w, height: h });
+                } else {
+                    const dataUrl = entry.canvas.toDataURL('image/png');
+                    const base64 = dataUrl.replace(/^data:image\/png;base64,/, '');
+                    filesToSave.push({ name: baseFn + '.png', data: base64 });
+                }
+            }
+
+            const result = await window.electronAPI.createSkin(carPath, safeName, filesToSave);
+            if (result.error) {
+                mostrarToast('⚠ Error creating skin: ' + result.error);
+            } else {
+                mostrarToast(`✔ Skin "${safeName}" created with ${result.filesWritten} file(s)`, 5000);
+            }
+        } catch(err) {
+            if (err?.message !== 'cancelled') mostrarToast('⚠ Error: ' + (err?.message || err));
+        } finally { try { prog.close(); } catch(_){} }
+    });
+
     // ── Generador de archivo DDS (formato A8R8G8B8 sin comprimir) ──
     // Formato aceptado nativamente por Assetto Corsa y la mayoría de herramientas.
     // Estructura: Magic (4) + DDS_HEADER (124) + pixel data (BGRA 32bpp)
@@ -3371,11 +3649,12 @@ canvas { display: block; z-index: 0; }
     // ── Combina stickers + brushDecals en un array compatible con processStickerChunked ──
     function _buildExportCapas() {
         const capas = [...capasStickers];
+        const defaultBrushUrl = _brushTexCache?.tex?.image ? _brushTexCanvas.toDataURL() : null;
         for (const d of brushDecals) {
             if (!d.mesh3d.visible) continue;
             capas.push({
                 nombre: 'Brush',
-                miniaturaUrl: d.texDataUrl,
+                miniaturaUrl: d.texDataUrl || defaultBrushUrl,
                 datosOrigen: {
                     targetMesh: d.targetMesh,
                     pos:    d.pos,
@@ -3901,7 +4180,7 @@ canvas { display: block; z-index: 0; }
             const _decalRatioY = _formaActivaId ? formaAltoActual / formaAnchoActual : _texturaAspectRatio;
             const sticker = new THREE.Mesh(mkDecal(intersect.object, pos, rotD, new THREE.Vector3(tamañoActual, tamañoActual * _decalRatioY, 0.5)), mat);
             scene.add(sticker); contadorStickers++;
-            capasStickers.push({ nombre: baseNombre+(modoEspejo() !== 'ninguno'?" (Izq)":""), objetoMesh:sticker, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:modoEspejo() !== 'ninguno', datosOrigen:{targetMesh:intersect.object, pos:pos.clone(), posBase:pos.clone(), norm:norm.clone(), size:tamañoActual, ratioY:_decalRatioY, rotZ:rotacionActual, rotEuler:rotD.clone(), offsetX:0, offsetY:0, uv:intersect.uv?.clone()||null} });
+            capasStickers.push({ nombre: baseNombre+(modoEspejo() !== 'ninguno'?" (Izq)":""), objetoMesh:sticker, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:modoEspejo() !== 'ninguno', espejoSimetrico:modoEspejo()==='simetrico', datosOrigen:{targetMesh:intersect.object, pos:pos.clone(), posBase:pos.clone(), norm:norm.clone(), size:tamañoActual, ratioY:_decalRatioY, rotZ:rotacionActual, rotEuler:rotD.clone(), offsetX:0, offsetY:0, uv:intersect.uv?.clone()||null} });
             if (modoEspejo() !== 'ninguno') {
                 const espejo = encontrarMeshEspejo(intersect.object, pos);
                 const posE = espejo.pos;
@@ -3921,13 +4200,22 @@ canvas { display: block; z-index: 0; }
                 const matEspejo = new THREE.MeshStandardMaterial({ map:texEspejo, transparent:true, depthWrite:false, depthTest:true, polygonOffset:true, polygonOffsetFactor:-8, polygonOffsetUnits:-2, blending:THREE.NormalBlending, side:THREE.FrontSide, roughness:cfg.roughness, metalness:cfg.metalness, envMap:scene.environment });
                 const stickerE = new THREE.Mesh(mkDecal(espejo.mesh, posE, rotDE, new THREE.Vector3(tamañoActual, tamañoActual * _decalRatioY, 0.5)), matEspejo);
                 scene.add(stickerE); contadorStickers++;
-                capasStickers.push({nombre:baseNombre+" (Der)", objetoMesh:stickerE, miniaturaUrl:urlMiniaturaActual, vinculoEspejo:false, datosOrigen:{targetMesh:espejo.mesh, pos:posE.clone(), posBase:posE.clone(), norm:normE.clone(), size:tamañoActual, rotZ:rotacionActual, rotEuler:rotDE.clone(), offsetX:0, offsetY:0, uv:null}});
+                // Save flipped miniature for symmetric so session restore is correct
+                let miniUrlDer = urlMiniaturaActual;
+                if (modoEspejo() === 'simetrico' && texEspejo.image) {
+                    try {
+                        const fc = document.createElement('canvas');
+                        fc.width = texEspejo.image.width || 128; fc.height = texEspejo.image.height || 128;
+                        fc.getContext('2d').drawImage(texEspejo.image, 0, 0);
+                        miniUrlDer = fc.toDataURL();
+                    } catch(_) {}
+                }
+                capasStickers.push({nombre:baseNombre+" (Der)", objetoMesh:stickerE, miniaturaUrl:miniUrlDer, vinculoEspejo:false, espejoSimetrico:modoEspejo()==='simetrico', datosOrigen:{targetMesh:espejo.mesh, pos:posE.clone(), posBase:posE.clone(), norm:normE.clone(), size:tamañoActual, rotZ:rotacionActual, rotEuler:rotDE.clone(), offsetX:0, offsetY:0, uv:null}});
             }
             actualizarProfundidades3D(); actualizarInterfazCapas();
+            _globalUndoRegister('vinyl');
         }
     }
-
-    // ── Vinilos panel navigation ─────────────────────────────
     function mostrarVistaVinilos(vista) {
         document.getElementById('vinilos-home').style.display = vista === 'home' ? 'flex' : 'none';
         document.getElementById('vinilos-add').style.display  = vista === 'add'  ? 'flex' : 'none';
@@ -4295,6 +4583,7 @@ canvas { display: block; z-index: 0; }
         colocarDorsal(meshIzq, hitIzq.point, hitIzq.face.normal.clone().transformDirection(meshIzq.matrixWorld), texOrig, `Dorsal #${num} (Izq)`);
         colocarDorsal(meshDer, hitDer.point, hitDer.face.normal.clone().transformDirection(meshDer.matrixWorld), texOrig, `Dorsal #${num} (Der)`);
         actualizarProfundidades3D(); actualizarInterfazCapas();
+        _globalUndoRegister('vinyl');
         mostrarToast(`✔ Dorsal #${num} applied on both sides`);
     }); //──────────────────────
 
@@ -4367,6 +4656,7 @@ canvas { display: block; z-index: 0; }
         colocarPiloto(hitIzq, texOrig, `Piloto: ${nombre} (Izq)`);
         colocarPiloto(hitDer, texOrig, `Piloto: ${nombre} (Der)`);
         actualizarProfundidades3D(); actualizarInterfazCapas();
+        _globalUndoRegister('vinyl');
         mostrarToast(`✔ Name "${nombre}" applied on roof`);
     });
     //──────────────────────
@@ -4430,6 +4720,7 @@ canvas { display: block; z-index: 0; }
             nombre: capa.nombre,
             imgIdx: getImageIdx(capa.miniaturaUrl),
             vinculoEspejo: capa.vinculoEspejo,
+            espejoSimetrico: capa.espejoSimetrico || false,
             visible: capa.objetoMesh.visible,
             d: {
                 mn: capa.datosOrigen.targetMesh?.name || '',
@@ -4438,6 +4729,7 @@ canvas { display: block; z-index: 0; }
                 n:  [capa.datosOrigen.norm.x, capa.datosOrigen.norm.y, capa.datosOrigen.norm.z],
                 s:  capa.datosOrigen.size,
                 rz: capa.datosOrigen.rotZ || 0,
+                re: capa.datosOrigen.rotEuler ? [capa.datosOrigen.rotEuler.x, capa.datosOrigen.rotEuler.y, capa.datosOrigen.rotEuler.z, capa.datosOrigen.rotEuler.order] : null,
                 ox: capa.datosOrigen.offsetX || 0,
                 oy: capa.datosOrigen.offsetY || 0,
                 ry: capa.datosOrigen.ratioY || 1,
@@ -4446,8 +4738,9 @@ canvas { display: block; z-index: 0; }
         }));
 
         // ── Serializar brushDecals ──
+        const brushTexUrl = _brushTexCache?.tex?.image ? _brushTexCanvas.toDataURL() : null;
         const pincel = brushDecals.filter(d => d.mesh3d.visible).map(d => ({
-            imgIdx: getImageIdx(d.texDataUrl),
+            imgIdx: getImageIdx(d.texDataUrl || brushTexUrl),
             mn: d.targetMesh?.name || '',
             p:  [d.pos.x, d.pos.y, d.pos.z],
             n:  [d.norm.x, d.norm.y, d.norm.z],
@@ -4548,14 +4841,20 @@ canvas { display: block; z-index: 0; }
                 const imgUrl = isV2 ? images[capaData.imgIdx] : capaData.miniaturaUrl;
                 if (!imgUrl) { fallidas++; continue; }
 
-                const tex = await new Promise((res, rej) => {
+                let tex = await new Promise((res, rej) => {
                     textureLoader.load(imgUrl, res, undefined, rej);
                 });
 
+                // Use stored rotEuler if available (preserves exact orientation)
                 const dummy = new THREE.Object3D();
-                dummy.position.copy(pos);
-                dummy.lookAt(pos.clone().add(norm));
-                dummy.rotation.z += rotZ;
+                if (isV2 && d.re) {
+                    dummy.rotation.set(d.re[0], d.re[1], d.re[2], d.re[3] || 'XYZ');
+                    dummy.position.copy(pos);
+                } else {
+                    dummy.position.copy(pos);
+                    dummy.lookAt(pos.clone().add(norm));
+                    dummy.rotation.z += rotZ;
+                }
 
                 const mat = new THREE.MeshStandardMaterial({
                     map: tex, transparent: true, depthWrite: false, depthTest: true,
@@ -4573,8 +4872,10 @@ canvas { display: block; z-index: 0; }
                     objetoMesh: sticker,
                     miniaturaUrl: imgUrl,
                     vinculoEspejo: capaData.vinculoEspejo || false,
+                    espejoSimetrico: capaData.espejoSimetrico || false,
                     datosOrigen: { targetMesh: mesh, pos, posBase, norm,
-                        size, rotZ, offsetX, offsetY, ratioY, ratioZ }
+                        size, rotZ, rotEuler: dummy.rotation.clone(),
+                        offsetX, offsetY, ratioY, ratioZ }
                 });
                 restauradas++;
             } catch(e) { console.warn('Capa no restaurada:', e); fallidas++; }
@@ -4812,6 +5113,38 @@ canvas { display: block; z-index: 0; }
     });
 
     animate();
+
+    // ── KN5 IMPORT CONTROLLER (early init) ──────────────────────────
+    try {
+        createKn5ImportController({
+            api: window.electronAPI,
+            onFilesReady: async (files, metadata) => {
+                const wm = document.getElementById('welcome-modal');
+                if (wm) wm.style.display = 'none';
+
+                // Store car path for "Create New Skin" feature
+                if (metadata?.sourceKn5) {
+                    const parts = metadata.sourceKn5.replace(/\\/g, '/').split('/');
+                    parts.pop(); // remove .kn5 filename
+                    window._kn5SelectedCarPath = parts.join('/');
+                }
+                await wmProcesarCarpeta(files);
+                if (metadata?.sourceKn5) {
+                    const userNombre = document.getElementById('wm-nombre-proyecto')?.value?.trim();
+                    if (userNombre) {
+                        document.getElementById('hud-design-name').textContent = userNombre.toUpperCase();
+                    } else {
+                        const kn5Name = metadata.sourceKn5.split(/[\\/]/).pop().replace(/\.kn5$/i, '');
+                        document.getElementById('hud-design-name').textContent = kn5Name.toUpperCase();
+                    }
+                }
+            },
+            onStatus: (message, isError) => {
+                const el = document.getElementById('kn5-status');
+                if (el) { el.textContent = message; el.classList.toggle('error', !!isError); }
+            }
+        });
+    } catch(e) { console.error('[KN5] Controller init failed:', e); }
 
     // â”€â”€ i18n â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const LANG = {
@@ -5369,6 +5702,8 @@ applyLang();
     let brushEraserToggle = false;   // borrador permanente (toggle del botón)
     let brushLastPos      = null;    // THREE.Vector3 último punto pintado (interpolación)
     let brushLastMesh     = null;    // mesh del último punto
+    let _brushLastNorm    = null;    // THREE.Vector3 normal del último punto
+    let _brushCachedMat   = null;    // material reutilizado del pincel
 
     // Lista de decals del pincel (separada de capasStickers para no mezclarlas)
     // brushDecals y brushUndoStack están declarados arriba junto a las variables de estado
@@ -5451,75 +5786,82 @@ applyLang();
     }
 
     // ── Raycast bajo el cursor → THREE.Intersection ─────────────────
+    const _brushRaycaster = new THREE.Raycaster(); // reutilizar para evitar GC
     function _brushRaycast(clientX, clientY) {
         if (!objetosPintables.length) return null;
         const cw = window.innerWidth, ch = window.innerHeight;
-        const rc = new THREE.Raycaster();
-        rc.setFromCamera(
+        _brushRaycaster.setFromCamera(
             new THREE.Vector2((clientX / cw) * 2 - 1, -(clientY / ch) * 2 + 1),
             camera
         );
-        scene.updateMatrixWorld();
-        // Excluir los overlay meshes del pincel (hijos con userData._isBrushDecal)
-        const targets = objetosPintables.filter(m => !m.userData._isBrushDecal);
-        const hits = rc.intersectObjects(targets, false);
+        const hits = _brushRaycaster.intersectObjects(objetosPintables, false);
         return hits.length ? hits[0] : null;
     }
 
     // ── Colocar un decal del pincel en el punto de impacto ──────────
+    // Usa DecalGeometry (se recorta a la superficie) con throttle para performance
+    let _brushLastStampTime = 0;
+    const BRUSH_STAMP_INTERVAL = 30; // ms mínimo entre stamps (~33 stamps/seg max)
+
     function _brushStamp(hit, isErase) {
         if (!hit || !hit.face) return;
 
         const mesh   = hit.object;
         const pos    = hit.point.clone();
-        const norm   = hit.face.normal.clone().transformDirection(mesh.matrixWorld).normalize();
+        const norm   = hit._skipTransform
+            ? hit.face.normal.clone()
+            : hit.face.normal.clone().transformDirection(mesh.matrixWorld).normalize();
 
-        // Tamaño en unidades 3D: mapear el slider (4–128) a un rango de mundo.
-        // El tamaño base depende del modelo cargado. Usamos _modeloSize si existe.
         const modelSpan  = window._modeloSize
             ? Math.max(window._modeloSize.x, window._modeloSize.y, window._modeloSize.z)
             : 4;
-        const rawSize    = parseInt(brushSizeSlider.value); // 4–128
-        const worldSize  = (rawSize / 128) * modelSpan * 0.25; // max = 25% del span del modelo
+        const rawSize    = parseInt(brushSizeSlider.value);
+        const worldSize  = (rawSize / 128) * modelSpan * 0.25;
+
+        if (isErase) {
+            _brushEraseInRadius(pos, worldSize);
+            return;
+        }
+
+        // Throttle: no crear más de 1 decal cada BRUSH_STAMP_INTERVAL ms
+        const now = performance.now();
+        if (now - _brushLastStampTime < BRUSH_STAMP_INTERVAL) return;
+        _brushLastStampTime = now;
+
         const opacity    = parseInt(brushOpacitySlider.value) / 100;
         const hardness   = parseInt(brushHardSlider.value)    / 100;
         const colorHex   = brushColorInput.value;
 
-        // Orientar el decal apuntando a la cámara (igual que vinilos)
+        // Orientar el decal
         const rot = calcularRotacionDecal(pos, norm, 0);
-
         const decalSize = new THREE.Vector3(worldSize, worldSize, worldSize * 2);
+
         let geom;
         try { geom = mkDecal(mesh, pos, rot, decalSize); }
         catch(e) { return; }
 
-        let mat;
-        if (isErase) {
-            // Para borrar usamos un decal blanco (color del fondo o negro) con blending
-            // que sobreescribe los decals de pincel debajo. La técnica más limpia:
-            // renderOrder muy alto y color que tape lo que hay debajo.
-            // Como los decals del pincel no son trasparentes en sí (tienen su propia capa),
-            // el borrador simplemente elimina los decals existentes en esa zona
-            // marcándolos como invisibles si están en el radio.
-            _brushEraseInRadius(pos, worldSize);
-            geom.dispose();
-            return;
+        const tex = _brushMakeTexture(colorHex, opacity, hardness, false);
+        // Usar MeshStandardMaterial con el acabado actual (metalizado, brillante, etc.)
+        const finish = acabadoPresets[acabadoPintura] || acabadoPresets.brillante;
+        const matKey = colorHex + '_' + opacity + '_' + hardness + '_' + acabadoPintura;
+        if (!_brushCachedMat || _brushCachedMat.userData._matKey !== matKey) {
+            _brushCachedMat = new THREE.MeshStandardMaterial({
+                map: tex,
+                transparent: true,
+                depthWrite: false,
+                depthTest: true,
+                polygonOffset: true,
+                polygonOffsetFactor: -4,
+                polygonOffsetUnits: -1,
+                side: THREE.FrontSide,
+                roughness: finish.roughness,
+                metalness: finish.metalness,
+                envMap: scene.environment,
+            });
+            _brushCachedMat.userData._matKey = matKey;
         }
 
-        const tex = _brushMakeTexture(colorHex, opacity, hardness, false);
-        mat = new THREE.MeshBasicMaterial({
-            map: tex,
-            transparent: true,
-            depthWrite: false,
-            depthTest: true,
-            polygonOffset: true,
-            polygonOffsetFactor: -4,
-            polygonOffsetUnits: -1,
-            blending: THREE.NormalBlending,
-            side: THREE.FrontSide,
-        });
-
-        const decalMesh = new THREE.Mesh(geom, mat);
+        const decalMesh = new THREE.Mesh(geom, _brushCachedMat);
         decalMesh.renderOrder = 50 + brushDecals.length;
         decalMesh.userData._isBrushDecal = true;
         scene.add(decalMesh);
@@ -5531,7 +5873,7 @@ applyLang();
             worldSize,
             targetMesh: mesh,
             rotEuler: rot.clone(),
-            texDataUrl: _brushTexCanvas.toDataURL()
+            texDataUrl: null
         });
     }
 
@@ -5616,6 +5958,7 @@ applyLang();
             // Guardar punto de deshacer ANTES del primer stamp
             brushUndoStack.push(brushDecals.length);
             if (brushUndoStack.length > BRUSH_MAX_UNDO) brushUndoStack.shift();
+            _globalUndoRegister('brush');
         }
 
         const hit = _brushRaycast(e.clientX, e.clientY);
@@ -5644,30 +5987,31 @@ applyLang();
         const worldSize = (rawSize / 128) * modelSpan * 0.25;
 
         // Interpolar entre el último punto y el actual para trazo continuo
-        const spacing = worldSize * 0.15; // 15% del tamaño = trazo muy suave
+        const spacing = worldSize * 0.3; // 30% del tamaño — buen balance calidad/performance
         if (brushLastPos && brushLastMesh) {
             const dist = hit.point.distanceTo(brushLastPos);
-            if (dist < spacing) return; // aún no se movió lo suficiente
+            if (dist < spacing) return; // no se movió lo suficiente
+
             if (dist > spacing * 1.5) {
-                // Interpolar: generar stamps intermedios a lo largo de la línea 3D
-                const steps = Math.ceil(dist / spacing);
+                // Interpolar: generar stamps sin raycasts extra (usar lerp de pos/normal)
+                const steps = Math.min(10, Math.ceil(dist / spacing)); // cap a 10 para no lagear
+                const lastNorm = _brushLastNorm || hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
+                const hitNorm = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
                 for (let s = 1; s <= steps; s++) {
                     const t = s / steps;
-                    const interpPoint = brushLastPos.clone().lerp(hit.point, t);
-                    // Raycast desde la cámara hacia el punto interpolado para obtener la normal real
-                    const dir = interpPoint.clone().sub(camera.position).normalize();
-                    const rc = new THREE.Raycaster(camera.position.clone(), dir);
-                    const targets = objetosPintables.filter(m => !m.userData._isBrushDecal);
-                    const hits2 = rc.intersectObjects(targets, false);
-                    if (hits2.length && hits2[0].face) {
-                        _brushStamp(hits2[0], isErase);
-                    }
+                    const interpPos = brushLastPos.clone().lerp(hit.point, t);
+                    const interpNorm = lastNorm.clone().lerp(hitNorm, t).normalize();
+                    // Create a fake hit object for _brushStamp
+                    _brushStamp({ point: interpPos, face: { normal: interpNorm }, object: hit.object, _skipTransform: true }, isErase);
                 }
+                _brushLastNorm = hitNorm;
             } else {
                 _brushStamp(hit, isErase);
+                _brushLastNorm = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
             }
         } else {
             _brushStamp(hit, isErase);
+            _brushLastNorm = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
         }
 
         brushLastPos  = hit.point.clone();
@@ -5866,7 +6210,7 @@ applyLang();
 
         // Guardar en userData para exportación
         mesh.userData._bucketColor = colorHex;
-
+        _globalUndoRegister('bucket');
         mostrarToast(`🪣 Part "${mesh.name || 'mesh'}" painted`);
     }, { capture: true });
 
@@ -6054,7 +6398,142 @@ applyLang();
     });
 
     // ══════════════════════════════════════════════════════════════════
+    // ── GLOBAL UNDO (Ctrl+Z) ──────────────────────────────────────
+    // Tracks the order of actions across all systems (vinyls, brush, bucket)
+    // and undoes the most recent one.
+    // ══════════════════════════════════════════════════════════════════
+
+    const _globalUndoStack = []; // array of 'vinyl' | 'brush' | 'bucket'
+    const GLOBAL_UNDO_MAX = 50;
+
+    function _globalUndoRegister(type) {
+        _globalUndoStack.push(type);
+        if (_globalUndoStack.length > GLOBAL_UNDO_MAX) _globalUndoStack.shift();
+    }
+
+    function _globalUndo() {
+        if (!_globalUndoStack.length) { mostrarToast('Nothing to undo.'); return; }
+        const last = _globalUndoStack.pop();
+
+        if (last === 'vinyl') {
+            if (capasStickers.length > 0) {
+                const ul = capasStickers.pop();
+                scene.remove(ul.objetoMesh); ul.objetoMesh.geometry.dispose();
+                if (ul.vinculoEspejo && capasStickers.length > 0) {
+                    const ee = capasStickers.pop();
+                    if (ee) { scene.remove(ee.objetoMesh); ee.objetoMesh.geometry.dispose(); }
+                }
+                indexCapaSeleccionada = null;
+                subpanelEditor.style.display = 'none';
+                actualizarInterfazCapas();
+            }
+        } else if (last === 'brush') {
+            if (brushUndoStack.length) {
+                const targetLen = brushUndoStack.pop();
+                while (brushDecals.length > targetLen) {
+                    const d = brushDecals.pop();
+                    scene.remove(d.mesh3d);
+                    d.mesh3d.geometry.dispose();
+                    d.mesh3d.material.dispose();
+                }
+                for (const d of brushDecals) d.mesh3d.visible = true;
+            }
+        } else if (last === 'bucket') {
+            if (bucketHistory.length) {
+                const entry = bucketHistory.pop();
+                entry.mesh.material.color.set(entry.prevColor);
+                entry.mesh.material.map = entry.prevMap;
+                entry.mesh.material.needsUpdate = true;
+                delete entry.mesh.userData._bucketColor;
+            }
+        }
+    }
+
+    // Ctrl+Z listener
+    window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+            const tag = document.activeElement.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA') return; // don't override native undo in inputs
+            e.preventDefault();
+            _globalUndo();
+        }
+    });
+
+    // ══════════════════════════════════════════════════════════════════
+    // ── EDITABLE VALUE SPANS ──────────────────────────────────────
+    // Click on any .val span to type a value manually.
+    // Maps each span to its associated slider.
+    // ══════════════════════════════════════════════════════════════════
+
+    const _valSliderMap = {
+        'txt-tamaño':      'slider-tamaño',
+        'txt-rotacion':    'slider-rotacion',
+        'txt-edit-tam':    'edit-slider-tamaño',
+        'txt-edit-rot':    'edit-slider-rotacion',
+        'txt-edit-ox':     'edit-slider-ox',
+        'txt-edit-oy':     'edit-slider-oy',
+        'txt-brush-size':  'brush-size',
+        'txt-brush-opacity':'brush-opacity',
+        'txt-brush-hardness':'brush-hardness',
+        'txt-text-curve':  'slider-text-curve',
+        'txt-forma-ancho': 'sl-forma-ancho',
+        'txt-forma-alto':  'sl-forma-alto',
+    };
+
+    document.querySelectorAll('.field-label .val').forEach(span => {
+        span.title = 'Click to edit';
+        span.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const currentVal = span.textContent.replace(/[°%]/g, '').trim();
+            const sliderId = _valSliderMap[span.id];
+            const slider = sliderId ? document.getElementById(sliderId) : null;
+
+            // Create inline input
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.value = currentVal;
+            input.style.cssText = 'width:50px;padding:1px 4px;font-size:11px;background:var(--bg2);border:1px solid var(--gold);border-radius:3px;color:var(--gold);outline:none;text-align:center;font-family:inherit;';
+            if (slider) {
+                input.min = slider.min;
+                input.max = slider.max;
+                input.step = slider.step;
+            }
+
+            span.style.display = 'none';
+            span.parentElement.appendChild(input);
+            input.focus();
+            input.select();
+
+            function _commit() {
+                let val = parseFloat(input.value);
+                if (isNaN(val)) val = parseFloat(currentVal);
+                if (slider) {
+                    val = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), val));
+                    slider.value = val;
+                    slider.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+                // Update span text with appropriate suffix
+                const suffix = span.textContent.includes('°') ? '°' : (span.textContent.includes('%') ? '%' : '');
+                span.textContent = val + suffix;
+                span.style.display = '';
+                input.remove();
+            }
+
+            input.addEventListener('blur', _commit);
+            input.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter') { ev.preventDefault(); _commit(); }
+                if (ev.key === 'Escape') { span.style.display = ''; input.remove(); }
+            });
+        });
+    });
+
+    // ══════════════════════════════════════════════════════════════════
     // ── FIN SISTEMA DE PINCEL ─────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════
+
+    // ══════════════════════════════════════════════════════════════════
+    // ── KN5 IMPORT CONTROLLER ─────────────────────────────────────
+    // (initialized earlier, after animate())
     // ══════════════════════════════════════════════════════════════════
 
 

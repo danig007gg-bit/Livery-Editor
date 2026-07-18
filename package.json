@@ -20,12 +20,23 @@
       "index.html",
       "main.js",
       "preload.js",
+      "kn5-main-module.js",
+      "kn5-preload-api.js",
+      "kn5-renderer-controller.mjs",
       "package.json",
       "logo.png",
       "logosinfondo.png",
+      "ui_skin.json",
       "derelict_airfield_02_1k.hdr",
       "node_modules/three/**",
       "node_modules/dxt-js/**"
+    ],
+    "extraResources": [
+      {
+        "from": "kn5-tools",
+        "to": "kn5-tools",
+        "filter": ["**/*"]
+      }
     ],
     "win": {
       "target": "nsis",

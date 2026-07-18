@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const dxt = require('dxt-js');
+const { registerKn5Import } = require('./kn5-main-module');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -19,6 +20,14 @@ function createWindow() {
   });
 
   win.loadFile(path.join(__dirname, 'index.html'));
+}
+
+// ── Registrar módulo KN5 ────────────────────────────────────────────
+try {
+  registerKn5Import({ app, ipcMain, dialog, projectDir: __dirname });
+  console.log('[Main] KN5 module registered successfully');
+} catch (e) {
+  console.error('[Main] KN5 module registration failed:', e.message);
 }
 
 ipcMain.handle('save-file', async (event, { defaultName, dataUrl }) => {
@@ -93,6 +102,67 @@ ipcMain.handle('save-dds', async (event, { defaultName, rgbaBase64, width, heigh
 
     fs.writeFileSync(filePath, fileBuffer);
     return { filePath };
+  } catch (err) {
+    return { error: err.message };
+  }
+});
+
+// ── Create skin folder and save files directly ──────────────────────
+ipcMain.handle('create-skin', async (event, { carPath, skinName, files }) => {
+  if (!carPath || !skinName || !files?.length) return { error: 'Missing parameters' };
+  const skinsDir = path.join(carPath, 'skins');
+  const skinDir = path.join(skinsDir, skinName);
+  try {
+    fs.mkdirSync(skinDir, { recursive: true });
+    for (const file of files) {
+      const filePath = path.join(skinDir, file.name);
+      if (file.dds) {
+        // Compress RGBA to DXT5 and save as DDS
+        const rgbaBuffer = Buffer.from(file.data, 'base64');
+        const rgbaArray = new Uint8Array(rgbaBuffer);
+        const compressed = dxt.compress(rgbaArray, file.width, file.height, dxt.flags.DXT5);
+        const headerSize = 128;
+        const fileBuffer = Buffer.alloc(headerSize + compressed.length);
+        fileBuffer.writeUInt32LE(0x20534444, 0);
+        fileBuffer.writeUInt32LE(124, 4);
+        fileBuffer.writeUInt32LE(0x1 | 0x2 | 0x4 | 0x1000 | 0x80000, 8);
+        fileBuffer.writeUInt32LE(file.height, 12);
+        fileBuffer.writeUInt32LE(file.width, 16);
+        fileBuffer.writeUInt32LE(compressed.length, 20);
+        fileBuffer.writeUInt32LE(32, 76);
+        fileBuffer.writeUInt32LE(0x4, 80);
+        fileBuffer.write('DXT5', 84, 4, 'ascii');
+        fileBuffer.writeUInt32LE(0x1000, 108);
+        Buffer.from(compressed).copy(fileBuffer, headerSize);
+        fs.writeFileSync(filePath, fileBuffer);
+      } else {
+        // Save raw base64 data (PNG)
+        const data = Buffer.from(file.data, 'base64');
+        fs.writeFileSync(filePath, data);
+      }
+    }
+
+    // Copy ui_skin.json with project name
+    const uiSkinTemplatePath = app.isPackaged
+      ? path.join(process.resourcesPath, 'ui_skin.json')
+      : path.join(__dirname, 'ui_skin.json');
+    if (fs.existsSync(uiSkinTemplatePath)) {
+      try {
+        const uiSkin = JSON.parse(fs.readFileSync(uiSkinTemplatePath, 'utf8'));
+        uiSkin.skinname = skinName;
+        fs.writeFileSync(path.join(skinDir, 'ui_skin.json'), JSON.stringify(uiSkin, null, 2), 'utf8');
+      } catch (_) {}
+    }
+
+    // Copy logo.png as livery.png
+    const logoPath = app.isPackaged
+      ? path.join(process.resourcesPath, 'logo.png')
+      : path.join(__dirname, 'logo.png');
+    if (fs.existsSync(logoPath)) {
+      try { fs.copyFileSync(logoPath, path.join(skinDir, 'livery.png')); } catch (_) {}
+    }
+
+    return { skinDir, filesWritten: files.length + 2 };
   } catch (err) {
     return { error: err.message };
   }

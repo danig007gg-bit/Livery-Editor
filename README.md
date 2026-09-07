@@ -7,4 +7,4 @@ HOW TO USE:
 4. Export the design directly to your car skin folder
 5. Enjoy
 
-Discord of community https://discord.gg/9W9Ea3XdYS 
+Discord of community https://discord.gg/4xMeHjyWyr

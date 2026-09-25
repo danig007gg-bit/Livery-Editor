@@ -21,6 +21,7 @@ export function createKn5ImportController({ api = window.electronAPI, onFilesRea
   let cars = [];
   let selectedPath = null;
   let selectedCarIndex = null;
+  let selectedCarName = null;
 
   const status = (message, error = false) => {
     if (statusElement) {
@@ -75,6 +76,7 @@ export function createKn5ImportController({ api = window.electronAPI, onFilesRea
 
       card.addEventListener('click', () => {
         selectedCarIndex = index;
+        selectedCarName = car.name || null;
         // Highlight selected card
         carGrid.querySelectorAll('div[data-car-index]').forEach(c => c.style.borderColor = 'var(--border)');
         card.style.borderColor = 'var(--accent2)';
@@ -164,7 +166,7 @@ export function createKn5ImportController({ api = window.electronAPI, onFilesRea
   directButton.addEventListener('click', async () => {
     try {
       const selected = await api.selectKn5File();
-      if (selected) selectKn5(selected, selected.split(/[\\/]/).pop());
+      if (selected) { selectedCarName = null; selectKn5(selected, selected.split(/[\\/]/).pop()); }
     } catch (error) { status(error.message || String(error), true); }
   });
   rootButton.addEventListener('click', async () => {
@@ -181,6 +183,7 @@ export function createKn5ImportController({ api = window.electronAPI, onFilesRea
   modelSelect.addEventListener('change', () => {
     if (selectedCarIndex === null) return;
     const car = cars[selectedCarIndex];
+    selectedCarName = car?.name || null;
     const model = modelSelect.value === '' ? null : car?.kn5?.[Number(modelSelect.value)];
     if (model) selectKn5(model.path, `${car.name} — ${model.name}`);
   });
@@ -189,17 +192,38 @@ export function createKn5ImportController({ api = window.electronAPI, onFilesRea
     importButton.disabled = true;
     const errorBox = document.getElementById('kn5-error-box');
     if (errorBox) errorBox.style.display = 'none';
+
+    // Set import flag on window so onStatus handler knows not to dismiss splash
+    window._kn5IsImporting = true;
+
+    // Show splash transition immediately
+    const splash = document.getElementById('splash-screen');
+    const splashLogo = document.getElementById('splash-logo');
+    const splashStatus = document.getElementById('splash-status');
+    if (splash) {
+      splash.style.display = 'flex';
+      splash.style.opacity = '0';
+      if (splashLogo) { splashLogo.style.transform = ''; splashLogo.style.opacity = '1'; }
+      if (splashStatus) splashStatus.textContent = 'Converting KN5...';
+      requestAnimationFrame(() => { splash.style.opacity = '1'; });
+    }
+
     status('Converting KN5...');
     try {
       const converted = await api.convertKn5(selectedPath);
+      if (splashStatus) splashStatus.textContent = 'Reading files...';
       const entries = await api.readConvertedFolder(converted.outputDir);
       const files = entriesToFiles(entries);
       if (!files.some(file => /\.fbx$/i.test(file.name))) throw new Error('Conversion did not produce any FBX.');
-      await onFilesReady(files, { sourceKn5: selectedPath, temporary: true });
+      if (splashStatus) splashStatus.textContent = 'Loading model...';
+      await onFilesReady(files, { sourceKn5: selectedPath, carName: selectedCarName, temporary: true });
       status('KN5 converted and loaded. Temporary files cleaned.');
     } catch (error) {
       status(error.message || String(error), true);
       if (errorBox) errorBox.style.display = 'block';
+      // Hide splash on error
+      window._kn5IsImporting = false;
+      if (splash) { splash.style.opacity = '0'; setTimeout(() => { splash.style.display = 'none'; }, 800); }
     }
     finally { importButton.disabled = false; }
   });

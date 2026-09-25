@@ -35,13 +35,65 @@ function registerKn5Import({ app, ipcMain, dialog, projectDir = __dirname }) {
     }
     return null;
   };
+  // Letras de unidad disponibles en Windows (C:..Z:). En otros SO se ignora.
+  const listWindowsDrives = () => {
+    if (process.platform !== 'win32') return [];
+    const drives = [];
+    for (let c = 67 /* C */; c <= 90 /* Z */; c++) {
+      const root = String.fromCharCode(c) + ':\\';
+      try { if (fs.existsSync(root)) drives.push(String.fromCharCode(c) + ':'); } catch (_) {}
+    }
+    return drives;
+  };
+
+  // Lee las bibliotecas de Steam desde libraryfolders.vdf (Steam puede tener
+  // juegos repartidos en varias unidades). Devuelve rutas base de cada biblioteca.
+  const readSteamLibraries = () => {
+    const libs = [];
+    const steamRoots = [];
+    for (const drive of listWindowsDrives()) {
+      steamRoots.push(
+        `${drive}\\Program Files (x86)\\Steam`,
+        `${drive}\\Program Files\\Steam`,
+        `${drive}\\Steam`,
+        `${drive}\\SteamLibrary`
+      );
+    }
+    for (const sr of steamRoots) {
+      try { if (fs.existsSync(sr)) libs.push(sr); } catch (_) {}
+      // Parsear libraryfolders.vdf para descubrir bibliotecas en otras unidades.
+      for (const vdf of [
+        path.join(sr, 'steamapps', 'libraryfolders.vdf'),
+        path.join(sr, 'config', 'libraryfolders.vdf')
+      ]) {
+        try {
+          if (!fs.existsSync(vdf)) continue;
+          const txt = fs.readFileSync(vdf, 'utf8');
+          const re = /"path"\s*"([^"]+)"/g;
+          let m;
+          while ((m = re.exec(txt))) libs.push(m[1].replace(/\\\\/g, '\\'));
+        } catch (_) {}
+      }
+    }
+    return libs;
+  };
+
   const findAssettoRoot = () => {
-    const candidates = [
-      readSettings().acRoot,
-      'D:\\SteamLibrary\\steamapps\\common\\assettocorsa',
-      'C:\\Program Files (x86)\\Steam\\steamapps\\common\\assettocorsa',
-      'C:\\Program Files\\Steam\\steamapps\\common\\assettocorsa'
-    ];
+    const candidates = [readSettings().acRoot];
+    // Rutas típicas en cada unidad disponible.
+    for (const drive of listWindowsDrives()) {
+      candidates.push(
+        `${drive}\\SteamLibrary\\steamapps\\common\\assettocorsa`,
+        `${drive}\\Program Files (x86)\\Steam\\steamapps\\common\\assettocorsa`,
+        `${drive}\\Program Files\\Steam\\steamapps\\common\\assettocorsa`,
+        `${drive}\\Steam\\steamapps\\common\\assettocorsa`,
+        `${drive}\\SteamLibrary\\steamapps\\common\\assettocorsa`.replace('SteamLibrary', 'Games\\Steam')
+      );
+    }
+    // Bibliotecas descubiertas vía libraryfolders.vdf.
+    for (const lib of readSteamLibraries()) {
+      candidates.push(path.join(lib, 'steamapps', 'common', 'assettocorsa'));
+    }
     return candidates.find(isAssettoRoot) || null;
   };
   const usefulKn5 = fileName => {
@@ -231,6 +283,67 @@ function registerKn5Import({ app, ipcMain, dialog, projectDir = __dirname }) {
     }
     return results;
   });
+  // ── List the skins of a car (each with its preview.jpg as a data URL) ──
+  ipcMain.handle('kn5:list-skins', async (_event, carPath) => {
+    if (!carPath) return { error: 'No car path', skins: [] };
+    const skinsDir = path.join(carPath, 'skins');
+    if (!fs.existsSync(skinsDir)) return { skins: [] };
+    const skins = [];
+    try {
+      const entries = fs.readdirSync(skinsDir, { withFileTypes: true }).filter(e => e.isDirectory());
+      for (const entry of entries) {
+        const skinDir = path.join(skinsDir, entry.name);
+        // Preview thumbnail
+        let preview = null;
+        const previewCandidates = ['preview.jpg', 'preview.png', 'Preview.jpg', 'Preview.png'];
+        for (const name of previewCandidates) {
+          const p = path.join(skinDir, name);
+          if (fs.existsSync(p)) {
+            try {
+              const buf = fs.readFileSync(p);
+              const ext = p.toLowerCase().endsWith('.png') ? 'png' : 'jpeg';
+              preview = `data:image/${ext};base64,${buf.toString('base64')}`;
+            } catch (_) {}
+            break;
+          }
+        }
+        // Human-readable name from ui_skin.json if present
+        let displayName = entry.name;
+        try {
+          const uiSkinPath = path.join(skinDir, 'ui_skin.json');
+          if (fs.existsSync(uiSkinPath)) {
+            const raw = fs.readFileSync(uiSkinPath, 'utf8').replace(/^\uFEFF/, '');
+            const json = JSON.parse(raw);
+            if (json.skinname) displayName = json.skinname;
+          }
+        } catch (_) {}
+        skins.push({ id: entry.name, name: displayName, path: skinDir, preview });
+      }
+    } catch (err) { return { error: err.message, skins: [] }; }
+    return { skins };
+  });
+
+  // ── Read the texture files of a skin folder as base64 (png/jpg/dds/tga) ──
+  ipcMain.handle('kn5:read-skin-textures', async (_event, skinPath) => {
+    if (!skinPath || !fs.existsSync(skinPath)) return { error: 'Skin path not found', textures: [] };
+    const textures = [];
+    try {
+      const files = fs.readdirSync(skinPath, { withFileTypes: true }).filter(e => e.isFile());
+      for (const f of files) {
+        const lower = f.name.toLowerCase();
+        if (!/\.(dds|png|jpe?g|tga)$/i.test(lower)) continue;
+        // Skip preview/ui images that are not car textures
+        if (/^preview\.(jpg|jpeg|png)$/i.test(lower) || lower === 'livery.png') continue;
+        try {
+          const buf = fs.readFileSync(path.join(skinPath, f.name));
+          const ext = lower.split('.').pop();
+          textures.push({ name: f.name, ext, data: buf.toString('base64') });
+        } catch (_) {}
+      }
+    } catch (err) { return { error: err.message, textures: [] }; }
+    return { textures };
+  });
+
   ipcMain.handle('kn5:convert', async (_event, kn5Path) => convertTemporary(kn5Path));
   ipcMain.handle('kn5:get-preview', async (_event, previewPath) => {
     if (!previewPath || !fs.existsSync(previewPath)) return null;

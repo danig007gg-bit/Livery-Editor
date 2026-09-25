@@ -10,7 +10,7 @@ function createWindow() {
     height: 1000,
     minWidth: 1200,
     minHeight: 800,
-    title: 'Editor de Liveries Assetto Corsa',
+    title: 'Livery Editor — Assetto Corsa',
     backgroundColor: '#0b0b0e',
     webPreferences: {
       nodeIntegration: false,
@@ -102,6 +102,84 @@ ipcMain.handle('save-dds', async (event, { defaultName, rgbaBase64, width, heigh
 
     fs.writeFileSync(filePath, fileBuffer);
     return { filePath };
+  } catch (err) {
+    return { error: err.message };
+  }
+});
+
+// ── Decode a DDS file to raw RGBA (for 3D viewport display) ──────────
+// Handles DXT1/DXT3/DXT5 (via dxt-js) and uncompressed ARGB/RGB DDS.
+// Returns { width, height, rgbaBase64 } or { error }.
+ipcMain.handle('decode-dds', async (event, { base64 }) => {
+  try {
+    const buf = Buffer.from(base64, 'base64');
+    if (buf.readUInt32LE(0) !== 0x20534444) return { error: 'not a DDS file' };
+
+    const height = buf.readUInt32LE(12);
+    const width  = buf.readUInt32LE(16);
+    const pfFlags = buf.readUInt32LE(80);
+    const fourCC = buf.toString('ascii', 84, 88);
+    const rgbBitCount = buf.readUInt32LE(88);
+    const headerSize = 128;
+
+    const DDPF_ALPHAPIXELS = 0x1;
+    const DDPF_FOURCC = 0x4;
+    const DDPF_RGB = 0x40;
+    const DDPF_LUMINANCE = 0x20000;
+
+    const rMask = buf.readUInt32LE(92);
+    const gMask = buf.readUInt32LE(96);
+    const bMask = buf.readUInt32LE(100);
+    const aMask = buf.readUInt32LE(104);
+    const pixelData = buf.subarray(headerSize);
+    const maskShift = (m) => { if (!m) return -1; let s = 0; while (((m >> s) & 1) === 0 && s < 32) s++; return s; };
+
+    let rgba;
+
+    if (pfFlags & DDPF_FOURCC) {
+      // ── Compressed formats (DXT1/3/5) ──
+      let flag;
+      if (fourCC === 'DXT1') flag = dxt.flags.DXT1;
+      else if (fourCC === 'DXT3') flag = dxt.flags.DXT3;
+      else if (fourCC === 'DXT5') flag = dxt.flags.DXT5;
+      else return { error: 'unsupported FourCC: ' + fourCC };
+
+      const decompressed = dxt.decompress(new Uint8Array(pixelData), width, height, flag);
+      rgba = Buffer.from(decompressed);
+    } else if (pfFlags & DDPF_LUMINANCE) {
+      // ── Luminance / Luminance-Alpha (grayscale base maps) ──
+      // 8-bit  = L8   (luminance only)
+      // 16-bit = L8A8 (luminance in low byte, alpha in high byte)
+      const bytesPerPixel = rgbBitCount / 8;
+      rgba = Buffer.alloc(width * height * 4);
+      for (let i = 0; i < width * height; i++) {
+        const off = i * bytesPerPixel;
+        if (off + bytesPerPixel > pixelData.length) break;
+        const lum = pixelData[off];
+        const alpha = bytesPerPixel >= 2 ? pixelData[off + 1] : 255;
+        rgba[i*4] = lum; rgba[i*4+1] = lum; rgba[i*4+2] = lum; rgba[i*4+3] = alpha;
+      }
+    } else if (pfFlags & DDPF_RGB) {
+      // ── Uncompressed RGB/RGBA (use channel masks) ──
+      const bytesPerPixel = rgbBitCount / 8;
+      rgba = Buffer.alloc(width * height * 4);
+      const rS = maskShift(rMask), gS = maskShift(gMask), bS = maskShift(bMask), aS = maskShift(aMask);
+      const hasAlpha = (pfFlags & DDPF_ALPHAPIXELS) && aMask;
+      for (let i = 0; i < width * height; i++) {
+        const off = i * bytesPerPixel;
+        if (off + bytesPerPixel > pixelData.length) break;
+        let px = 0;
+        for (let b = 0; b < bytesPerPixel; b++) px |= pixelData[off + b] << (b * 8);
+        rgba[i*4]   = rS >= 0 ? (px & rMask) >>> rS : 0;
+        rgba[i*4+1] = gS >= 0 ? (px & gMask) >>> gS : 0;
+        rgba[i*4+2] = bS >= 0 ? (px & bMask) >>> bS : 0;
+        rgba[i*4+3] = hasAlpha && aS >= 0 ? (px & aMask) >>> aS : 255;
+      }
+    } else {
+      return { error: 'unsupported DDS pixel format (pfFlags=0x' + pfFlags.toString(16) + ')' };
+    }
+
+    return { width, height, rgbaBase64: rgba.toString('base64') };
   } catch (err) {
     return { error: err.message };
   }

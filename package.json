@@ -1,7 +1,7 @@
 {
-  "name": "editor-liveries-ac",
-  "version": "1.0.0",
-  "description": "Editor 3D de liveries para Assetto Corsa con interfaz tipo Gran Turismo",
+  "name": "livery-editor-ac",
+  "version": "0.8.5",
+  "description": "3D Livery Editor for Assetto Corsa",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -14,8 +14,8 @@
     "electron-packager": "^17.1.2"
   },
   "build": {
-    "appId": "com.editorliveries.assetto",
-    "productName": "Editor Liveries AC",
+    "appId": "com.liveryeditor.assetto",
+    "productName": "Livery Editor AC",
     "files": [
       "index.html",
       "main.js",

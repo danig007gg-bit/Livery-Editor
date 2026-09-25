@@ -11,7 +11,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   readConvertedFolder: (outputDir) => ipcRenderer.invoke('kn5:read-output', outputDir),
   getCarPreview: (previewPath) => ipcRenderer.invoke('kn5:get-preview', previewPath),
   getCarPreviews: (previewPaths) => ipcRenderer.invoke('kn5:get-previews', previewPaths),
-  createSkin: (carPath, skinName, files) => ipcRenderer.invoke('create-skin', { carPath, skinName, files })
+  listSkins: (carPath) => ipcRenderer.invoke('kn5:list-skins', carPath),
+  readSkinTextures: (skinPath) => ipcRenderer.invoke('kn5:read-skin-textures', skinPath),
+  createSkin: (carPath, skinName, files) => ipcRenderer.invoke('create-skin', { carPath, skinName, files }),
+  decodeDDS: (base64) => ipcRenderer.invoke('decode-dds', { base64 })
 });
 
 window.addEventListener('DOMContentLoaded', () => {
